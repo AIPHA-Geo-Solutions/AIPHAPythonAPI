@@ -4,29 +4,37 @@ import urllib
 import json
 import ssl
 
+verifySSL = False #TODO: verifySSL=True
 
 def import_commands(server_address):
     url = "https://" + server_address + "/default_functions.json"
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE #TODO: enforce checking of ssl certificate
-    commands_string = urllib.request.urlopen(url, context=ctx).read()
+    if not verifySSL:
+      ctx = ssl.create_default_context()
+      ctx.check_hostname = False
+      ctx.verify_mode = ssl.CERT_NONE
+      commands_string = urllib.request.urlopen(url, context=ctx).read()
+    else:
+      commands_string = urllib.request.urlopen(url).read()
     commands = json.loads(commands_string)
     return commands
 
 def check_command_arguments(
         command, 
-        arguments, 
+        parameters, 
         command_dict
     ):
     if not command in command_dict:
-      #raise RuntimeError("Invalid command request: " + command + " does not exist")
-      return {}
-    valid_parameters = dict(command_dict['in_parameters'], *command_dict['out_parameters'])
+      raise RuntimeError("Invalid command request: " + command + " does not exist")
+    print(command_dict[command]['in_parameters'], command_dict[command]['out_parameters'])
+    valid_parameters = dict(**(command_dict[command]['in_parameters']), **(command_dict[command]['out_parameters']))
     all_parameters = {}
+    image_name = command_dict[command]['image']
     for parameter in valid_parameters:
-        print(parameter)
-    return all_parameters
+        if parameter in parameters:
+            all_parameters[parameter] = parameters[parameter]
+        else:
+            all_parameters[parameter] = valid_parameters[parameter]['default_value']
+    return all_parameters, image_name
 
 def command_request(
         username,
@@ -35,11 +43,11 @@ def command_request(
         parameters_dictionary,
         server_address):
   available_commands = import_commands(server_address)
-  all_parameters = check_command_arguments(command, parameters_dictionary, available_commands)
-  print(available_commands)
-  payload = {'customerId': username, 'customerPassword': password, 'command': command, 'parameters': all_parameters}
+  all_parameters, image_name = check_command_arguments(command, parameters_dictionary, available_commands)
+  print(all_parameters)
+  payload = {'customerId': username, 'customerPassword': password, 'command': image_name, 'parameters': all_parameters, 'operator_name': command}
   url = 'https://' + server_address +':443/run-operator'
-  r = requests.post(url, json=payload, verify=False) #TODO: enforce checking of ssl certificates
+  r = requests.post(url, json=payload, verify=verifySSL)
   print(r.text)
   return r
 
