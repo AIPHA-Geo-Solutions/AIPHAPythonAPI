@@ -3,6 +3,7 @@ import argparse
 import urllib
 import json
 import ssl
+import time
 
 verifySSL = False #TODO: verifySSL=True
 
@@ -71,6 +72,46 @@ def command_request(
       raise RuntimeError('AIPHAProcessingError: ' + r.text)
   return result
 
+def running_services_request(
+        username,
+        password,
+        server_address):
+  payload = { \
+          'customerId': username, \
+          'customerPassword': password, \
+            }
+  url = 'https://' + server_address +':443/get-running-services'
+  r = requests.post(url, json=payload, verify=verifySSL)
+  try:
+    result = json.loads(r.text)
+    if 'error' in result:
+      raise RuntimeError('AIPHAProcessingError: ' + result['error'])
+  except:
+      raise RuntimeError('AIPHAProcessingError: ' + r.text)
+  return result
+
+def check_services_completed(
+        username,
+        password,
+        server_address,
+        services):
+  running_services =  running_services_request(
+        username,
+        password,
+        server_address
+  )
+  services_dict = json.loads(running_services['running_processes'])
+  for service_id in services:
+      this_complete = False
+      for running_service in services_dict:
+        if service_id.startswith(running_service['ID']):
+          if '1/1 completed' in running_service['Replicas']:
+              this_complete = True
+              break
+      if this_complete == False:
+          return False
+  return True
+
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument('--username', type=str, default="", help='input folder')
@@ -88,3 +129,13 @@ if __name__ == "__main__":
         parameters_dictionary,
         args.server_address)
   print(result)
+  completed = False
+  while not completed:
+    time.sleep(10)
+    completed = check_services_completed(
+        args.username,
+        args.password,
+        args.server_address,
+        [result['pid']])
+    print(completed)
+
