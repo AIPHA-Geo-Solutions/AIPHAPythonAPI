@@ -63,9 +63,12 @@ def command_request(
             }
   url = 'https://' + server_address +':443/run-operator'
   r = requests.post(url, json=payload, verify=verifySSL)
-  result = json.loads(r.text)
-  if 'error' in result:
-      raise RuntimeError('Error: ' + result['error'])
+  try:
+    result = json.loads(r.text)
+    if 'error' in result:
+      raise RuntimeError('AIPHAProcessingError: ' + result['error'])
+  except:
+      raise RuntimeError('AIPHAProcessingError: ' + r.text)
   return result
 
 if __name__ == "__main__":
