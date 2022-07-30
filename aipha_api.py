@@ -81,9 +81,10 @@ if __name__ == "__main__":
   args = parser.parse_args()
 
   parameters_dictionary = json.loads(args.parameters_dictionary_str)
-  command_request(
+  result = command_request(
         args.username,
         args.password,
         args.command,
         parameters_dictionary,
         args.server_address)
+  print(result)
