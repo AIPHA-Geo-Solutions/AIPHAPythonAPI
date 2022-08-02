@@ -118,7 +118,7 @@ if __name__ == "__main__":
   parser.add_argument('--password', type=str, default = "", help='input folder')
   parser.add_argument('--command', type=str, default = "hello world", help='output folder')
   parser.add_argument('--parameters_dictionary_str', type=str, default = '{"instance_type": "nano"}', help='command parameters as string in json format')
-  parser.add_argument('--server_address', type=str, default = "18.156.36.243", help='Server address')
+  parser.add_argument('--server_address', type=str, default = "18.198.190.23", help='Server address')
   args = parser.parse_args()
 
   parameters_dictionary = json.loads(args.parameters_dictionary_str)
