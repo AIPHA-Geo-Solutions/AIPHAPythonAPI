@@ -111,12 +111,14 @@ def check_services_completed(
     services_dict = json.loads(running_services['running_processes'])
     for service_id in services:
       this_complete = False
+      this_running = False
       for running_service in services_dict:
         if service_id.startswith(running_service['ID']):
+          this_running = True
           if '1/1 completed' in running_service['Replicas']:
               this_complete = True
               break
-      if this_complete == False:
+      if this_complete == False and this_running == True:
           return False
     return True
   except:
