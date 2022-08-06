@@ -118,7 +118,7 @@ def check_services_completed(
           if '1/1 completed' in running_service['Replicas']:
               this_complete = True
               break
-      if this_complete == False and this_running == True:
+      if this_complete == False and (this_running == True or len(services_dict) == 0):
           return False
     return True
   except:
