@@ -114,6 +114,7 @@ def check_services_completed(
       for running_service in services_dict:
         if service_id.startswith(running_service['ID']):
           if '1/1 completed' in running_service['Replicas']:
+              this_complete = True
               break
       if this_complete == False:
           return False
