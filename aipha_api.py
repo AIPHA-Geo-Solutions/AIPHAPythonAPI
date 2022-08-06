@@ -29,7 +29,7 @@ def check_command_arguments(
     for parameter in valid_parameters:
         if parameter in parameters:
             all_parameters[parameter] = parameters[parameter]
-        elif 'parameter' == instance_type:
+        elif parameter == 'instance_type':
             instance_parameteters['instance_type'] = parameters[parameter]
         else:
             all_parameters[parameter] = valid_parameters[parameter]['default_value']
