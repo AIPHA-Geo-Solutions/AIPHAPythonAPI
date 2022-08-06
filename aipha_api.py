@@ -24,12 +24,12 @@ def check_command_arguments(
     all_parameters = {}
     image_name = command_dict[command]['image']
     instance_parameters = {}
-    if 'instance_type' in command_dict[command]:
+    if 'instance_type' in parameters:
+        instance_parameters['instance_type'] = parameters['instance_type']
+    elif 'instance_type' in command_dict[command]:
         instance_parameters['instance_type'] = command_dict[command]['instance_type']['default_value']
     for parameter in valid_parameters:
-        if parameter == 'instance_type':
-            instance_parameters['instance_type'] = parameters[parameter]
-        elif parameter in parameters:
+        if parameter in parameters:
             all_parameters[parameter] = parameters[parameter]
         else:
             all_parameters[parameter] = valid_parameters[parameter]['default_value']
@@ -68,6 +68,7 @@ def command_request(
           'operator_name': command, \
           'instance_parameters': instance_parameters \
             }
+  print("instance", instance_parameters)
   url = 'https://' + server_address +':443/run-operator'
   r = requests.post(url, json=payload, verify=verifySSL)
   try:
