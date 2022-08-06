@@ -102,13 +102,14 @@ def check_services_completed(
         password,
         server_address,
         services):
-  running_services =  running_services_request(
+  try:
+    running_services =  running_services_request(
         username,
         password,
         server_address
-  )
-  services_dict = json.loads(running_services['running_processes'])
-  for service_id in services:
+    )
+    services_dict = json.loads(running_services['running_processes'])
+    for service_id in services:
       this_complete = False
       for running_service in services_dict:
         if service_id.startswith(running_service['ID']):
@@ -117,7 +118,9 @@ def check_services_completed(
               break
       if this_complete == False:
           return False
-  return True
+    return True
+  except:
+    return False
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
