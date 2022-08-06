@@ -28,7 +28,7 @@ def check_command_arguments(
         instance_parameters['instance_type'] = command_dict[command]['instance_type']['default_value']
     for parameter in valid_parameters:
         if parameter == 'instance_type':
-            instance_parameteters['instance_type'] = parameters[parameter]
+            instance_parameters['instance_type'] = parameters[parameter]
         elif parameter in parameters:
             all_parameters[parameter] = parameters[parameter]
         else:
