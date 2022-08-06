@@ -27,10 +27,10 @@ def check_command_arguments(
     if 'instance_type' in command_dict[command]:
         instance_parameters['instance_type'] = command_dict[command]['instance_type']['default_value']
     for parameter in valid_parameters:
-        if parameter in parameters:
-            all_parameters[parameter] = parameters[parameter]
-        elif parameter == 'instance_type':
+        if parameter == 'instance_type':
             instance_parameteters['instance_type'] = parameters[parameter]
+        elif parameter in parameters:
+            all_parameters[parameter] = parameters[parameter]
         else:
             all_parameters[parameter] = valid_parameters[parameter]['default_value']
     return all_parameters, instance_parameters, image_name
