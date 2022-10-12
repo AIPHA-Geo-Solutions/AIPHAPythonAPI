@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "AIPHA"
+version = "0.1"
+authors = [
+  { name="Timo Hackel", email="timo.hackel@aipha.ch" },
+]
+description = "A python API to the AIPHA webservices"
+readme = "README.md"
+requires-python = ">=3.5"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/AIPHA-Geo-Solutions/"
+"Bug Tracker" = "https://github.com/AIPHA-Geo-Solutions/AIPHAPythonAPI/issues"

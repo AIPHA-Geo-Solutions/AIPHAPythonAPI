@@ -29,12 +29,15 @@ def check_command_arguments(
     ):
     if not command in command_dict:
       raise RuntimeError("Invalid command request: " + command + " does not exist")
+    
     if 'in_parameters' in command_dict[command] and 'out_parameters' in command_dict[command]:
       valid_parameters = dict(**(command_dict[command]['in_parameters']), **(command_dict[command]['out_parameters']))
     elif 'in_parameters' in command_dict[command]:
       valid_parameters = command_dict[command]['in_parameters']
     elif 'out_parameters' in command_dict[command]:
       valid_parameters = command_dict[command]['out_parameters']
+    else:
+      valid_parameters = {}
 
     all_parameters = {}
     image_name = command_dict[command]['image']
