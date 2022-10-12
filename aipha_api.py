@@ -7,6 +7,21 @@ import time
 
 verifySSL = False #TODO: verifySSL=True
 
+class AiphaClient:
+    def __init__(self, username, token, server_address):
+      self.username = username
+      self.token = token
+      self.server_address = server_address
+
+    def get_username(self):
+        return self.username
+
+    def get_token(self):
+        return self.token
+    
+    def get_server_address(self):
+        return self.server_address
+
 def check_command_arguments(
         command, 
         parameters, 
