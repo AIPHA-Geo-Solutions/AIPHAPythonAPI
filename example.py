@@ -4,8 +4,8 @@ import aipha.operators as ao
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
-  parser.add_argument('--username', type=str, default="", help='input folder')
-  parser.add_argument('--token', type=str, default = "", help='input folder')
+  parser.add_argument('--username', type=str, default="", help='user name for AIPHA webservices')
+  parser.add_argument('--token', type=str, default = "", help='Token for AIPHA webservices. Please not that passing tokens via command line is insecure. Consider using enviroment variables or reading from config files instead')
   parser.add_argument('--server_address', type=str, default = "18.198.190.23", help='Server address')
   args = parser.parse_args()
 
