@@ -1,6 +1,6 @@
 import argparse
-from aipha.webservice_api import AiphaClient
-import aipha.operators as ao
+from aipha_geo_solutions.webservice_api import AiphaClient
+import aipha_geo_solutions.operators as ao
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
