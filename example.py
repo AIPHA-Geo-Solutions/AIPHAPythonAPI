@@ -15,7 +15,7 @@ if __name__ == "__main__":
   running_processes = ao.list_running_services(client)
   print(running_processes)
   print('starting new process')
-  res = ao.hello_world(client)
+  res = ao.create_directory_in_cloud(client, '/api_test')
   print('started process ' + res['pid'])
 
   print('waiting for process to complete...')

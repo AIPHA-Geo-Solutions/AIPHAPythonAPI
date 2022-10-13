@@ -32,7 +32,8 @@ def download_data_to_cloud(client,
    password='',
    port=21,
    download_type=0,
-   destination='/data'):
+   destination='/data',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -50,7 +51,8 @@ def upload_data_from_cloud(client,
    username='',
    password='',
    port=21,
-   target='/data'):
+   target='/data',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -63,7 +65,8 @@ def upload_data_from_cloud(client,
 
 
 def remove_files_from_cloud(client,
-   target='/files'):
+   target='/files',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -76,7 +79,8 @@ def remove_files_from_cloud(client,
 
 
 def create_directory_in_cloud(client,
-   destination='/files'):
+   destination='/files',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -95,7 +99,8 @@ def classify_each_file_in_folder(client,
    adjustable_out_parameter_name='output_data_path',
    input_data_path='/3D_data',
    in_model_path='/3D_classification_model',
-   output_path='/3D_classification'):
+   output_path='/3D_classification',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -110,7 +115,8 @@ def classify_each_file_in_folder(client,
 def classify_3D(client,
    input_data_path='/3D_data',
    in_model_path='/3D_classification_model',
-   output_path='/3D_classification'):
+   output_path='/3D_classification',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -124,7 +130,8 @@ def classify_3D(client,
 
 def train_classify_3D(client,
    in_training_data_path='/3D_data',
-   out_model_path='/3D_classification_model'):
+   out_model_path='/3D_classification_model',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -140,7 +147,8 @@ def qc_classification(client,
    project_id='',
    year='2022',
    lidar_new_data_folder='in/',
-   out_folder='out/'):
+   out_folder='out/',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -157,7 +165,8 @@ def lidar_completeness(client,
    year='2022',
    lidar_new_data_folder='in/',
    out_folder='out/',
-   lidar_new_shp_file='out/'):
+   lidar_new_shp_file='out/',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -174,7 +183,8 @@ def ortho_completeness(client,
    year='2022',
    orthophoto_folder='in/',
    out_folder='out/',
-   orthophoto_new_shp_file='out/'):
+   orthophoto_new_shp_file='out/',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -191,7 +201,8 @@ def vegetation_consistency(client,
    year='2022',
    lidar_old_data_reduced_folder='in/',
    lidar_new_data_reduced_folder='in/',
-   out_folder='out/'):
+   out_folder='out/',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -207,7 +218,8 @@ def generate_orthophoto_subset(client,
    trasse_id='',
    mapping_file='in/',
    orthophoto_path='in/',
-   subset_path='out/'):
+   subset_path='out/',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -225,7 +237,8 @@ def sg_qc_data_processing_init(client,
    ftp_password='',
    ftp_port=21,
    ftp_folder='/QC-AIPHA',
-   processing_folder='/processing'):
+   processing_folder='/processing',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -244,7 +257,8 @@ def sg_qc_data_processing(client,
    ftp_port=21,
    ftp_data_folder='',
    ftp_ortho_folders='',
-   processing_folder='/processing'):
+   processing_folder='/processing',
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -256,7 +270,8 @@ def sg_qc_data_processing(client,
     client.get_server_address())
 
 
-def sleep_infinity(client):
+def sleep_infinity(client,
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
@@ -268,7 +283,8 @@ def sleep_infinity(client):
     client.get_server_address())
 
 
-def hello_world(client):
+def hello_world(client,
+   instance_type='nano'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
