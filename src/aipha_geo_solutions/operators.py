@@ -112,37 +112,6 @@ def classify_each_file_in_folder(client,
     client.get_server_address())
 
 
-def classify_3D(client,
-   input_data_path='/3D_data',
-   in_model_path='/3D_classification_model',
-   output_path='/3D_classification',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "classify 3D",
-    all_parameters,
-    client.get_server_address())
-
-
-def train_classify_3D(client,
-   in_training_data_path='/3D_data',
-   out_model_path='/3D_classification_model',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "train classify 3D",
-    all_parameters,
-    client.get_server_address())
-
-
 def qc_classification(client,
    project_id='',
    year='2022',
@@ -270,20 +239,30 @@ def sg_qc_data_processing(client,
     client.get_server_address())
 
 
-def sleep_infinity(client,
-   instance_type='nano'):
+def tower_displacement(client,
+   spatial_reference=2056,
+   laz_in_folder_new='laz_folder_new',
+   laz_in_folder_old='laz_folder_old',
+   laz_in_folder_ref='laz_folder_ref',
+   result_out_folder='results',
+   tower_names='1010x001,1010x002',
+   tower_coordinates='257875.7425442745175 113330.5794447326122,254339.7628343642347 113418.4283347820272',
+   perform_preprocessing='True',
+   instance_type='P2'):
 
   all_parameters = locals().copy()
   del all_parameters['client']
   return command_request(
     client.get_username(),
     client.get_token(),
-    "sleep infinity",
+    "tower displacement",
     all_parameters,
     client.get_server_address())
 
 
-def hello_world(client,
+def las2las(client,
+   i='file.las',
+   o='file.las',
    instance_type='nano'):
 
   all_parameters = locals().copy()
@@ -291,6 +270,6 @@ def hello_world(client,
   return command_request(
     client.get_username(),
     client.get_token(),
-    "hello world",
+    "las2las",
     all_parameters,
     client.get_server_address())
