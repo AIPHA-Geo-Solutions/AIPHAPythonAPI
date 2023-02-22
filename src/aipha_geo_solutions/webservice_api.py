@@ -5,13 +5,12 @@ import json
 import ssl
 import time
 
-verifySSL = False #TODO: verifySSL=True
-
 class AiphaClient:
-    def __init__(self, username, token, server_address):
+    def __init__(self, username, token, server_address, verifySSL=True):
       self.username = username
       self.token = token
       self.server_address = server_address
+      self.verifySSL = verifySSL
 
     def get_username(self):
         return self.username
@@ -21,6 +20,10 @@ class AiphaClient:
     
     def get_server_address(self):
         return self.server_address
+    
+    def get_verify_ssl(self):
+        return self.verifySSL
+
 
 def check_command_arguments(
         command, 
@@ -54,7 +57,8 @@ def check_command_arguments(
     return all_parameters, instance_parameters, image_name
 
 glob_commands = {}
-def import_commands(server_address):
+def import_commands(server_address,
+                    verifySSL = True):
     url = "https://" + server_address + "/default_functions.json"
     global glob_commands
     if glob_commands != {}:
@@ -75,8 +79,9 @@ def command_request(
         password,
         command,
         parameters_dictionary,
-        server_address):
-  available_commands = import_commands(server_address)
+        server_address,
+        verifySSL = True):
+  available_commands = import_commands(server_address, verifySSL)
   all_parameters, instance_parameters, image_name = check_command_arguments(command, parameters_dictionary, available_commands)
   payload = { \
           'customerId': username, \
@@ -100,7 +105,8 @@ def command_request(
 def running_services_request(
         username,
         password,
-        server_address):
+        server_address,
+        verifySSL = True):
   payload = { \
           'customerId': username, \
           'customerPassword': password, \
@@ -119,12 +125,14 @@ def check_services_completed(
         username,
         password,
         server_address,
-        services):
+        services,
+        verifySSL = True):
   try:
     running_services =  running_services_request(
         username,
         password,
-        server_address
+        server_address,
+        verifySSL
     )
     services_dict = json.loads(running_services['running_processes'])
     for service_id in services:

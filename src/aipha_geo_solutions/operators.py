@@ -9,7 +9,8 @@ def list_running_services(client):
   return running_services_request(
         client.get_username(),
         client.get_token(),
-        client.get_server_address())
+        client.get_server_address(),
+        client.get_verify_ssl())
 
 
 def wait_for_completion(client,
@@ -22,7 +23,9 @@ def wait_for_completion(client,
         client.get_username(),
         client.get_token(),
         client.get_server_address(),
-        services)
+        services,
+        client.get_verify_ssl()
+        )
 
 
 def download_data_to_cloud(client,
@@ -42,7 +45,9 @@ def download_data_to_cloud(client,
     client.get_token(),
     "download data to cloud",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def upload_data_from_cloud(client,
@@ -61,7 +66,9 @@ def upload_data_from_cloud(client,
     client.get_token(),
     "upload data from cloud",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def remove_files_from_cloud(client,
@@ -75,7 +82,9 @@ def remove_files_from_cloud(client,
     client.get_token(),
     "remove files from cloud",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def create_directory_in_cloud(client,
@@ -89,7 +98,9 @@ def create_directory_in_cloud(client,
     client.get_token(),
     "create directory in cloud",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def classify_each_file_in_folder(client,
@@ -109,7 +120,9 @@ def classify_each_file_in_folder(client,
     client.get_token(),
     "classify each file in folder",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def qc_classification(client,
@@ -126,7 +139,9 @@ def qc_classification(client,
     client.get_token(),
     "qc classification",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def lidar_completeness(client,
@@ -144,7 +159,9 @@ def lidar_completeness(client,
     client.get_token(),
     "lidar completeness",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def ortho_completeness(client,
@@ -162,7 +179,9 @@ def ortho_completeness(client,
     client.get_token(),
     "ortho completeness",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def vegetation_consistency(client,
@@ -180,7 +199,9 @@ def vegetation_consistency(client,
     client.get_token(),
     "vegetation consistency",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def generate_orthophoto_subset(client,
@@ -197,7 +218,9 @@ def generate_orthophoto_subset(client,
     client.get_token(),
     "generate orthophoto subset",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def sg_qc_data_processing_init(client,
@@ -216,7 +239,9 @@ def sg_qc_data_processing_init(client,
     client.get_token(),
     "sg qc data processing init",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def sg_qc_data_processing(client,
@@ -236,7 +261,9 @@ def sg_qc_data_processing(client,
     client.get_token(),
     "sg qc data processing",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def tower_displacement(client,
@@ -257,7 +284,9 @@ def tower_displacement(client,
     client.get_token(),
     "tower displacement",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def las2las(client,
@@ -272,7 +301,9 @@ def las2las(client,
     client.get_token(),
     "las2las",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
 
 
 def sleep_infinity(client,
@@ -285,4 +316,6 @@ def sleep_infinity(client,
     client.get_token(),
     "sleep infinity",
     all_parameters,
-    client.get_server_address())
+    client.get_server_address(),
+    client.get_verify_ssl()
+    )
