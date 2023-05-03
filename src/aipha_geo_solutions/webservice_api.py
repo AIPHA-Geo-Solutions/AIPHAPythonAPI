@@ -97,7 +97,14 @@ def command_request(
   try:
     result = json.loads(r.text)
     if 'error' in result:
-      raise RuntimeError('AIPHAProcessingError: ' + result['error'])
+      for idx in range(10): #10 times retry
+        time.sleep(60)
+        r = requests.post(url, json=payload, verify=verifySSL)
+        result = json.loads(r.text)
+        if not 'error' in result:
+            break
+      if 'error' in result:
+        raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
   except:
       raise RuntimeError('AIPHAProcessingError: ' + r.text)
   return result
@@ -116,7 +123,14 @@ def running_services_request(
   try:
     result = json.loads(r.text)
     if 'error' in result:
-      raise RuntimeError('AIPHAProcessingError: ' + result['error'])
+      for idx in range(10): #10 times retry
+        time.sleep(60)
+        r = requests.post(url, json=payload, verify=verifySSL)
+        result = json.loads(r.text)
+        if not 'error' in result:
+            break
+      if 'error' in result:
+        raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
   except:
       raise RuntimeError('AIPHAProcessingError: ' + r.text)
   return result
@@ -136,9 +150,10 @@ def check_services_completed(
     )
     services_dict = json.loads(running_services['running_processes'])
     for service_id in services:
-      this_complete = False
+      this_complete = True #ignore services that have been deleted
       for running_service in services_dict:
         if service_id.startswith(running_service['ID']):
+          this_complete = False
           if '1/1 completed' in running_service['Replicas']:
               this_complete = True
               break
