@@ -51,9 +51,9 @@ def check_command_arguments(
         instance_parameters['instance_type'] = command_dict[command]['instance_type']['default_value']
     for parameter in valid_parameters:
         if parameter in parameters:
-            all_parameters[parameter] = parameters[parameter]
+            all_parameters[parameter] = str(parameters[parameter]).replace('"', '\\"')
         else:
-            all_parameters[parameter] = valid_parameters[parameter]['default_value']
+            all_parameters[parameter] = str(valid_parameters[parameter]['default_value'])
     return all_parameters, instance_parameters, image_name
 
 glob_commands = {}

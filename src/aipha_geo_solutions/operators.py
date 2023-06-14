@@ -3,18 +3,25 @@
 
 from aipha_geo_solutions.webservice_api import AiphaClient, command_request, running_services_request, check_services_completed
 import time
+import json
 
 def list_running_services(client):
 
   return running_services_request(
         client.get_username(),
         client.get_token(),
-        client.get_server_address())
+        client.get_server_address(),
+        client.get_verify_ssl())
 
 
 def wait_for_completion(client,
   services):
-  
+  pid_services = []  
+  for service in services:
+    if isinstance(service, dict):
+      pid_services.append(service['pid'])
+    else:
+      pid_services.append(pid)
   completed = False
   while not completed:
     time.sleep(10)
@@ -22,406 +29,3908 @@ def wait_for_completion(client,
         client.get_username(),
         client.get_token(),
         client.get_server_address(),
-        services)
-
-
-def point_cloud_classification_inference(client,
-   file_in='file.laz',
-   file_out='classified_file.laz',
-   model_path='model_path',
-   cols_data='x,y,z,intensity',
-   cols_labels='classification',
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "point cloud classification inference",
-    all_parameters,
-    client.get_server_address())
-
-
-def convert_laz_point_formats(client,
-   file_in='file.laz',
-   file_out='converted_file.laz',
-   format=7,
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "convert laz point formats",
-    all_parameters,
-    client.get_server_address())
-
-
-def point_cloud_crop_circle(client,
-   in_file='file.laz',
-   out_file='classified_file.laz',
-   latitude=0,
-   longitude=0,
-   radius=1,
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "point cloud crop circle",
-    all_parameters,
-    client.get_server_address())
-
-
-def union_point_clouds(client,
-   in_files='file.laz',
-   out_file='converted_file.laz',
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "union point clouds",
-    all_parameters,
-    client.get_server_address())
-
-
-def point_cloud_filter_label_noise(client,
-   file_in_data='file.laz',
-   file_in_labels='converted_file.laz',
-   file_out='converted_file.laz',
-   k_nearest_neighbours=5,
-   sigma=10,
-   dim=3,
-   invalid_label=0,
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "point cloud filter label noise",
-    all_parameters,
-    client.get_server_address())
-
-
-def segment_objects(client,
-   in_points_file='file.laz',
-   in_labels_file='file.laz',
-   out_directory='objects',
-   out_prefix='object',
-   label_col='classification',
-   object_class=6,
-   max_distance=1,
-   min_points=1,
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "segment objects",
-    all_parameters,
-    client.get_server_address())
-
-
-def select_center_object(client,
-   in_directory='objects',
-   out_file='selected.laz',
-   latitude=1,
-   longitude=1,
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "select center object",
-    all_parameters,
-    client.get_server_address())
-
-
-def assign_point_labels(client,
-   file_source_in='file.laz',
-   file_labels_in='file.laz',
-   file_source_out='converted_file.laz',
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "assign point labels",
-    all_parameters,
-    client.get_server_address())
-
-
-def select_points_by_value(client,
-   file_source_in='file.laz',
-   min_value=1,
-   max_value=1,
-   attribute='classification',
-   file_source_out='selected.laz',
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "select points by value",
-    all_parameters,
-    client.get_server_address())
-
-
-def download_data_to_cloud(client,
-   url='',
-   protocol='',
-   username='',
-   password='',
-   port=21,
-   download_type=0,
-   destination='/data',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "download data to cloud",
-    all_parameters,
-    client.get_server_address())
-
-
-def upload_data_from_cloud(client,
-   url='',
-   protocol='',
-   username='',
-   password='',
-   port=21,
-   target='/data',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "upload data from cloud",
-    all_parameters,
-    client.get_server_address())
-
-
-def remove_files_from_cloud(client,
-   target='/files',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "remove files from cloud",
-    all_parameters,
-    client.get_server_address())
-
-
-def create_directory_in_cloud(client,
-   destination='/files',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "create directory in cloud",
-    all_parameters,
-    client.get_server_address())
-
-
-def qc_classification(client,
-   project_id='',
-   year='2022',
-   lidar_new_data_folder='in/',
-   out_folder='out/',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "qc classification",
-    all_parameters,
-    client.get_server_address())
-
-
-def lidar_completeness(client,
-   project_id='',
-   year='2022',
-   lidar_new_data_folder='in/',
-   out_folder='out/',
-   lidar_new_shp_file='out/',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "lidar completeness",
-    all_parameters,
-    client.get_server_address())
-
-
-def ortho_completeness(client,
-   project_id='',
-   year='2022',
-   orthophoto_folder='in/',
-   out_folder='out/',
-   orthophoto_new_shp_file='out/',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "ortho completeness",
-    all_parameters,
-    client.get_server_address())
-
-
-def vegetation_consistency(client,
-   project_id='',
-   year='2022',
-   lidar_old_data_reduced_folder='in/',
-   lidar_new_data_reduced_folder='in/',
-   out_folder='out/',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "vegetation consistency",
-    all_parameters,
-    client.get_server_address())
-
-
-def generate_orthophoto_subset(client,
-   trasse_id='',
-   mapping_file='in/',
-   orthophoto_path='in/',
-   subset_path='out/',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "generate orthophoto subset",
-    all_parameters,
-    client.get_server_address())
-
-
-def sg_qc_data_processing_init(client,
-   ftp_server='',
-   ftp_user='',
-   ftp_password='',
-   ftp_port=21,
-   ftp_folder='/QC-AIPHA',
-   processing_folder='/processing',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "sg qc data processing init",
-    all_parameters,
-    client.get_server_address())
-
-
-def sg_qc_data_processing(client,
-   ftp_server='',
-   ftp_user='',
-   ftp_password='',
-   ftp_port=21,
-   ftp_data_folder='',
-   ftp_ortho_folders='',
-   processing_folder='/processing',
-   instance_type='nano'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "sg qc data processing",
-    all_parameters,
-    client.get_server_address())
-
-
-def tower_displacement(client,
-   spatial_reference=2056,
-   laz_in_folder_new='laz_folder_new',
-   laz_in_folder_old='laz_folder_old',
-   laz_in_folder_ref='laz_folder_ref',
-   result_out_folder='results',
-   tower_names='1010x001,1010x002',
-   tower_coordinates='257875.7425442745175 113330.5794447326122,254339.7628343642347 113418.4283347820272',
-   perform_preprocessing='True',
-   instance_type='P2'):
-
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "tower displacement",
-    all_parameters,
-    client.get_server_address())
-
-
+        pid_services,
+        client.get_verify_ssl())
 def las2las(client,
-   i='file.las',
-   o='file.las',
-   instance_type='nano'):
+     i='file.las',
+     o='file.las',
+     instance_type='nano'):
 
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "las2las",
-    all_parameters,
-    client.get_server_address())
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "las2las",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+def las2las_folder(client,
+     folder_i='/folder_i',
+     folder_o='/folder_o',
+     worker_instance_type='nano',
+     manager_instance_type="small",
+     extension_i=".las",
+     extension_o=".las"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_i']
+      del all_parameters['folder_o']
+      del all_parameters['extension_i']
+      del all_parameters['extension_o']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "i,o"
+      folders = folder_i + "," + folder_o
+      extensions = extension_i + "," + extension_o
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "las2las" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
 
 
 def sleep_infinity(client,
-   instance_type='nano'):
+     instance_type='P2'):
 
-  all_parameters = locals().copy()
-  del all_parameters['client']
-  return command_request(
-    client.get_username(),
-    client.get_token(),
-    "sleep infinity",
-    all_parameters,
-    client.get_server_address())
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "sleep infinity",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+def sleep_infinity_folder(client,
+     worker_instance_type='P2',
+     manager_instance_type="small"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = ""
+      folders = ""
+      extensions = ""
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "sleep infinity" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class image:
+   def matrix_to_image(client,
+     input_file='matrix.npy',
+     output_file='image.png',
+     data_type='uint8',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "matrix to image",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def matrix_to_image_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     data_type='uint8',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".npy",
+     extension_output_file=".png"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "matrix to image" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def image_to_matrix(client,
+     input_file='image.tif',
+     output_file='matrix.npy',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "image to matrix",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def image_to_matrix_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".tif",
+     extension_output_file=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "image to matrix" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def polygon_to_image(client,
+     geotiff_file='in.tif',
+     pickle_file='in.pickle',
+     output_file='out.tif',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "polygon to_image",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def polygon_to_image_folder(client,
+     geotiff_folder='/geotiff_folder',
+     pickle_folder='/pickle_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_geotiff_file=".tif",
+     extension_pickle_file=".pickle",
+     extension_output_file=".tif"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['geotiff_folder']
+      del all_parameters['pickle_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_geotiff_file']
+      del all_parameters['extension_pickle_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "geotiff_file,pickle_file,output_file"
+      folders = geotiff_folder + "," + pickle_folder + "," + output_folder
+      extensions = extension_geotiff_file + "," + extension_pickle_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "polygon to_image" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def assign_georeference(client,
+     georeferenced_file='',
+     unreferenced_file='',
+     output_file='',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "assign georeference",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def assign_georeference_folder(client,
+     georeferenced_folder='/georeferenced_folder',
+     unreferenced_folder='/unreferenced_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_georeferenced_file=".laz",
+     extension_unreferenced_file=".laz",
+     extension_output_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['georeferenced_folder']
+      del all_parameters['unreferenced_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_georeferenced_file']
+      del all_parameters['extension_unreferenced_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "georeferenced_file,unreferenced_file,output_file"
+      folders = georeferenced_folder + "," + unreferenced_folder + "," + output_folder
+      extensions = extension_georeferenced_file + "," + extension_unreferenced_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "assign georeference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class shp:
+   def extract_multipolygons_from_shp(client,
+     shp_file='',
+     out_polygon_folder='polygons/',
+     out_attributes_folder='attributes/',
+     shape_id=-1,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "extract multipolygons from shp",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def extract_multipolygons_from_shp_folder(client,
+     shp_folder='/shp_folder',
+     folder_out_polygon_folder='/folder_out_polygon_folder',
+     folder_out_attributes_folder='/folder_out_attributes_folder',
+     shape_id=-1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_shp_file=".laz",
+     extension_out_polygon_folder=".laz",
+     extension_out_attributes_folder=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['shp_folder']
+      del all_parameters['folder_out_polygon_folder']
+      del all_parameters['folder_out_attributes_folder']
+      del all_parameters['extension_shp_file']
+      del all_parameters['extension_out_polygon_folder']
+      del all_parameters['extension_out_attributes_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "shp_file,out_polygon_folder,out_attributes_folder"
+      folders = shp_folder + "," + folder_out_polygon_folder + "," + folder_out_attributes_folder
+      extensions = extension_shp_file + "," + extension_out_polygon_folder + "," + extension_out_attributes_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "extract multipolygons from shp" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class sys:
+   def create_directory_in_cloud(client,
+     destination='data',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "create directory in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def create_directory_in_cloud_folder(client,
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "create directory in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_data_from_cloud(client,
+     url='',
+     target='data',
+     protocol='',
+     username='',
+     password='',
+     port=21,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "upload data from cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_data_from_cloud_folder(client,
+     url='',
+     folder_target='/folder_target',
+     protocol='',
+     username='',
+     password='',
+     port=21,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "upload data from cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remove_files_from_cloud(client,
+     target='',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "remove files from cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remove_files_from_cloud_folder(client,
+     folder_target='/folder_target',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "remove files from cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def move_file_in_cloud(client,
+     target='',
+     destination='',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "move file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def move_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "move file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def rename_file_in_cloud(client,
+     target='',
+     prefix='',
+     suffix='',
+     replace_from='',
+     replace_to='',
+     replace_count=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "rename file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def rename_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     prefix='',
+     suffix='',
+     replace_from='',
+     replace_to='',
+     replace_count=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "rename file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_data_to_cloud(client,
+     url='',
+     destination='data',
+     protocol='',
+     download_type=0,
+     username='',
+     password='',
+     port=21,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "download data to cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_data_to_cloud_folder(client,
+     url='',
+     folder_destination='/folder_destination',
+     protocol='',
+     download_type=0,
+     username='',
+     password='',
+     port=21,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "download data to cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class val:
+   def values_divide(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values divide",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_divide_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values divide" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def divide_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1.0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "divide constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def divide_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1.0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "divide constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_less(client,
+     infile1='in.npy',
+     infile2='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values less",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_less_folder(client,
+     infolder1='/infolder1',
+     infolder2='/infolder2',
+     outfolder='/outfolder',
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile1=".npy",
+     extension_infile2=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder1']
+      del all_parameters['infolder2']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile1']
+      del all_parameters['extension_infile2']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile1,infile2,outfile"
+      folders = infolder1 + "," + infolder2 + "," + outfolder
+      extensions = extension_infile1 + "," + extension_infile2 + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values less" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def add_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=0.0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "add constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def add_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=0.0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "add constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_not_equal(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values not equal",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_not_equal_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values not equal" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def less_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "less constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def less_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "less constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def subtract_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=0.0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "subtract constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def subtract_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=0.0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "subtract constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def sum(client,
+     dtype='float',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "sum",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def sum_folder(client,
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = ""
+      folders = ""
+      extensions = ""
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "sum" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def greater_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "greater constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def greater_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "greater constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_distance(client,
+     filename_is='in1.npy',
+     filename_should='in2.npy',
+     output_file='out.npy',
+     dtype='float',
+     no_type=0.0,
+     value=1.0,
+     gridsize=1.0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values distance",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_distance_folder(client,
+     foldername_is='/foldername_is',
+     foldername_should='/foldername_should',
+     output_folder='/output_folder',
+     dtype='float',
+     no_type=0.0,
+     value=1.0,
+     gridsize=1.0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_filename_is=".npy",
+     extension_filename_should=".npy",
+     extension_output_file=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['foldername_is']
+      del all_parameters['foldername_should']
+      del all_parameters['output_folder']
+      del all_parameters['extension_filename_is']
+      del all_parameters['extension_filename_should']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "filename_is,filename_should,output_file"
+      folders = foldername_is + "," + foldername_should + "," + output_folder
+      extensions = extension_filename_is + "," + extension_filename_should + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values distance" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_greater(client,
+     infile1='in.npy',
+     infile2='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values greater",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_greater_folder(client,
+     infolder1='/infolder1',
+     infolder2='/infolder2',
+     outfolder='/outfolder',
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile1=".npy",
+     extension_infile2=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder1']
+      del all_parameters['infolder2']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile1']
+      del all_parameters['extension_infile2']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile1,infile2,outfile"
+      folders = infolder1 + "," + infolder2 + "," + outfolder
+      extensions = extension_infile1 + "," + extension_infile2 + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values greater" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_add(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values add",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_add_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values add" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def multiply_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1.0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "multiply constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def multiply_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1.0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "multiply constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_assign(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values assign",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_assign_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values assign" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_multiply(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values multiply",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_multiply_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values multiply" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_equal(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values equal",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_equal_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values equal" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remap_values(client,
+     file_values_in='file.laz',
+     file_values_out='values.txt',
+     map_in='1,2,3,4',
+     map_out='3,1,2,2',
+     unmapped=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "remap values",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remap_values_folder(client,
+     folder_values_in='/folder_values_in',
+     folder_values_out='/folder_values_out',
+     map_in='1,2,3,4',
+     map_out='3,1,2,2',
+     unmapped=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values_in,file_values_out"
+      folders = folder_values_in + "," + folder_values_out
+      extensions = extension_file_values_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "remap values" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_subtract(client,
+     file_values1_in='file1.laz',
+     file_values2_in='file2.laz',
+     file_values_out='values.txt',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values subtract",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_subtract_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_values_out='/folder_values_out',
+     ignore_label=float("nan"),
+     value_subset1=float("nan"),
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".laz",
+     extension_file_values2_in=".laz",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values subtract" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class ml3d:
+   def semantic_training_rfcr(client,
+     data_in_path='/data/files/',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     learning_rate_decay=0.1,
+     learning_momentum=0.98,
+     learning_gradient_clip_norm=100,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic training rfcr",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_rfcr_folder(client,
+     data_in_folder='/data_in_folder',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     learning_rate_decay=0.1,
+     learning_momentum=0.98,
+     learning_gradient_clip_norm=100,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['extension_data_in_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path"
+      folders = data_in_folder
+      extensions = extension_data_in_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic training rfcr" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_rfcr(client,
+     in_model_parameters_path='[atr] results/Log_2022-11-10_11-42-05',
+     data_in_path='data.laz',
+     results_labels_path='[out] result_labels/',
+     results_probabilities_path='[out] result_probabilities/',
+     number_of_votes=5,
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic inference rfcr",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_rfcr_folder(client,
+     in_model_parameters_folder='/in_model_parameters_folder',
+     data_in_folder='/data_in_folder',
+     results_labels_folder='/results_labels_folder',
+     results_probabilities_folder='/results_probabilities_folder',
+     number_of_votes=5,
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_model_parameters_path=".laz",
+     extension_data_in_path=".laz",
+     extension_results_labels_path=".laz",
+     extension_results_probabilities_path=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_model_parameters_folder']
+      del all_parameters['data_in_folder']
+      del all_parameters['results_labels_folder']
+      del all_parameters['results_probabilities_folder']
+      del all_parameters['extension_in_model_parameters_path']
+      del all_parameters['extension_data_in_path']
+      del all_parameters['extension_results_labels_path']
+      del all_parameters['extension_results_probabilities_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_model_parameters_path,data_in_path,results_labels_path,results_probabilities_path"
+      folders = in_model_parameters_folder + "," + data_in_folder + "," + results_labels_folder + "," + results_probabilities_folder
+      extensions = extension_in_model_parameters_path + "," + extension_data_in_path + "," + extension_results_labels_path + "," + extension_results_probabilities_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic inference rfcr" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_scf(client,
+     data_in_path='/data/files/',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     max_epochs=500,
+     learning_rate=0.01,
+     learning_rate_decay=0.1,
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic training scf",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_scf_folder(client,
+     data_in_folder='/data_in_folder',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     max_epochs=500,
+     learning_rate=0.01,
+     learning_rate_decay=0.1,
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['extension_data_in_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path"
+      folders = data_in_folder
+      extensions = extension_data_in_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic training scf" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_scf(client,
+     data_in_path='file.laz',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     results_labels_path='[out] result.labels',
+     in_model_parameters_path='[atr] results/Log_2022-11-10_11-42-05',
+     results_probabilities_path='[out] result_probs.npy',
+     number_of_votes=5,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic inference scf",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_scf_folder(client,
+     data_in_folder='/data_in_folder',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     results_labels_folder='/results_labels_folder',
+     in_model_parameters_folder='/in_model_parameters_folder',
+     results_probabilities_folder='/results_probabilities_folder',
+     number_of_votes=5,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     extension_results_labels_path=".labels",
+     extension_in_model_parameters_path=".laz",
+     extension_results_probabilities_path=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['results_labels_folder']
+      del all_parameters['in_model_parameters_folder']
+      del all_parameters['results_probabilities_folder']
+      del all_parameters['extension_data_in_path']
+      del all_parameters['extension_results_labels_path']
+      del all_parameters['extension_in_model_parameters_path']
+      del all_parameters['extension_results_probabilities_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path,results_labels_path,in_model_parameters_path,results_probabilities_path"
+      folders = data_in_folder + "," + results_labels_folder + "," + in_model_parameters_folder + "," + results_probabilities_folder
+      extensions = extension_data_in_path + "," + extension_results_labels_path + "," + extension_in_model_parameters_path + "," + extension_results_probabilities_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic inference scf" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class tdp:
+   def point_cloud_classification_inference(client,
+     file_in='file.laz',
+     file_out='file.labels',
+     model_path='network_parameters',
+     cols_data='X,Y,Z',
+     cols_labels='classification',
+     instance_type='P2'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "point cloud classification inference",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_classification_inference_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     model_path='network_parameters',
+     cols_data='X,Y,Z',
+     cols_labels='classification',
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_file_in=".laz",
+     extension_file_out=".labels"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "point cloud classification inference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def convert_laz_point_formats(client,
+     file_in='file.laz',
+     file_out='file.labels',
+     format=7,
+     instance_type='P2'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "convert laz point formats",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def convert_laz_point_formats_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     format=7,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_file_in=".laz",
+     extension_file_out=".labels"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "convert laz point formats" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def segment_objects(client,
+     in_points_file='laz_files_test',
+     in_labels_file='laz_files_test',
+     out_directory='segmented_object',
+     out_prefix='object',
+     label_col='classification',
+     object_class=68,
+     max_distance=2,
+     min_points=100,
+     instance_type='P2'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "segment objects",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def segment_objects_folder(client,
+     in_points_folder='/in_points_folder',
+     in_labels_folder='/in_labels_folder',
+     out_directory='segmented_object',
+     out_prefix='object',
+     label_col='classification',
+     object_class=68,
+     max_distance=2,
+     min_points=100,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_in_points_file=".laz",
+     extension_in_labels_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_points_folder']
+      del all_parameters['in_labels_folder']
+      del all_parameters['extension_in_points_file']
+      del all_parameters['extension_in_labels_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_points_file,in_labels_file"
+      folders = in_points_folder + "," + in_labels_folder
+      extensions = extension_in_points_file + "," + extension_in_labels_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "segment objects" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_filter_label_noise(client,
+     file_in_data='file.laz',
+     file_in_labels='file.labels',
+     file_out='result.laz',
+     k_nearest_neighbours=5,
+     sigma=10.,
+     dim=3,
+     invalid_label=0,
+     instance_type='P2'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "point cloud filter label noise",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_filter_label_noise_folder(client,
+     folder_in_data='/folder_in_data',
+     folder_in_labels='/folder_in_labels',
+     folder_out='/folder_out',
+     k_nearest_neighbours=5,
+     sigma=10.,
+     dim=3,
+     invalid_label=0,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_file_in_data=".laz",
+     extension_file_in_labels=".labels",
+     extension_file_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_in_data']
+      del all_parameters['folder_in_labels']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in_data']
+      del all_parameters['extension_file_in_labels']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in_data,file_in_labels,file_out"
+      folders = folder_in_data + "," + folder_in_labels + "," + folder_out
+      extensions = extension_file_in_data + "," + extension_file_in_labels + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "point cloud filter label noise" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def tower_displacement(client,
+     laz_in_file_new='new.laz',
+     laz_in_file_old='old.laz',
+     laz_in_file_ref='ref.laz',
+     tower_name='',
+     year_new='2022',
+     year_old='2020',
+     year_ref='2018',
+     results_out_file='result.txt',
+     plots_out_folder='plots/',
+     instance_type='P2'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "tower displacement",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def tower_displacement_folder(client,
+     laz_in_folder_new='/laz_in_folder_new',
+     laz_in_folder_old='/laz_in_folder_old',
+     laz_in_folder_ref='/laz_in_folder_ref',
+     tower_name='',
+     year_new='2022',
+     year_old='2020',
+     year_ref='2018',
+     results_out_folder='/results_out_folder',
+     folder_plots_out_folder='/folder_plots_out_folder',
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_laz_in_file_new=".laz",
+     extension_laz_in_file_old=".laz",
+     extension_laz_in_file_ref=".laz",
+     extension_results_out_file=".txt",
+     extension_plots_out_folder=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['laz_in_folder_new']
+      del all_parameters['laz_in_folder_old']
+      del all_parameters['laz_in_folder_ref']
+      del all_parameters['results_out_folder']
+      del all_parameters['folder_plots_out_folder']
+      del all_parameters['extension_laz_in_file_new']
+      del all_parameters['extension_laz_in_file_old']
+      del all_parameters['extension_laz_in_file_ref']
+      del all_parameters['extension_results_out_file']
+      del all_parameters['extension_plots_out_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "laz_in_file_new,laz_in_file_old,laz_in_file_ref,results_out_file,plots_out_folder"
+      folders = laz_in_folder_new + "," + laz_in_folder_old + "," + laz_in_folder_ref + "," + results_out_folder + "," + folder_plots_out_folder
+      extensions = extension_laz_in_file_new + "," + extension_laz_in_file_old + "," + extension_laz_in_file_ref + "," + extension_results_out_file + "," + extension_plots_out_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "tower displacement" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class ops3d:
+   def union_point_clouds(client,
+     in_files='file1.laz,file2.laz',
+     out_file='laz_files_merged',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "union point clouds",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def union_point_clouds_folder(client,
+     in_files='file1.laz,file2.laz',
+     out_folder='/out_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_out_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['out_folder']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "out_file"
+      folders = out_folder
+      extensions = extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "union point clouds" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def iterative_outlier_removal(client,
+     folder_in='segmented_object',
+     folder_out='iterative_outlier_removal',
+     decay_factor=0.98,
+     iteration_count=10,
+     max_num_processes=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "iterative outlier removal",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def iterative_outlier_removal_folder(client,
+     folder_folder_in='/folder_folder_in',
+     folder_folder_out='/folder_folder_out',
+     decay_factor=0.98,
+     iteration_count=10,
+     max_num_processes=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_in=".laz",
+     extension_folder_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_in']
+      del all_parameters['folder_folder_out']
+      del all_parameters['extension_folder_in']
+      del all_parameters['extension_folder_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_in,folder_out"
+      folders = folder_folder_in + "," + folder_folder_out
+      extensions = extension_folder_in + "," + extension_folder_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "iterative outlier removal" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def get_point_values(client,
+     file_source_in='file.laz',
+     file_labels_out='values.txt',
+     dtype='classification',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "get point values",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def get_point_values_folder(client,
+     folder_source_in='/folder_source_in',
+     folder_labels_out='/folder_labels_out',
+     dtype='classification',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_source_in=".laz",
+     extension_file_labels_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_source_in']
+      del all_parameters['folder_labels_out']
+      del all_parameters['extension_file_source_in']
+      del all_parameters['extension_file_labels_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_source_in,file_labels_out"
+      folders = folder_source_in + "," + folder_labels_out
+      extensions = extension_file_source_in + "," + extension_file_labels_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "get point values" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def make_line_model_from_points(client,
+     folder_in='segmented_object',
+     folder_out='vobject_coordinates3D',
+     dim=3,
+     max_num_processes=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "make line model from points",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def make_line_model_from_points_folder(client,
+     folder_folder_in='/folder_folder_in',
+     folder_folder_out='/folder_folder_out',
+     dim=3,
+     max_num_processes=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_in=".laz",
+     extension_folder_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_in']
+      del all_parameters['folder_folder_out']
+      del all_parameters['extension_folder_in']
+      del all_parameters['extension_folder_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_in,folder_out"
+      folders = folder_folder_in + "," + folder_folder_out
+      extensions = extension_folder_in + "," + extension_folder_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "make line model from points" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def fit_line_model(client,
+     folder_in='segmented_object',
+     folder_out='fit_line_model',
+     residual_threshold=30.05,
+     min_samples=2,
+     max_trials=1,
+     max_dim=3,
+     max_num_processes=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "fit line model",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def fit_line_model_folder(client,
+     folder_folder_in='/folder_folder_in',
+     folder_folder_out='/folder_folder_out',
+     residual_threshold=30.05,
+     min_samples=2,
+     max_trials=1,
+     max_dim=3,
+     max_num_processes=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_in=".laz",
+     extension_folder_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_in']
+      del all_parameters['folder_folder_out']
+      del all_parameters['extension_folder_in']
+      del all_parameters['extension_folder_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_in,folder_out"
+      folders = folder_folder_in + "," + folder_folder_out
+      extensions = extension_folder_in + "," + extension_folder_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "fit line model" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def iterative_closest_point(client,
+     folder_source_in='segmented_object1',
+     folder_target_in='segmented_object2',
+     folder_source_out='iterative_closest_point1',
+     metric='point2point',
+     threshold=0.2,
+     max_correspondences=5,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "iterative closest point",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def iterative_closest_point_folder(client,
+     folder_folder_source_in='/folder_folder_source_in',
+     folder_folder_target_in='/folder_folder_target_in',
+     folder_folder_source_out='/folder_folder_source_out',
+     metric='point2point',
+     threshold=0.2,
+     max_correspondences=5,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_source_in=".laz",
+     extension_folder_target_in=".laz",
+     extension_folder_source_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_source_in']
+      del all_parameters['folder_folder_target_in']
+      del all_parameters['folder_folder_source_out']
+      del all_parameters['extension_folder_source_in']
+      del all_parameters['extension_folder_target_in']
+      del all_parameters['extension_folder_source_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_source_in,folder_target_in,folder_source_out"
+      folders = folder_folder_source_in + "," + folder_folder_target_in + "," + folder_folder_source_out
+      extensions = extension_folder_source_in + "," + extension_folder_target_in + "," + extension_folder_source_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "iterative closest point" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def filter_label_noise(client,
+     file_in_data='file.laz',
+     file_in_labels='file.labels',
+     file_out='result.laz',
+     k_nearest_neighbours=5,
+     sigma=10.,
+     dim=3,
+     invalid_label=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "filter label noise",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def filter_label_noise_folder(client,
+     folder_in_data='/folder_in_data',
+     folder_in_labels='/folder_in_labels',
+     folder_out='/folder_out',
+     k_nearest_neighbours=5,
+     sigma=10.,
+     dim=3,
+     invalid_label=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_in_data=".laz",
+     extension_file_in_labels=".labels",
+     extension_file_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_in_data']
+      del all_parameters['folder_in_labels']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in_data']
+      del all_parameters['extension_file_in_labels']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in_data,file_in_labels,file_out"
+      folders = folder_in_data + "," + folder_in_labels + "," + folder_out
+      extensions = extension_file_in_data + "," + extension_file_in_labels + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "filter label noise" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_circle(client,
+     in_file='file.laz',
+     out_file='cropped.laz',
+     latitude=1,
+     longitude=1,
+     radius=75,
+     max_num_processes=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "crop circle",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_circle_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     latitude=1,
+     longitude=1,
+     radius=75,
+     max_num_processes=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".laz",
+     extension_out_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "crop circle" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_points_by_value(client,
+     file_source_in='segmented_object',
+     min_value=1,
+     max_value=1,
+     attribute='classification',
+     file_source_out='aligned_points',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "select points by value",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_points_by_value_folder(client,
+     folder_source_in='/folder_source_in',
+     min_value=1,
+     max_value=1,
+     attribute='classification',
+     folder_source_out='/folder_source_out',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_source_in=".laz",
+     extension_file_source_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_source_in']
+      del all_parameters['folder_source_out']
+      del all_parameters['extension_file_source_in']
+      del all_parameters['extension_file_source_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_source_in,file_source_out"
+      folders = folder_source_in + "," + folder_source_out
+      extensions = extension_file_source_in + "," + extension_file_source_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "select points by value" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def filter_label_disagreement_knn(client,
+     file_points_in='file1.laz',
+     file_labels_in='file2.laz',
+     file_label_disagrement_in='values.txt',
+     file_label_disagrement_out='values.txt',
+     distance=2,
+     classes_to_compare='2',
+     comparison_type='2',
+     class_to_filter=1,
+     dim_data=3,
+     knn=2,
+     comparison_axis=-1,
+     invalid_label=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "filter label disagreement knn",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def filter_label_disagreement_knn_folder(client,
+     folder_points_in='/folder_points_in',
+     folder_labels_in='/folder_labels_in',
+     folder_label_disagrement_in='/folder_label_disagrement_in',
+     folder_label_disagrement_out='/folder_label_disagrement_out',
+     distance=2,
+     classes_to_compare='2',
+     comparison_type='2',
+     class_to_filter=1,
+     dim_data=3,
+     knn=2,
+     comparison_axis=-1,
+     invalid_label=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_points_in=".laz",
+     extension_file_labels_in=".laz",
+     extension_file_label_disagrement_in=".txt",
+     extension_file_label_disagrement_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_points_in']
+      del all_parameters['folder_labels_in']
+      del all_parameters['folder_label_disagrement_in']
+      del all_parameters['folder_label_disagrement_out']
+      del all_parameters['extension_file_points_in']
+      del all_parameters['extension_file_labels_in']
+      del all_parameters['extension_file_label_disagrement_in']
+      del all_parameters['extension_file_label_disagrement_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_points_in,file_labels_in,file_label_disagrement_in,file_label_disagrement_out"
+      folders = folder_points_in + "," + folder_labels_in + "," + folder_label_disagrement_in + "," + folder_label_disagrement_out
+      extensions = extension_file_points_in + "," + extension_file_labels_in + "," + extension_file_label_disagrement_in + "," + extension_file_label_disagrement_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "filter label disagreement knn" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def assign_point_labels(client,
+     file_source_in='segmented_object',
+     file_labels_in='labels',
+     file_source_out='aligned_points',
+     dtype='classification',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "assign point labels",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def assign_point_labels_folder(client,
+     folder_source_in='/folder_source_in',
+     folder_labels_in='/folder_labels_in',
+     folder_source_out='/folder_source_out',
+     dtype='classification',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_source_in=".laz",
+     extension_file_labels_in=".laz",
+     extension_file_source_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_source_in']
+      del all_parameters['folder_labels_in']
+      del all_parameters['folder_source_out']
+      del all_parameters['extension_file_source_in']
+      del all_parameters['extension_file_labels_in']
+      del all_parameters['extension_file_source_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_source_in,file_labels_in,file_source_out"
+      folders = folder_source_in + "," + folder_labels_in + "," + folder_source_out
+      extensions = extension_file_source_in + "," + extension_file_labels_in + "," + extension_file_source_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "assign point labels" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def quantile_filter(client,
+     folder_in='segmented_object',
+     folder_out='quantile_filterd',
+     max_quantile=0.995,
+     min_quantile=0.3,
+     axis=2,
+     max_num_processes=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "quantile filter",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def quantile_filter_folder(client,
+     folder_folder_in='/folder_folder_in',
+     folder_folder_out='/folder_folder_out',
+     max_quantile=0.995,
+     min_quantile=0.3,
+     axis=2,
+     max_num_processes=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_in=".laz",
+     extension_folder_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_in']
+      del all_parameters['folder_folder_out']
+      del all_parameters['extension_folder_in']
+      del all_parameters['extension_folder_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_in,folder_out"
+      folders = folder_folder_in + "," + folder_folder_out
+      extensions = extension_folder_in + "," + extension_folder_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "quantile filter" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_to_dsm(client,
+     file_points_in='points.laz',
+     file_dsm_out='dsm.tif',
+     file_dtm_out='dtm.tif',
+     file_chm_out='chm.tif',
+     grid_size=0.5,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "point cloud to dsm",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_to_dsm_folder(client,
+     folder_points_in='/folder_points_in',
+     folder_dsm_out='/folder_dsm_out',
+     folder_dtm_out='/folder_dtm_out',
+     folder_chm_out='/folder_chm_out',
+     grid_size=0.5,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_points_in=".laz",
+     extension_file_dsm_out=".tif",
+     extension_file_dtm_out=".tif",
+     extension_file_chm_out=".tif"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_points_in']
+      del all_parameters['folder_dsm_out']
+      del all_parameters['folder_dtm_out']
+      del all_parameters['folder_chm_out']
+      del all_parameters['extension_file_points_in']
+      del all_parameters['extension_file_dsm_out']
+      del all_parameters['extension_file_dtm_out']
+      del all_parameters['extension_file_chm_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_points_in,file_dsm_out,file_dtm_out,file_chm_out"
+      folders = folder_points_in + "," + folder_dsm_out + "," + folder_dtm_out + "," + folder_chm_out
+      extensions = extension_file_points_in + "," + extension_file_dsm_out + "," + extension_file_dtm_out + "," + extension_file_chm_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "point cloud to dsm" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def align_points(client,
+     folder_source_in='segmented_object',
+     folder_transformation_in='transformations',
+     folder_source_out='aligned_points',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "align points",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def align_points_folder(client,
+     folder_folder_source_in='/folder_folder_source_in',
+     folder_folder_transformation_in='/folder_folder_transformation_in',
+     folder_folder_source_out='/folder_folder_source_out',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_source_in=".laz",
+     extension_folder_transformation_in=".laz",
+     extension_folder_source_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_source_in']
+      del all_parameters['folder_folder_transformation_in']
+      del all_parameters['folder_folder_source_out']
+      del all_parameters['extension_folder_source_in']
+      del all_parameters['extension_folder_transformation_in']
+      del all_parameters['extension_folder_source_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_source_in,folder_transformation_in,folder_source_out"
+      folders = folder_folder_source_in + "," + folder_folder_transformation_in + "," + folder_folder_source_out
+      extensions = extension_folder_source_in + "," + extension_folder_transformation_in + "," + extension_folder_source_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "align points" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_center_object(client,
+     in_directory='laz_files',
+     out_file='out.laz',
+     latitude=1,
+     longitude=1,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "select center object",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_center_object_folder(client,
+     in_directory='laz_files',
+     out_folder='/out_folder',
+     latitude=1,
+     longitude=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_out_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['out_folder']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "out_file"
+      folders = out_folder
+      extensions = extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "select center object" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_to_equal_value_range(client,
+     folder1_in='segmented_object1',
+     folder2_in='segmented_object2',
+     folder1_out='crop_relative_height1',
+     folder2_out='crop_relative_height2',
+     reference='max',
+     axis=2,
+     max_num_processes=0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "crop to equal value range",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_to_equal_value_range_folder(client,
+     folder_folder1_in='/folder_folder1_in',
+     folder_folder2_in='/folder_folder2_in',
+     folder_folder1_out='/folder_folder1_out',
+     folder_folder2_out='/folder_folder2_out',
+     reference='max',
+     axis=2,
+     max_num_processes=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder1_in=".laz",
+     extension_folder2_in=".laz",
+     extension_folder1_out=".laz",
+     extension_folder2_out=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder1_in']
+      del all_parameters['folder_folder2_in']
+      del all_parameters['folder_folder1_out']
+      del all_parameters['folder_folder2_out']
+      del all_parameters['extension_folder1_in']
+      del all_parameters['extension_folder2_in']
+      del all_parameters['extension_folder1_out']
+      del all_parameters['extension_folder2_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder1_in,folder2_in,folder1_out,folder2_out"
+      folders = folder_folder1_in + "," + folder_folder2_in + "," + folder_folder1_out + "," + folder_folder2_out
+      extensions = extension_folder1_in + "," + extension_folder2_in + "," + extension_folder1_out + "," + extension_folder2_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "crop to equal value range" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class qc:
+   def report_qc_classification(client,
+     in_file='output_files',
+     out_file='output_files_tower_filtered',
+     error_classes='148,149',
+     error_names='Line,Tower',
+     keep_error_free='True',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "report qc classification",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_qc_classification_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     error_classes='148,149',
+     error_names='Line,Tower',
+     keep_error_free='True',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".laz",
+     extension_out_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "report qc classification" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
