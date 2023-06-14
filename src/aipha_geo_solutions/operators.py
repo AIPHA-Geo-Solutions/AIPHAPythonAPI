@@ -18,19 +18,23 @@ def wait_for_completion(client,
   services):
   pid_services = []  
   for service in services:
-    if isinstance(service, dict):
+    if isinstance(service, dict) and 'pid' in service:
       pid_services.append(service['pid'])
     else:
       pid_services.append(pid)
   completed = False
-  while not completed:
-    time.sleep(10)
+  completed_1 = False
+  while not completed or not completed_1:
+    time.sleep(5)
+    if not completed_1:
+      completed_1 = completed
     completed =  check_services_completed(
         client.get_username(),
         client.get_token(),
         client.get_server_address(),
         pid_services,
         client.get_verify_ssl())
+    print(completed, completed_1)
 def las2las(client,
      i='file.las',
      o='file.las',
