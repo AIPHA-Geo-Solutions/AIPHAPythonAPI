@@ -51,7 +51,12 @@ def check_command_arguments(
         instance_parameters['instance_type'] = command_dict[command]['instance_type']['default_value']
     for parameter in valid_parameters:
         if parameter in parameters:
-            all_parameters[parameter] = str(parameters[parameter]).replace('"', '\\"')
+            all_parameters[parameter] = str(parameters[parameter])
+            if len(all_parameters[parameter]) > 0 and all_parameters[parameter][0] != "'":
+                all_parameters[parameter] = "'" + all_parameters[parameter]
+            if len(all_parameters[parameter]) > 0 and all_parameters[parameter][-1] != "'":
+                all_parameters[parameter] = all_parameters[parameter] + "'"
+            all_parameters[parameter] = all_parameters[parameter].replace('"', '\\"')
         else:
             all_parameters[parameter] = str(valid_parameters[parameter]['default_value'])
     return all_parameters, instance_parameters, image_name
@@ -74,7 +79,7 @@ def import_commands(server_address,
     glob_commands = commands
     return commands
 
-def command_request(
+async def command_request(
         username,
         password,
         command,
@@ -96,11 +101,13 @@ def command_request(
   r = requests.post(url, json=payload, verify=verifySSL)
   try:
     result = json.loads(r.text)
+    result['in_parameters'] = all_parameters
     if 'error' in result:
       for idx in range(10): #10 times retry
         time.sleep(60)
         r = requests.post(url, json=payload, verify=verifySSL)
         result = json.loads(r.text)
+        result['in_parameters'] = all_parameters
         if not 'error' in result:
             break
       if 'error' in result:
@@ -149,7 +156,8 @@ def check_services_completed(
         verifySSL
     )
     services_dict = json.loads(running_services['running_processes'])
-    for service_id in services:
+    for service_promise in services:
+      service_id = service_promise
       this_complete = True #ignore services that have been deleted
       for running_service in services_dict:
         if service_id.startswith(running_service['ID']):

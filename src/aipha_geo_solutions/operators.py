@@ -4,6 +4,7 @@
 from aipha_geo_solutions.webservice_api import AiphaClient, command_request, running_services_request, check_services_completed
 import time
 import json
+import asyncio
 
 def list_running_services(client):
 
@@ -16,25 +17,30 @@ def list_running_services(client):
 
 def wait_for_completion(client,
   services):
-  pid_services = []  
-  for service in services:
-    if isinstance(service, dict) and 'pid' in service:
-      pid_services.append(service['pid'])
-    else:
-      pid_services.append(pid)
-  completed = False
-  completed_1 = False
-  while not completed or not completed_1:
-    time.sleep(5)
-    if not completed_1:
+  async def await_completion(client, services):
+    pid_services = []  
+    for service_promise in services:
+      print(service_promise)
+      service = await service_promise
+      print('service', service)
+      if isinstance(service, dict) and 'pid' in service:
+        pid_services.append(service['pid'])
+      else:
+        pid_services.append(service)
+    completed = False
+    completed_1 = False
+    while not completed or not completed_1:
+      time.sleep(5)
       completed_1 = completed
-    completed =  check_services_completed(
+      completed =  check_services_completed(
         client.get_username(),
         client.get_token(),
         client.get_server_address(),
         pid_services,
         client.get_verify_ssl())
-    print(completed, completed_1)
+  asyncio.run(await_completion(client, services))
+
+
 def las2las(client,
      i='file.las',
      o='file.las',
@@ -151,9 +157,79 @@ def sleep_infinity_folder(client,
 
 
 class image:
+   def retile_images(client,
+     folder_reference='.',
+     folder_to_retile='.',
+     output_folder='out1',
+     extension_ref='.tif',
+     extension_ret='.tif',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "retile images",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_images_folder(client,
+     folder_folder_reference='/folder_folder_reference',
+     folder_folder_to_retile='/folder_folder_to_retile',
+     folder_output_folder='/folder_output_folder',
+     extension_ref='.tif',
+     extension_ret='.tif',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_folder_reference="",
+     extension_folder_to_retile="",
+     extension_output_folder=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_folder_reference']
+      del all_parameters['folder_folder_to_retile']
+      del all_parameters['folder_output_folder']
+      del all_parameters['extension_folder_reference']
+      del all_parameters['extension_folder_to_retile']
+      del all_parameters['extension_output_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "folder_reference,folder_to_retile,output_folder"
+      folders = folder_folder_reference + "," + folder_folder_to_retile + "," + folder_output_folder
+      extensions = extension_folder_reference + "," + extension_folder_to_retile + "," + extension_output_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "retile images" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def matrix_to_image(client,
      input_file='matrix.npy',
-     output_file='image.png',
+     output_file='image.tif',
      data_type='uint8',
      instance_type='x2large'):
 
@@ -175,7 +251,7 @@ class image:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".npy",
-     extension_output_file=".png"):
+     extension_output_file=".tif"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -286,7 +362,7 @@ class image:
       return command_request(
          client.get_username(),
          client.get_token(),
-         "polygon to_image",
+         "polygon to image",
          all_parameters,
          client.get_server_address(),
          client.get_verify_ssl())
@@ -321,7 +397,7 @@ class image:
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
-        "command": "'" + "polygon to_image" + "'",
+        "command": "'" + "polygon to image" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -342,9 +418,9 @@ class image:
 
 
    def assign_georeference(client,
-     georeferenced_file='',
-     unreferenced_file='',
-     output_file='',
+     georeferenced_file='in1.tif',
+     unreferenced_file='in2.tif',
+     output_file='out.tif',
      instance_type='x2large'):
 
       all_parameters = locals().copy()
@@ -364,9 +440,9 @@ class image:
      output_folder='/output_folder',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_georeferenced_file=".laz",
-     extension_unreferenced_file=".laz",
-     extension_output_file=".laz"):
+     extension_georeferenced_file=".tif",
+     extension_unreferenced_file=".tif",
+     extension_output_file=".tif"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -411,11 +487,75 @@ class image:
 
 
 class shp:
+   def intersecting_polygons(client,
+     input_file='polygon.pickle',
+     comparison_folder='polygons',
+     output_file='list.txt',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "intersecting polygons",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def intersecting_polygons_folder(client,
+     input_folder='/input_folder',
+     comparison_folder='polygons',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".pickle",
+     extension_output_file=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "intersecting polygons" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def extract_multipolygons_from_shp(client,
      shp_file='',
      out_polygon_folder='polygons/',
      out_attributes_folder='attributes/',
      shape_id=-1,
+     name_id=0,
      instance_type='x2large'):
 
       all_parameters = locals().copy()
@@ -434,6 +574,7 @@ class shp:
      folder_out_polygon_folder='/folder_out_polygon_folder',
      folder_out_attributes_folder='/folder_out_attributes_folder',
      shape_id=-1,
+     name_id=0,
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_shp_file=".laz",
@@ -661,6 +802,75 @@ class sys:
          client.get_verify_ssl())
 
 
+   def find_file_paths(client,
+     input_files='files.txt',
+     output_files='paths.txt',
+     search_folder='/search_folder',
+     replace_in='',
+     replace_out='',
+     substrings='',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "find file paths",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def find_file_paths_folder(client,
+     input_folders='/input_folders',
+     output_folders='/output_folders',
+     search_folder='/search_folder',
+     replace_in='',
+     replace_out='',
+     substrings='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_files=".txt",
+     extension_output_files=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['input_folders']
+      del all_parameters['output_folders']
+      del all_parameters['extension_input_files']
+      del all_parameters['extension_output_files']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_files,output_files"
+      folders = input_folders + "," + output_folders
+      extensions = extension_input_files + "," + extension_output_files
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "find file paths" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def move_file_in_cloud(client,
      target='',
      destination='',
@@ -861,9 +1071,9 @@ class sys:
 
 class val:
    def values_divide(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -887,9 +1097,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -1129,9 +1339,9 @@ class val:
 
 
    def values_not_equal(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -1155,9 +1365,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -1179,6 +1389,69 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "values not equal" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def max(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "max",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def max_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "max" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -1328,7 +1601,74 @@ class val:
          client.get_verify_ssl())
 
 
+   def resize_slice_matrix(client,
+     filename_in='in.npy',
+     filename_out='out.npy',
+     dtype='float',
+     indices=':,124:,:3',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "resize slice matrix",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def resize_slice_matrix_folder(client,
+     foldername_in='/foldername_in',
+     foldername_out='/foldername_out',
+     dtype='float',
+     indices=':,124:,:3',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_filename_in=".npy",
+     extension_filename_out=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['foldername_in']
+      del all_parameters['foldername_out']
+      del all_parameters['extension_filename_in']
+      del all_parameters['extension_filename_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "filename_in,filename_out"
+      folders = foldername_in + "," + foldername_out
+      extensions = extension_filename_in + "," + extension_filename_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "resize slice matrix" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def sum(client,
+     infile='in.npy',
+     outfile='out.npy',
      dtype='float',
      instance_type='x2large'):
 
@@ -1344,20 +1684,28 @@ class val:
 
 
    def sum_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
      dtype='float',
      worker_instance_type='x2large',
-     manager_instance_type="small"):
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
 
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
 
       cmd_str = json.dumps(all_parameters)
-      parameters = ""
-      folders = ""
-      extensions = ""
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
@@ -1427,6 +1775,73 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "greater constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def connected_components_labeling(client,
+     filename_in='in.npy',
+     filename_out='out.npy',
+     dtype='float',
+     no_type=0.0,
+     value=1.0,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "connected components labeling",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def connected_components_labeling_folder(client,
+     foldername_in='/foldername_in',
+     foldername_out='/foldername_out',
+     dtype='float',
+     no_type=0.0,
+     value=1.0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_filename_in=".npy",
+     extension_filename_out=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['foldername_in']
+      del all_parameters['foldername_out']
+      del all_parameters['extension_filename_in']
+      del all_parameters['extension_filename_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "filename_in,filename_out"
+      folders = foldername_in + "," + foldername_out
+      extensions = extension_filename_in + "," + extension_filename_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "connected components labeling" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -1589,9 +2004,9 @@ class val:
 
 
    def values_add(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -1615,9 +2030,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -1724,9 +2139,9 @@ class val:
 
 
    def values_assign(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -1750,9 +2165,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -1793,10 +2208,145 @@ class val:
          client.get_verify_ssl())
 
 
+   def count_unique_values(client,
+     filename_in='in.npy',
+     filename_out='out.npy',
+     dtype='float',
+     ignore='nan',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "count_unique_values",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def count_unique_values_folder(client,
+     foldername_in='/foldername_in',
+     foldername_out='/foldername_out',
+     dtype='float',
+     ignore='nan',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_filename_in=".npy",
+     extension_filename_out=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['foldername_in']
+      del all_parameters['foldername_out']
+      del all_parameters['extension_filename_in']
+      del all_parameters['extension_filename_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "filename_in,filename_out"
+      folders = foldername_in + "," + foldername_out
+      extensions = extension_filename_in + "," + extension_filename_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "count_unique_values" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def masked_assing_constant(client,
+     file_values_in='file1.npy',
+     file_mask_in='file2.npy',
+     file_values_out='values.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "masked assing constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def masked_assing_constant_folder(client,
+     folder_values_in='/folder_values_in',
+     folder_mask_in='/folder_mask_in',
+     folder_values_out='/folder_values_out',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values_in=".npy",
+     extension_file_mask_in=".npy",
+     extension_file_values_out=".npy"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values_in']
+      del all_parameters['folder_mask_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values_in']
+      del all_parameters['extension_file_mask_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values_in,file_mask_in,file_values_out"
+      folders = folder_values_in + "," + folder_mask_in + "," + folder_values_out
+      extensions = extension_file_values_in + "," + extension_file_mask_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "masked assing constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def values_multiply(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -1820,9 +2370,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -1864,9 +2414,9 @@ class val:
 
 
    def values_equal(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -1890,9 +2440,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -1933,12 +2483,85 @@ class val:
          client.get_verify_ssl())
 
 
-   def remap_values(client,
-     file_values_in='file.laz',
+   def values_masked_assing(client,
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_mask_in='file2.npy',
      file_values_out='values.txt',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values masked assing",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_masked_assing_folder(client,
+     folder_values1_in='/folder_values1_in',
+     folder_values2_in='/folder_values2_in',
+     folder_mask_in='/folder_mask_in',
+     folder_values_out='/folder_values_out',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_mask_in=".npy",
+     extension_file_values_out=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values1_in']
+      del all_parameters['folder_values2_in']
+      del all_parameters['folder_mask_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values1_in']
+      del all_parameters['extension_file_values2_in']
+      del all_parameters['extension_file_mask_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values1_in,file_values2_in,file_mask_in,file_values_out"
+      folders = folder_values1_in + "," + folder_values2_in + "," + folder_mask_in + "," + folder_values_out
+      extensions = extension_file_values1_in + "," + extension_file_values2_in + "," + extension_file_mask_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values masked assing" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remap_values(client,
+     file_values_in='file.npy',
+     file_values_out='values.npy',
      map_in='1,2,3,4',
      map_out='3,1,2,2',
-     unmapped=0,
+     dtype_in='int32',
+     dtype_out='int32',
+     unmapped='0',
      instance_type='x2large'):
 
       all_parameters = locals().copy()
@@ -1957,11 +2580,13 @@ class val:
      folder_values_out='/folder_values_out',
      map_in='1,2,3,4',
      map_out='3,1,2,2',
-     unmapped=0,
+     dtype_in='int32',
+     dtype_out='int32',
+     unmapped='0',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -2001,9 +2626,9 @@ class val:
 
 
    def values_subtract(client,
-     file_values1_in='file1.laz',
-     file_values2_in='file2.laz',
-     file_values_out='values.txt',
+     file_values1_in='file1.npy',
+     file_values2_in='file2.npy',
+     file_values_out='values.npy',
      ignore_label=float("nan"),
      value_subset1=float("nan"),
      instance_type='x2large'):
@@ -2027,9 +2652,9 @@ class val:
      value_subset1=float("nan"),
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_file_values1_in=".laz",
-     extension_file_values2_in=".laz",
-     extension_file_values_out=".txt"):
+     extension_file_values1_in=".npy",
+     extension_file_values2_in=".npy",
+     extension_file_values_out=".npy"):
 
       all_parameters = locals().copy()
       del all_parameters['client']
@@ -2884,6 +3509,72 @@ class ops3d:
          client.get_verify_ssl())
 
 
+   def crop_and_merge_polygons(client,
+     point_cloud_files='points.laz',
+     polygon_file='polygon.pickle',
+     output_file='cropped.laz',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "crop and merge polygons",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_and_merge_polygons_folder(client,
+     point_cloud_folders='/point_cloud_folders',
+     polygon_folder='/polygon_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_point_cloud_files=".laz",
+     extension_polygon_file=".pickle",
+     extension_output_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['point_cloud_folders']
+      del all_parameters['polygon_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_point_cloud_files']
+      del all_parameters['extension_polygon_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "point_cloud_files,polygon_file,output_file"
+      folders = point_cloud_folders + "," + polygon_folder + "," + output_folder
+      extensions = extension_point_cloud_files + "," + extension_polygon_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "crop and merge polygons" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def get_point_values(client,
      file_source_in='file.laz',
      file_labels_out='values.txt',
@@ -3136,6 +3827,66 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "iterative closest point" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_points_to_polygon(client,
+     input_points='points.laz',
+     input_polygon='polygon.pickle',
+     output_file='cropped.laz',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "crop points to polygon",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def crop_points_to_polygon_folder(client,
+     input_points='points.laz',
+     input_polygon='polygon.pickle',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_output_file=".laz"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['output_folder']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "output_file"
+      folders = output_folder
+      extensions = extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "crop points to polygon" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
