@@ -29,8 +29,9 @@ def wait_for_completion(client,
         pid_services.append(service)
     completed = False
     completed_1 = False
+    time.sleep(3)
     while not completed or not completed_1:
-      time.sleep(5)
+      time.sleep(2)
       completed_1 = completed
       completed =  check_services_completed(
         client.get_username(),
@@ -38,7 +39,15 @@ def wait_for_completion(client,
         client.get_server_address(),
         pid_services,
         client.get_verify_ssl())
-  asyncio.run(await_completion(client, services))
+  async def parallel_exec(client, services):
+    loop = asyncio.get_event_loop()
+    tasks = []
+    for service_idx in range(len(services)):
+      task = loop.create_task(await_completion(client, [services[service_idx]]))
+      tasks.append(task)
+    for idx in range(len(tasks)):
+        await tasks[idx]
+  asyncio.run(parallel_exec(client, services))
 
 
 def las2las(client,
@@ -208,6 +217,132 @@ class image:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "retile images" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def image_metadata(client,
+     input_file='in.tif',
+     output_file='out.json',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "image metadata",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def image_metadata_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".tif",
+     extension_output_file=".json"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "image metadata" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def resize_image(client,
+     input_file='in.tif',
+     output_file='out.tif',
+     new_grid_size=1.,
+     compression='None',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "resize image",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def resize_image_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     new_grid_size=1.,
+     compression='None',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".tif",
+     extension_output_file=".tif"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "resize image" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -1670,6 +1805,7 @@ class val:
      infile='in.npy',
      outfile='out.npy',
      dtype='float',
+     axis=-1,
      instance_type='x2large'):
 
       all_parameters = locals().copy()
@@ -1687,6 +1823,7 @@ class val:
      infolder='/infolder',
      outfolder='/outfolder',
      dtype='float',
+     axis=-1,
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
@@ -4670,6 +4807,219 @@ class qc:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "report qc classification" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_image_completeness(client,
+     in_file='in_file.txt',
+     out_file='out_file.txt',
+     grid_size=0.5,
+     populated_class=1,
+     small_holes_class=100,
+     large_holes_class=255,
+     keep_error_free='True',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "report image completeness",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_image_completeness_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     grid_size=0.5,
+     populated_class=1,
+     small_holes_class=100,
+     large_holes_class=255,
+     keep_error_free='True',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".txt",
+     extension_out_file=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "report image completeness" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_vegetation_occurance(client,
+     in_file='in_file.txt',
+     out_file='out_file.txt',
+     ground_classes_old='2,3,6,7,15',
+     ground_classes_new='1,3,9,11,15',
+     vegetation_old='6,7,15',
+     vegetation_new='9,11,15',
+     keep_error_free='True',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "report vegetation occurance",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_vegetation_occurance_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     ground_classes_old='2,3,6,7,15',
+     ground_classes_new='1,3,9,11,15',
+     vegetation_old='6,7,15',
+     vegetation_new='9,11,15',
+     keep_error_free='True',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".txt",
+     extension_out_file=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "report vegetation occurance" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_lidar_completeness(client,
+     in_file='in_file.txt',
+     out_file='out_file.txt',
+     grid_size=0.5,
+     populated_class=1,
+     small_holes_class=100,
+     large_holes_class=255,
+     keep_error_free='True',
+     instance_type='x2large'):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "report lidar completeness",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def report_lidar_completeness_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     grid_size=0.5,
+     populated_class=1,
+     small_holes_class=100,
+     large_holes_class=255,
+     keep_error_free='True',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".txt",
+     extension_out_file=".txt"):
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "report lidar completeness" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
