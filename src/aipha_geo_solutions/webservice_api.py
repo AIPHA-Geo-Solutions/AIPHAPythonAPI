@@ -1,3 +1,4 @@
+import grequests
 import requests
 import argparse
 import urllib
@@ -79,7 +80,7 @@ def import_commands(server_address,
     glob_commands = commands
     return commands
 
-async def command_request(
+def command_request(
         username,
         password,
         command,
@@ -98,23 +99,12 @@ async def command_request(
             }
   print("instance", instance_parameters)
   url = 'https://' + server_address +':443/run-operator'
-  r = requests.post(url, json=payload, verify=verifySSL)
-  try:
-    result = json.loads(r.text)
-    result['in_parameters'] = all_parameters
-    if 'error' in result:
-      for idx in range(10): #10 times retry
-        time.sleep(60)
-        r = requests.post(url, json=payload, verify=verifySSL)
-        result = json.loads(r.text)
-        result['in_parameters'] = all_parameters
-        if not 'error' in result:
-            break
-      if 'error' in result:
-        raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
-  except:
-      raise RuntimeError('AIPHAProcessingError: ' + r.text)
-  return result
+  print(payload)
+  r = grequests.post(url, json=payload, verify=verifySSL, timeout=90.)
+  return r
+
+def execute(requests):
+    return grequests.map(requests, size=5)
 
 def running_services_request(
         username,
