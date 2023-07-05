@@ -104,7 +104,7 @@ def command_request(
   return r
 
 def execute(requests):
-    return grequests.map(requests, size=5)
+    return grequests.map(requests, size=25)
 
 def running_services_request(
         username,
