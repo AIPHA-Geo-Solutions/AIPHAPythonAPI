@@ -123,6 +123,8 @@ class AIPHAOperator:
 	   connector,
 	   parameters,
 	   result_promise,
+	   processing_class,
+	   scope,
 	   folder_level_operator = False,
 	   unique_id = 0,
 	   executed = False):
@@ -132,6 +134,8 @@ class AIPHAOperator:
 		 self.result_promise = result_promise
 		 self.executed = executed
 		 self.unique_id = unique_id
+		 self.processing_class = processing_class
+		 self.scope = scope
 		 self.folder_level_operator = folder_level_operator
 
 	 def is_folder_level_operator(self):
@@ -146,7 +150,7 @@ class AIPHAOperator:
 	 def get_connector(self):
 		 return self.connector
 
-	 def __get_item__(self, key, type = 'out'):
+	 def io(self, key, type = 'out'):
 			 return self.connector[key, type]
 
 	 def get_result_promise(self):
@@ -157,6 +161,60 @@ class AIPHAOperator:
 
 	 def get_parameter(self, key):
 		 return self.parameters[key]
+
+	 def __getitem__(self, *args, output_key = 0):
+		 if self.scope != 'val':
+			 raise RuntimeError('Cannot use slice operator on non-value type. Please convert from {scope} to value type first.')
+		 slices_str = ''
+		 for idx in args:
+			 if isinstance(idx, int):
+			   slices_str += str(idx) + ','
+			 elif isinstance(idx, slice):
+			   slices_str += str(idx.start) + ':' + str(idx.stop) + ':' + str(idx.step) + ','
+			 else:
+			   raise RuntimeError('Invalid slice operator.')
+		 slices_str = slices_str[:-1]
+
+		 if self.folder_level_operator:
+			 return self.processing_class.val.resize_slice_matrix_folder(folder_name_in = self.io(output_key, 'out'), indices=slices_str)
+		 else:
+			 return self.processing_class.val.resize_slice_matrix(file_name_in = self.io(output_key, 'out'), indices=slices_str)
+
+	 def __setitem__(self, *args, output_key = 0):
+		 if self.scope != 'val':
+			 raise RuntimeError('Cannot use slice operator on non-value type. Please convert from {scope} to value type first.')
+		 slices_str = ''
+		 for idx in args:
+			 if isinstance(idx, int):
+			   slices_str += str(idx) + ','
+			 elif isinstance(idx, slice):
+			   slices_str += str(idx.start) + ':' + str(idx.stop) + ':' + str(idx.step) + ','
+			 else:
+			   raise RuntimeError('Invalid slice operator.')
+		 slices_str = slices_str[:-1]
+		 #TODO: value operator sliced assign
+
+	 def __add__(self, other, this_output_key = 0, other_output_key = 0):
+		 if self.scope != 'val':
+			 raise RuntimeError('Cannot use arithmetic operator on non-value type. Please convert from {scope} to value type first.')
+		 if not isinstance(other, AIPHAOperator) or isinstance(other, int) or isinstance(other, float):
+			 raise RuntimeError('Invalid type for arithmetic operator.')
+		 if isinstance(other, AIPHAOperator):
+			 if other.scope != 'val':
+				 raise RuntimeError('Cannot use arithmetic operator on non-value type. Please convert from {scope} to value type first.')
+			 if self.folder_level_operator != other.folder_level_operator:
+				 raise RuntimeError('Cannot use arithmetic operator on operators with different folder level.')
+		 if self.folder_level_operator:
+			 if isinstance(other, int) or isinstance(other, float):
+				 return self.processing_class.val.add_constant_folder(folder_name_in = self.io(this_output_key, 'out'), constant=other)
+			 else:
+				 return self.processing_class.val.values_add(folder_name_in1 = self.io(this_output_key, 'out'), folder_name_in2 = other.io(other_output_key, 'out'))
+		 else:
+			 if isinstance(other, int) or isinstance(other, float):
+				 return self.processing_class.val.add_constant(file_name_in = self.io(this_output_key, 'out'), constant=other)
+			 else:
+				 return self.processing_class.val.values_add(file_name_in1 = self.io(this_output_key, 'out'), file_name_in2 = other.io(other_output_key, 'out'))
+
 
 class AIPHAProcessing:
 	 '''
@@ -253,12 +311,13 @@ class AIPHAProcessing:
 			 itertable_params = ['out_file']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'union_point_clouds',
 			                False,
@@ -268,7 +327,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.union_point_clouds(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -296,12 +361,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values_in', 'file_points_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'make_laz_from_values',
 			                False,
@@ -311,7 +377,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.make_laz_from_values(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -339,12 +411,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'iterative_outlier_removal',
 			                False,
@@ -354,7 +427,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.iterative_outlier_removal(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -378,12 +457,13 @@ class AIPHAProcessing:
 			 itertable_params = ['point_cloud_files', 'polygon_file', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'pickle', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_and_merge_polygons',
 			                False,
@@ -393,7 +473,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.crop_and_merge_polygons(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -419,12 +505,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_source_in', 'file_labels_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'get_point_values',
 			                False,
@@ -434,7 +521,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.get_point_values(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -468,12 +561,13 @@ class AIPHAProcessing:
 			 itertable_params = ['filename', 'cluster_id_filename', 'cluster_centers_filename', 'wireframe_filename']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['laz', 'npy', 'laz', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'density_based_clustering',
 			                False,
@@ -483,7 +577,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.density_based_clustering(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -509,12 +609,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'make_line_model_from_points',
 			                False,
@@ -524,7 +625,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.make_line_model_from_points(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -556,12 +663,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'fit_line_model',
 			                False,
@@ -571,7 +679,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.fit_line_model(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -603,12 +717,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_source_in', 'file_target_in', 'file_source_out', 'file_trafo_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'iterative_closest_point',
 			                False,
@@ -618,7 +733,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.iterative_closest_point(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -642,12 +763,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_points_file', 'in_polygon_file', 'out_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'pickle', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_points_to_polygon',
 			                False,
@@ -657,7 +779,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.crop_points_to_polygon(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -689,12 +817,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_in_data', 'file_in_labels', 'file_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'labels', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'filter_label_noise',
 			                False,
@@ -704,7 +833,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.filter_label_noise(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -738,12 +873,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'out_file', 'lat_lon_file']
 			 itertable_iotypes = ['in', 'out', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_circle',
 			                False,
@@ -753,7 +889,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.crop_circle(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -783,12 +925,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_source_in', 'file_source_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'select_points_by_value',
 			                False,
@@ -798,7 +941,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.select_points_by_value(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -840,12 +989,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_points_in', 'file_labels_in', 'file_label_disagrement_in', 'file_label_disagrement_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['laz', 'npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'filter_label_disagreement_knn',
 			                False,
@@ -855,7 +1005,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.filter_label_disagreement_knn(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -881,12 +1037,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_source_in', 'file_labels_in', 'file_source_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'npy', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'assign_point_labels',
 			                False,
@@ -896,7 +1053,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.assign_point_labels(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -926,12 +1089,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'quantile_filter',
 			                False,
@@ -941,7 +1105,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.quantile_filter(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -969,12 +1139,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_points_in', 'file_dsm_out', 'file_dtm_out', 'file_chm_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['laz', 'tif', 'tif', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'point_cloud_to_dsm',
 			                False,
@@ -984,7 +1155,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.point_cloud_to_dsm(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1008,12 +1185,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'align_points',
 			                False,
@@ -1023,7 +1201,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.align_points(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1045,12 +1229,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'out_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'json']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'get_meta_data',
 			                False,
@@ -1060,7 +1245,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.get_meta_data(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1086,12 +1277,13 @@ class AIPHAProcessing:
 			 itertable_params = ['out_file']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'select_center_object',
 			                False,
@@ -1101,7 +1293,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.select_center_object(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1133,12 +1331,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_to_equal_value_range',
 			                False,
@@ -1148,7 +1347,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ops3d.crop_to_equal_value_range(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1156,7 +1361,7 @@ class AIPHAProcessing:
 
 		 def union_point_clouds_folder(self,
 			in_files='file1.laz,file2.laz', 
-			out_folder='out_folder',
+			out_folder='__auto__',
 			extension_out_folder = '.laz',
 		 ):
 			 '''
@@ -1171,12 +1376,13 @@ class AIPHAProcessing:
 			 itertable_params = ['out_folder']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'union_point_clouds_folder',
 			                True,
@@ -1187,19 +1393,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.union_point_clouds_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def make_laz_from_values_folder(self,
-			folder_values_in='folder_values_in', 
-			folder_points_out='folder_points_out', 
+			folder_values_in='__auto__', 
+			folder_points_out='__auto__', 
 			dtype='X,Y,Z', 
 			scale='0.01,0.01,0.01', 
 			point_format=7,
-			extension_folder_values_in = '.laz',
+			extension_folder_values_in = '.npy',
 			extension_folder_points_out = '.laz',
 		 ):
 			 '''
@@ -1216,13 +1428,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values_in', 'folder_points_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'make_laz_from_values_folder',
 			                True,
@@ -1233,7 +1446,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.make_laz_from_values_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1261,12 +1480,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'iterative_outlier_removal_folder',
 			                True,
@@ -1277,18 +1497,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.iterative_outlier_removal_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def crop_and_merge_polygons_folder(self,
-			point_cloud_folders='point_cloud_folders', 
-			polygon_folder='polygon_folder', 
-			output_folder='output_folder',
+			point_cloud_folders='__auto__', 
+			polygon_folder='__auto__', 
+			output_folder='__auto__',
 			extension_point_cloud_folders = '.laz',
-			extension_polygon_folder = '.laz',
+			extension_polygon_folder = '.pickle',
 			extension_output_folder = '.laz',
 		 ):
 			 '''
@@ -1303,13 +1529,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['point_cloud_folders', 'polygon_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'pickle', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_and_merge_polygons_folder',
 			                True,
@@ -1320,19 +1547,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.crop_and_merge_polygons_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def get_point_values_folder(self,
-			folder_source_in='folder_source_in', 
-			folder_labels_out='folder_labels_out', 
+			folder_source_in='__auto__', 
+			folder_labels_out='__auto__', 
 			dtype='classification', 
 			decomposed_labels='True',
 			extension_folder_source_in = '.laz',
-			extension_folder_labels_out = '.laz',
+			extension_folder_labels_out = '.txt',
 		 ):
 			 '''
 				get point values
@@ -1347,13 +1580,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_source_in', 'folder_labels_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'get_point_values_folder',
 			                True,
@@ -1364,25 +1598,31 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.get_point_values_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def density_based_clustering_folder(self,
-			foldername='foldername', 
-			cluster_id_foldername='cluster_id_foldername', 
-			cluster_centers_foldername='cluster_centers_foldername', 
-			wireframe_foldername='wireframe_foldername', 
+			foldername='__auto__', 
+			cluster_id_foldername='__auto__', 
+			cluster_centers_foldername='__auto__', 
+			wireframe_foldername='__auto__', 
 			epsilon=0.25, 
 			min_samples=0, 
 			dim=3, 
 			wireframe='False',
 			extension_foldername = '.laz',
-			extension_cluster_id_foldername = '.laz',
+			extension_cluster_id_foldername = '.npy',
 			extension_cluster_centers_foldername = '.laz',
-			extension_wireframe_foldername = '.laz',
+			extension_wireframe_foldername = '.npy',
 		 ):
 			 '''
 				Density-based Point Cloud Clustering
@@ -1401,13 +1641,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['foldername', 'cluster_id_foldername', 'cluster_centers_foldername', 'wireframe_foldername']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'npy', 'laz', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'density_based_clustering_folder',
 			                True,
@@ -1418,7 +1659,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.density_based_clustering_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1444,12 +1691,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'make_line_model_from_points_folder',
 			                True,
@@ -1460,7 +1708,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.make_line_model_from_points_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1492,12 +1746,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'fit_line_model_folder',
 			                True,
@@ -1508,24 +1763,30 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.fit_line_model_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def iterative_closest_point_folder(self,
-			folder_source_in='folder_source_in', 
-			folder_target_in='folder_target_in', 
-			folder_source_out='folder_source_out', 
-			folder_trafo_out='folder_trafo_out', 
+			folder_source_in='__auto__', 
+			folder_target_in='__auto__', 
+			folder_source_out='__auto__', 
+			folder_trafo_out='__auto__', 
 			metric='point2point', 
 			threshold=0.2, 
 			max_correspondences=5,
 			extension_folder_source_in = '.laz',
 			extension_folder_target_in = '.laz',
 			extension_folder_source_out = '.laz',
-			extension_folder_trafo_out = '.laz',
+			extension_folder_trafo_out = '.txt',
 		 ):
 			 '''
 				iterative closest point
@@ -1543,13 +1804,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_source_in', 'folder_target_in', 'folder_source_out', 'folder_trafo_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'laz', 'laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'iterative_closest_point_folder',
 			                True,
@@ -1560,18 +1822,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.iterative_closest_point_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def crop_points_to_polygon_folder(self,
-			in_points_folder='in_points_folder', 
-			in_polygon_folder='in_polygon_folder', 
-			out_folder='out_folder',
+			in_points_folder='__auto__', 
+			in_polygon_folder='__auto__', 
+			out_folder='__auto__',
 			extension_in_points_folder = '.laz',
-			extension_in_polygon_folder = '.laz',
+			extension_in_polygon_folder = '.pickle',
 			extension_out_folder = '.laz',
 		 ):
 			 '''
@@ -1586,13 +1854,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_points_folder', 'in_polygon_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'pickle', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_points_to_polygon_folder',
 			                True,
@@ -1603,22 +1872,28 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.crop_points_to_polygon_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def filter_label_noise_folder(self,
-			folder_in_data='folder_in_data', 
-			folder_in_labels='folder_in_labels', 
-			folder_out='folder_out', 
+			folder_in_data='__auto__', 
+			folder_in_labels='__auto__', 
+			folder_out='__auto__', 
 			k_nearest_neighbours=5, 
 			sigma=10., 
 			dim=3, 
 			invalid_label=0,
 			extension_folder_in_data = '.laz',
-			extension_folder_in_labels = '.laz',
+			extension_folder_in_labels = '.labels',
 			extension_folder_out = '.laz',
 		 ):
 			 '''
@@ -1637,13 +1912,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_in_data', 'folder_in_labels', 'folder_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'labels', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'filter_label_noise_folder',
 			                True,
@@ -1654,18 +1930,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.filter_label_noise_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def crop_circle_folder(self,
-			in_folder='in_folder', 
-			out_folder='out_folder', 
+			in_folder='__auto__', 
+			out_folder='__auto__', 
 			latitude=1, 
 			longitude=1, 
-			lat_lon_folder='lat_lon_folder', 
+			lat_lon_folder='__auto__', 
 			radius=75, 
 			cols='', 
 			max_num_processes=0,
@@ -1691,12 +1973,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_folder', 'out_folder', 'lat_lon_folder']
 			 itertable_iotypes = ['in', 'out', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_circle_folder',
 			                True,
@@ -1707,18 +1990,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.crop_circle_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def select_points_by_value_folder(self,
-			folder_source_in='folder_source_in', 
+			folder_source_in='__auto__', 
 			min_value=1, 
 			max_value=1, 
 			attribute='classification', 
-			folder_source_out='folder_source_out', 
+			folder_source_out='__auto__', 
 			keep_empty='True',
 			extension_folder_source_in = '.laz',
 			extension_folder_source_out = '.laz',
@@ -1739,12 +2028,13 @@ class AIPHAProcessing:
 			 itertable_params = ['folder_source_in', 'folder_source_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'select_points_by_value_folder',
 			                True,
@@ -1755,17 +2045,23 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.select_points_by_value_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def filter_label_disagreement_knn_folder(self,
-			folder_points_in='folder_points_in', 
-			folder_labels_in='folder_labels_in', 
-			folder_label_disagrement_in='folder_label_disagrement_in', 
-			folder_label_disagrement_out='folder_label_disagrement_out', 
+			folder_points_in='__auto__', 
+			folder_labels_in='__auto__', 
+			folder_label_disagrement_in='__auto__', 
+			folder_label_disagrement_out='__auto__', 
 			distance=2, 
 			classes_to_compare='2', 
 			comparison_type='2', 
@@ -1775,9 +2071,9 @@ class AIPHAProcessing:
 			comparison_axis=-1, 
 			invalid_label=0,
 			extension_folder_points_in = '.laz',
-			extension_folder_labels_in = '.laz',
-			extension_folder_label_disagrement_in = '.laz',
-			extension_folder_label_disagrement_out = '.laz',
+			extension_folder_labels_in = '.npy',
+			extension_folder_label_disagrement_in = '.npy',
+			extension_folder_label_disagrement_out = '.npy',
 		 ):
 			 '''
 				filter label disagreement knn
@@ -1800,13 +2096,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_points_in', 'folder_labels_in', 'folder_label_disagrement_in', 'folder_label_disagrement_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'filter_label_disagreement_knn_folder',
 			                True,
@@ -1817,19 +2114,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.filter_label_disagreement_knn_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def assign_point_labels_folder(self,
-			folder_source_in='folder_source_in', 
-			folder_labels_in='folder_labels_in', 
-			folder_source_out='folder_source_out', 
+			folder_source_in='__auto__', 
+			folder_labels_in='__auto__', 
+			folder_source_out='__auto__', 
 			dtype='classification',
 			extension_folder_source_in = '.laz',
-			extension_folder_labels_in = '.laz',
+			extension_folder_labels_in = '.npy',
 			extension_folder_source_out = '.laz',
 		 ):
 			 '''
@@ -1845,13 +2148,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_source_in', 'folder_labels_in', 'folder_source_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'npy', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'assign_point_labels_folder',
 			                True,
@@ -1862,7 +2166,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.assign_point_labels_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1892,12 +2202,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'quantile_filter_folder',
 			                True,
@@ -1908,22 +2219,28 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.quantile_filter_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def point_cloud_to_dsm_folder(self,
-			folder_points_in='folder_points_in', 
-			folder_dsm_out='folder_dsm_out', 
-			folder_dtm_out='folder_dtm_out', 
-			folder_chm_out='folder_chm_out', 
+			folder_points_in='__auto__', 
+			folder_dsm_out='__auto__', 
+			folder_dtm_out='__auto__', 
+			folder_chm_out='__auto__', 
 			grid_size=0.5,
 			extension_folder_points_in = '.laz',
-			extension_folder_dsm_out = '.laz',
-			extension_folder_dtm_out = '.laz',
-			extension_folder_chm_out = '.laz',
+			extension_folder_dsm_out = '.tif',
+			extension_folder_dtm_out = '.tif',
+			extension_folder_chm_out = '.tif',
 		 ):
 			 '''
 				point cloud to dsm
@@ -1939,13 +2256,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_points_in', 'folder_dsm_out', 'folder_dtm_out', 'folder_chm_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'tif', 'tif', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'point_cloud_to_dsm_folder',
 			                True,
@@ -1956,7 +2274,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.point_cloud_to_dsm_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -1980,12 +2304,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'align_points_folder',
 			                True,
@@ -1996,17 +2321,23 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.align_points_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def get_meta_data_folder(self,
-			in_folder='in_folder', 
-			out_folder='out_folder',
+			in_folder='__auto__', 
+			out_folder='__auto__',
 			extension_in_folder = '.laz',
-			extension_out_folder = '.laz',
+			extension_out_folder = '.json',
 		 ):
 			 '''
 				Get meta data from las or laz file
@@ -2019,13 +2350,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['laz', 'json']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'get_meta_data_folder',
 			                True,
@@ -2036,7 +2368,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.get_meta_data_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2044,7 +2382,7 @@ class AIPHAProcessing:
 
 		 def select_center_object_folder(self,
 			in_directory='laz_files', 
-			out_folder='out_folder', 
+			out_folder='__auto__', 
 			latitude=1, 
 			longitude=1,
 			extension_out_folder = '.laz',
@@ -2063,12 +2401,13 @@ class AIPHAProcessing:
 			 itertable_params = ['out_folder']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'select_center_object_folder',
 			                True,
@@ -2079,7 +2418,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.select_center_object_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2111,12 +2456,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'crop_to_equal_value_range_folder',
 			                True,
@@ -2127,7 +2473,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ops3d.crop_to_equal_value_range_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ops3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2166,12 +2518,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['pickle', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'intersecting_polygons',
 			                False,
@@ -2181,7 +2534,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.shp.intersecting_polygons(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2209,12 +2568,13 @@ class AIPHAProcessing:
 			 itertable_params = ['shp_file']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'extract_multipolygons_from_shp',
 			                False,
@@ -2224,7 +2584,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.shp.extract_multipolygons_from_shp(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2248,12 +2614,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'edges_file', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'npy', 'dxf']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'wireframe_to_dxf',
 			                False,
@@ -2263,7 +2630,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.shp.wireframe_to_dxf(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2287,12 +2660,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['json', 'pickle']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'make_polygon_from_json',
 			                False,
@@ -2302,18 +2676,24 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.shp.make_polygon_from_json(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def intersecting_polygons_folder(self,
-			input_folder='input_folder', 
+			input_folder='__auto__', 
 			comparison_folder='polygons', 
-			output_folder='output_folder',
-			extension_input_folder = '.laz',
-			extension_output_folder = '.laz',
+			output_folder='__auto__',
+			extension_input_folder = '.pickle',
+			extension_output_folder = '.txt',
 		 ):
 			 '''
 				intersecting polygons
@@ -2327,13 +2707,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['pickle', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'intersecting_polygons_folder',
 			                True,
@@ -2344,14 +2725,20 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.shp.intersecting_polygons_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def extract_multipolygons_from_shp_folder(self,
-			shp_folder='shp_folder', 
+			shp_folder='__auto__', 
 			out_polygon_folder='polygons/', 
 			out_attributes_folder='attributes/', 
 			shape_id=-1, 
@@ -2373,12 +2760,13 @@ class AIPHAProcessing:
 			 itertable_params = ['shp_folder']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'extract_multipolygons_from_shp_folder',
 			                True,
@@ -2389,19 +2777,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.shp.extract_multipolygons_from_shp_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def wireframe_to_dxf_folder(self,
-			input_folder='input_folder', 
-			edges_folder='edges_folder', 
-			output_folder='output_folder',
+			input_folder='__auto__', 
+			edges_folder='__auto__', 
+			output_folder='__auto__',
 			extension_input_folder = '.laz',
-			extension_edges_folder = '.laz',
-			extension_output_folder = '.laz',
+			extension_edges_folder = '.npy',
+			extension_output_folder = '.dxf',
 		 ):
 			 '''
 				wireframe to dxf
@@ -2415,13 +2809,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'edges_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'npy', 'dxf']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'wireframe_to_dxf_folder',
 			                True,
@@ -2432,18 +2827,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.shp.wireframe_to_dxf_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def make_polygon_from_json_folder(self,
-			input_folder='input_folder', 
-			output_folder='output_folder', 
+			input_folder='__auto__', 
+			output_folder='__auto__', 
 			point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
-			extension_input_folder = '.laz',
-			extension_output_folder = '.laz',
+			extension_input_folder = '.json',
+			extension_output_folder = '.pickle',
 		 ):
 			 '''
 				make polygon from json
@@ -2457,13 +2858,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['json', 'pickle']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'make_polygon_from_json_folder',
 			                True,
@@ -2474,7 +2876,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.shp.make_polygon_from_json_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          shp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2531,12 +2939,13 @@ class AIPHAProcessing:
 			 itertable_params = ['data_in_path']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_training_rfcr',
 			                False,
@@ -2546,7 +2955,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.semantic_training_rfcr(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2578,12 +2993,13 @@ class AIPHAProcessing:
 			 itertable_params = ['data_in_path', 'results_labels_path', 'results_probabilities_path']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'labels', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_inference_rfcr',
 			                False,
@@ -2593,7 +3009,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.semantic_inference_rfcr(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2633,12 +3055,13 @@ class AIPHAProcessing:
 			 itertable_params = ['data_in_path']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_training_scf',
 			                False,
@@ -2648,7 +3071,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.semantic_training_scf(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2688,12 +3117,13 @@ class AIPHAProcessing:
 			 itertable_params = ['data_in_path', 'results_labels_path', 'in_model_parameters_path', 'results_probabilities_path']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['laz', 'labels', 'laz', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_inference_scf',
 			                False,
@@ -2703,7 +3133,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.semantic_inference_scf(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2729,12 +3165,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_files', 'out_result_files']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'wireframe_estimation_inference',
 			                False,
@@ -2744,7 +3181,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.wireframe_estimation_inference(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2770,12 +3213,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_files', 'out_files']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'vertices_estimation_inference',
 			                False,
@@ -2785,7 +3229,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.vertices_estimation_inference(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2845,12 +3295,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'wireframe_estimation_training',
 			                False,
@@ -2860,7 +3311,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.wireframe_estimation_training(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2918,12 +3375,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'universal_training',
 			                False,
@@ -2933,7 +3391,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.universal_training(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -2995,12 +3459,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'vertices_estimation_training',
 			                False,
@@ -3010,7 +3475,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.vertices_estimation_training(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3036,12 +3507,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_files', 'out_files']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'universal_inference',
 			                False,
@@ -3051,14 +3523,20 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.ml3d.universal_inference(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def semantic_training_rfcr_folder(self,
-			data_in_folder='data_in_folder', 
+			data_in_folder='__auto__', 
 			out_model_parameters_path='trained_model/model_1', 
 			class_names='1,2,3,4,5,6,7,8', 
 			feature_names='red,green,blue', 
@@ -3094,12 +3572,13 @@ class AIPHAProcessing:
 			 itertable_params = ['data_in_folder']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_training_rfcr_folder',
 			                True,
@@ -3110,23 +3589,29 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.semantic_training_rfcr_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def semantic_inference_rfcr_folder(self,
-			data_in_folder='data_in_folder', 
-			results_labels_folder='results_labels_folder', 
-			results_probabilities_folder='results_probabilities_folder', 
+			data_in_folder='__auto__', 
+			results_labels_folder='__auto__', 
+			results_probabilities_folder='__auto__', 
 			in_model_parameters_path='results/Log_2022-11-10_11-42-05', 
 			number_of_votes=5, 
 			feature_names='red,green,blue', 
 			point_names='x,y,z',
 			extension_data_in_folder = '.laz',
-			extension_results_labels_folder = '.laz',
-			extension_results_probabilities_folder = '.laz',
+			extension_results_labels_folder = '.labels',
+			extension_results_probabilities_folder = '.npy',
 		 ):
 			 '''
 				semantic inference rfcr
@@ -3144,13 +3629,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['data_in_folder', 'results_labels_folder', 'results_probabilities_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'labels', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_inference_rfcr_folder',
 			                True,
@@ -3161,14 +3647,20 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.semantic_inference_rfcr_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def semantic_training_scf_folder(self,
-			data_in_folder='data_in_folder', 
+			data_in_folder='__auto__', 
 			out_model_parameters_path='trained_model/model_1', 
 			class_names='1,2,3,4,5,6,7,8', 
 			feature_names='red,green,blue', 
@@ -3202,12 +3694,13 @@ class AIPHAProcessing:
 			 itertable_params = ['data_in_folder']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_training_scf_folder',
 			                True,
@@ -3218,28 +3711,34 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.semantic_training_scf_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def semantic_inference_scf_folder(self,
-			data_in_folder='data_in_folder', 
+			data_in_folder='__auto__', 
 			class_names='1,2,3,4,5,6,7,8', 
 			feature_names='red,green,blue', 
 			point_names='x,y,z', 
 			label_name='classification', 
 			feature_dimensions='12,48,96,192,384', 
 			batch_size=2, 
-			results_labels_folder='results_labels_folder', 
-			in_model_parameters_folder='in_model_parameters_folder', 
-			results_probabilities_folder='results_probabilities_folder', 
+			results_labels_folder='__auto__', 
+			in_model_parameters_folder='__auto__', 
+			results_probabilities_folder='__auto__', 
 			number_of_votes=5,
 			extension_data_in_folder = '.laz',
-			extension_results_labels_folder = '.laz',
+			extension_results_labels_folder = '.labels',
 			extension_in_model_parameters_folder = '.laz',
-			extension_results_probabilities_folder = '.laz',
+			extension_results_probabilities_folder = '.npy',
 		 ):
 			 '''
 				semantic inference scf
@@ -3261,13 +3760,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['data_in_folder', 'results_labels_folder', 'in_model_parameters_folder', 'results_probabilities_folder']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'labels', 'laz', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'semantic_inference_scf_folder',
 			                True,
@@ -3278,15 +3778,21 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.semantic_inference_scf_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def wireframe_estimation_inference_folder(self,
-			in_folders='in_folders', 
-			out_result_folders='out_result_folders', 
+			in_folders='__auto__', 
+			out_result_folders='__auto__', 
 			in_model_path='parameters_wireframe', 
 			batch_size=1,
 			extension_in_folders = '.laz',
@@ -3306,12 +3812,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_folders', 'out_result_folders']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'wireframe_estimation_inference_folder',
 			                True,
@@ -3322,15 +3829,21 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.wireframe_estimation_inference_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def vertices_estimation_inference_folder(self,
-			in_folders='in_folders', 
-			out_folders='out_folders', 
+			in_folders='__auto__', 
+			out_folders='__auto__', 
 			in_model_path='parameters_model', 
 			batch_size=1,
 			extension_in_folders = '.laz',
@@ -3350,12 +3863,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_folders', 'out_folders']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'vertices_estimation_inference_folder',
 			                True,
@@ -3366,7 +3880,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.vertices_estimation_inference_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3426,12 +3946,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'wireframe_estimation_training_folder',
 			                True,
@@ -3442,7 +3963,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.wireframe_estimation_training_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3500,12 +4027,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'universal_training_folder',
 			                True,
@@ -3516,7 +4044,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.universal_training_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3578,12 +4112,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'vertices_estimation_training_folder',
 			                True,
@@ -3594,15 +4129,21 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.vertices_estimation_training_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def universal_inference_folder(self,
-			in_folders='in_folders', 
-			out_folders='out_folders', 
+			in_folders='__auto__', 
+			out_folders='__auto__', 
 			in_model_path='parameters_model', 
 			batch_size=1,
 			extension_in_folders = '.laz',
@@ -3622,12 +4163,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_folders', 'out_folders']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'universal_inference_folder',
 			                True,
@@ -3638,7 +4180,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.ml3d.universal_inference_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          ml3d,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3681,12 +4229,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'out_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_qc_classification',
 			                False,
@@ -3696,7 +4245,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.qc.report_qc_classification(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3730,12 +4285,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'in_meta_data_file', 'out_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['txt', 'json', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_image_completeness',
 			                False,
@@ -3745,7 +4301,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.qc.report_image_completeness(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3777,12 +4339,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'out_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_vegetation_occurance',
 			                False,
@@ -3792,7 +4355,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.qc.report_vegetation_occurance(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -3824,12 +4393,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'out_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_lidar_completeness',
 			                False,
@@ -3839,20 +4409,26 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.qc.report_lidar_completeness(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def report_qc_classification_folder(self,
-			in_folder='in_folder', 
-			out_folder='out_folder', 
+			in_folder='__auto__', 
+			out_folder='__auto__', 
 			error_classes='148,149', 
 			error_names='Line,Tower', 
 			keep_error_free='True',
 			extension_in_folder = '.laz',
-			extension_out_folder = '.laz',
+			extension_out_folder = '.txt',
 		 ):
 			 '''
 				report qc classification
@@ -3868,13 +4444,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_qc_classification_folder',
 			                True,
@@ -3885,24 +4462,30 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.qc.report_qc_classification_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def report_image_completeness_folder(self,
-			in_folder='in_folder', 
-			in_meta_data_folder='in_meta_data_folder', 
-			out_folder='out_folder', 
+			in_folder='__auto__', 
+			in_meta_data_folder='__auto__', 
+			out_folder='__auto__', 
 			grid_size=0.5, 
 			populated_class=1, 
 			small_holes_class=100, 
 			large_holes_class=255, 
 			keep_error_free='True',
-			extension_in_folder = '.laz',
-			extension_in_meta_data_folder = '.laz',
-			extension_out_folder = '.laz',
+			extension_in_folder = '.txt',
+			extension_in_meta_data_folder = '.json',
+			extension_out_folder = '.txt',
 		 ):
 			 '''
 				report image completeness
@@ -3921,13 +4504,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_folder', 'in_meta_data_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['txt', 'json', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_image_completeness_folder',
 			                True,
@@ -3938,22 +4522,28 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.qc.report_image_completeness_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def report_vegetation_occurance_folder(self,
-			in_folder='in_folder', 
-			out_folder='out_folder', 
+			in_folder='__auto__', 
+			out_folder='__auto__', 
 			ground_classes_old='2,3,6,7,15', 
 			ground_classes_new='1,3,9,11,15', 
 			vegetation_old='6,7,15', 
 			vegetation_new='9,11,15', 
 			keep_error_free='True',
-			extension_in_folder = '.laz',
-			extension_out_folder = '.laz',
+			extension_in_folder = '.txt',
+			extension_out_folder = '.txt',
 		 ):
 			 '''
 				report vegetation occurance
@@ -3971,13 +4561,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_vegetation_occurance_folder',
 			                True,
@@ -3988,22 +4579,28 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.qc.report_vegetation_occurance_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def report_lidar_completeness_folder(self,
-			in_folder='in_folder', 
-			out_folder='out_folder', 
+			in_folder='__auto__', 
+			out_folder='__auto__', 
 			grid_size=0.5, 
 			populated_class=1, 
 			small_holes_class=100, 
 			large_holes_class=255, 
 			keep_error_free='True',
-			extension_in_folder = '.laz',
-			extension_out_folder = '.laz',
+			extension_in_folder = '.txt',
+			extension_out_folder = '.txt',
 		 ):
 			 '''
 				report lidar completeness
@@ -4021,13 +4618,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'report_lidar_completeness_folder',
 			                True,
@@ -4038,7 +4636,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.qc.report_lidar_completeness_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          qc,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4081,12 +4685,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_in', 'file_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'labels']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'point_cloud_classification_inference',
 			                False,
@@ -4096,7 +4701,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.tdp.point_cloud_classification_inference(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4120,12 +4731,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_in', 'file_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'labels']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'convert_laz_point_formats',
 			                False,
@@ -4135,7 +4747,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.tdp.convert_laz_point_formats(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4169,12 +4787,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_points_file', 'in_labels_file']
 			 itertable_iotypes = ['in', 'in']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'segment_objects',
 			                False,
@@ -4184,7 +4803,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.tdp.segment_objects(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4216,12 +4841,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_in_data', 'file_in_labels', 'file_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'labels', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'point_cloud_filter_label_noise',
 			                False,
@@ -4231,7 +4857,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.tdp.point_cloud_filter_label_noise(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4267,12 +4899,13 @@ class AIPHAProcessing:
 			 itertable_params = ['laz_in_file_new', 'laz_in_file_old', 'laz_in_file_ref', 'results_out_file']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'tower_displacement',
 			                False,
@@ -4282,20 +4915,26 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.tdp.tower_displacement(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def point_cloud_classification_inference_folder(self,
-			folder_in='folder_in', 
-			folder_out='folder_out', 
+			folder_in='__auto__', 
+			folder_out='__auto__', 
 			model_path='network_parameters', 
 			cols_data='X,Y,Z', 
 			cols_labels='classification',
 			extension_folder_in = '.laz',
-			extension_folder_out = '.laz',
+			extension_folder_out = '.labels',
 		 ):
 			 '''
 				point cloud classification inference
@@ -4311,13 +4950,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_in', 'folder_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['laz', 'labels']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'point_cloud_classification_inference_folder',
 			                True,
@@ -4328,18 +4968,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.tdp.point_cloud_classification_inference_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def convert_laz_point_formats_folder(self,
-			folder_in='folder_in', 
-			folder_out='folder_out', 
+			folder_in='__auto__', 
+			folder_out='__auto__', 
 			format=7,
 			extension_folder_in = '.laz',
-			extension_folder_out = '.laz',
+			extension_folder_out = '.labels',
 		 ):
 			 '''
 				convert laz point formats
@@ -4353,13 +4999,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_in', 'folder_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['laz', 'labels']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'convert_laz_point_formats_folder',
 			                True,
@@ -4370,15 +5017,21 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.tdp.convert_laz_point_formats_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def segment_objects_folder(self,
-			in_points_folder='in_points_folder', 
-			in_labels_folder='in_labels_folder', 
+			in_points_folder='__auto__', 
+			in_labels_folder='__auto__', 
 			out_directory='segmented_object', 
 			out_prefix='object', 
 			label_col='classification', 
@@ -4406,12 +5059,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_points_folder', 'in_labels_folder']
 			 itertable_iotypes = ['in', 'in']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'segment_objects_folder',
 			                True,
@@ -4422,22 +5076,28 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.tdp.segment_objects_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def point_cloud_filter_label_noise_folder(self,
-			folder_in_data='folder_in_data', 
-			folder_in_labels='folder_in_labels', 
-			folder_out='folder_out', 
+			folder_in_data='__auto__', 
+			folder_in_labels='__auto__', 
+			folder_out='__auto__', 
 			k_nearest_neighbours=5, 
 			sigma=10., 
 			dim=3, 
 			invalid_label=0,
 			extension_folder_in_data = '.laz',
-			extension_folder_in_labels = '.laz',
+			extension_folder_in_labels = '.labels',
 			extension_folder_out = '.laz',
 		 ):
 			 '''
@@ -4456,13 +5116,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_in_data', 'folder_in_labels', 'folder_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'labels', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'point_cloud_filter_label_noise_folder',
 			                True,
@@ -4473,26 +5134,32 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.tdp.point_cloud_filter_label_noise_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def tower_displacement_folder(self,
-			laz_in_folder_new='laz_in_folder_new', 
-			laz_in_folder_old='laz_in_folder_old', 
-			laz_in_folder_ref='laz_in_folder_ref', 
+			laz_in_folder_new='__auto__', 
+			laz_in_folder_old='__auto__', 
+			laz_in_folder_ref='__auto__', 
 			tower_name='', 
 			year_new='2022', 
 			year_old='2020', 
 			year_ref='2018', 
-			results_out_folder='results_out_folder', 
+			results_out_folder='__auto__', 
 			plots_out_folder='plots/',
 			extension_laz_in_folder_new = '.laz',
 			extension_laz_in_folder_old = '.laz',
 			extension_laz_in_folder_ref = '.laz',
-			extension_results_out_folder = '.laz',
+			extension_results_out_folder = '.txt',
 		 ):
 			 '''
 				tower displacement
@@ -4512,13 +5179,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['laz_in_folder_new', 'laz_in_folder_old', 'laz_in_folder_ref', 'results_out_folder']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'laz', 'laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'tower_displacement_folder',
 			                True,
@@ -4529,7 +5197,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.tdp.tower_displacement_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          tdp,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4568,12 +5242,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_source_in', 'file_trafo_out', 'file_source_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'txt', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'estimate_vobject_coordinates',
 			                False,
@@ -4583,7 +5258,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.estimate_vobject_coordinates(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4615,12 +5296,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'input_file2', 'input_file_features', 'output_file', 'output_file_features']
 			 itertable_iotypes = ['in', 'in', 'in', 'out', 'out']
 			 iterable_file_types = ['laz', 'laz', 'npy', 'laz', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'filter_valid_vertices',
 			                False,
@@ -4630,7 +5312,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.filter_valid_vertices(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4654,12 +5342,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'target_file', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'align_top',
 			                False,
@@ -4669,7 +5358,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.align_top(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4691,12 +5386,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'zero_centering',
 			                False,
@@ -4706,7 +5402,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.zero_centering(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4738,12 +5440,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_cloud_file', 'input_vertices_file', 'output_graph_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'dxf']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'connect_neighbouring_vertices',
 			                False,
@@ -4753,7 +5456,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.connect_neighbouring_vertices(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4777,12 +5486,13 @@ class AIPHAProcessing:
 			 itertable_params = ['in_file', 'out_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['dxf', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'import_vertices',
 			                False,
@@ -4792,7 +5502,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.import_vertices(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -4822,12 +5538,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'points_file', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'likelihood',
 			                False,
@@ -4837,18 +5554,24 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.fvo.likelihood(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def estimate_vobject_coordinates_folder(self,
-			folder_source_in='folder_source_in', 
-			folder_trafo_out='folder_trafo_out', 
-			folder_source_out='folder_source_out',
+			folder_source_in='__auto__', 
+			folder_trafo_out='__auto__', 
+			folder_source_out='__auto__',
 			extension_folder_source_in = '.laz',
-			extension_folder_trafo_out = '.laz',
+			extension_folder_trafo_out = '.txt',
 			extension_folder_source_out = '.laz',
 		 ):
 			 '''
@@ -4863,13 +5586,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_source_in', 'folder_trafo_out', 'folder_source_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'txt', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'estimate_vobject_coordinates_folder',
 			                True,
@@ -4880,25 +5604,31 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.estimate_vobject_coordinates_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def filter_valid_vertices_folder(self,
-			input_folder='input_folder', 
-			input_folder2='input_folder2', 
-			input_folder_features='input_folder_features', 
-			output_folder='output_folder', 
-			output_folder_features='output_folder_features', 
+			input_folder='__auto__', 
+			input_folder2='__auto__', 
+			input_folder_features='__auto__', 
+			output_folder='__auto__', 
+			output_folder_features='__auto__', 
 			min_distance=0.0, 
 			max_distance=100,
 			extension_input_folder = '.laz',
 			extension_input_folder2 = '.laz',
-			extension_input_folder_features = '.laz',
+			extension_input_folder_features = '.npy',
 			extension_output_folder = '.laz',
-			extension_output_folder_features = '.laz',
+			extension_output_folder_features = '.npy',
 		 ):
 			 '''
 				Filter valid vertices from a DXF file.
@@ -4916,13 +5646,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'input_folder2', 'input_folder_features', 'output_folder', 'output_folder_features']
 			 itertable_iotypes = ['in', 'in', 'in', 'out', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'laz', 'npy', 'laz', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'filter_valid_vertices_folder',
 			                True,
@@ -4933,16 +5664,22 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.filter_valid_vertices_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def align_top_folder(self,
-			input_folder='input_folder', 
-			target_folder='target_folder', 
-			output_folder='output_folder',
+			input_folder='__auto__', 
+			target_folder='__auto__', 
+			output_folder='__auto__',
 			extension_input_folder = '.laz',
 			extension_target_folder = '.laz',
 			extension_output_folder = '.laz',
@@ -4960,12 +5697,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_folder', 'target_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'align_top_folder',
 			                True,
@@ -4976,15 +5714,21 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.align_top_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def zero_centering_folder(self,
-			input_folder='input_folder', 
-			output_folder='output_folder',
+			input_folder='__auto__', 
+			output_folder='__auto__',
 			extension_input_folder = '.laz',
 			extension_output_folder = '.laz',
 		 ):
@@ -5000,12 +5744,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'zero_centering_folder',
 			                True,
@@ -5016,23 +5761,29 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.zero_centering_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def connect_neighbouring_vertices_folder(self,
-			input_cloud_folder='input_cloud_folder', 
-			input_vertices_folder='input_vertices_folder', 
-			output_graph_folder='output_graph_folder', 
+			input_cloud_folder='__auto__', 
+			input_vertices_folder='__auto__', 
+			output_graph_folder='__auto__', 
 			max_distance=4, 
 			min_num_inliers=6, 
 			line_distance=0.25, 
 			line_knn=7,
 			extension_input_cloud_folder = '.laz',
 			extension_input_vertices_folder = '.laz',
-			extension_output_graph_folder = '.laz',
+			extension_output_graph_folder = '.dxf',
 		 ):
 			 '''
 				Connect neighbouring vertices
@@ -5050,13 +5801,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_cloud_folder', 'input_vertices_folder', 'output_graph_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['laz', 'laz', 'dxf']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'connect_neighbouring_vertices_folder',
 			                True,
@@ -5067,17 +5819,23 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.connect_neighbouring_vertices_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def import_vertices_folder(self,
-			in_folder='in_folder', 
+			in_folder='__auto__', 
 			layer='1', 
-			out_folder='out_folder',
-			extension_in_folder = '.laz',
+			out_folder='__auto__',
+			extension_in_folder = '.dxf',
 			extension_out_folder = '.laz',
 		 ):
 			 '''
@@ -5092,13 +5850,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['in_folder', 'out_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['dxf', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'import_vertices_folder',
 			                True,
@@ -5109,16 +5868,22 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.import_vertices_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def likelihood_folder(self,
-			input_folder='input_folder', 
-			points_folder='points_folder', 
-			output_folder='output_folder', 
+			input_folder='__auto__', 
+			points_folder='__auto__', 
+			output_folder='__auto__', 
 			max_distance=0.5, 
 			missing_distance=1.5, 
 			missing_knn=2,
@@ -5142,12 +5907,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_folder', 'points_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['laz', 'laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'likelihood_folder',
 			                True,
@@ -5158,7 +5924,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.fvo.likelihood_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          fvo,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5201,12 +5973,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_divide',
 			                False,
@@ -5216,7 +5989,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_divide(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5242,12 +6021,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'divide_constant',
 			                False,
@@ -5257,7 +6037,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.divide_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5283,12 +6069,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile1', 'infile2', 'outfile']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_less',
 			                False,
@@ -5298,7 +6085,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_less(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5324,12 +6117,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'add_constant',
 			                False,
@@ -5339,7 +6133,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.add_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5367,12 +6167,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_not_equal',
 			                False,
@@ -5382,7 +6183,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_not_equal(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5406,12 +6213,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'max',
 			                False,
@@ -5421,7 +6229,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.max(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5447,12 +6261,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_in', 'file_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'replace_strings',
 			                False,
@@ -5462,7 +6277,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.replace_strings(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5488,12 +6309,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'less_constant',
 			                False,
@@ -5503,7 +6325,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.less_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5529,12 +6357,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'subtract_constant',
 			                False,
@@ -5544,7 +6373,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.subtract_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5570,12 +6405,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_hstack',
 			                False,
@@ -5585,7 +6421,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_hstack(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5613,12 +6455,13 @@ class AIPHAProcessing:
 			 itertable_params = ['filename_in', 'filename_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'resize_slice_matrix',
 			                False,
@@ -5628,7 +6471,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.resize_slice_matrix(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5654,12 +6503,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'sum',
 			                False,
@@ -5669,7 +6519,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.sum(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5695,12 +6551,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'greater_constant',
 			                False,
@@ -5710,7 +6567,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.greater_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5738,12 +6601,13 @@ class AIPHAProcessing:
 			 itertable_params = ['filename_in', 'filename_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'connected_components_labeling',
 			                False,
@@ -5753,7 +6617,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.connected_components_labeling(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5785,12 +6655,13 @@ class AIPHAProcessing:
 			 itertable_params = ['filename_is', 'filename_should', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_distance',
 			                False,
@@ -5800,7 +6671,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_distance(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5826,12 +6703,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile1', 'infile2', 'outfile']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_greater',
 			                False,
@@ -5841,7 +6719,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_greater(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5869,12 +6753,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_add',
 			                False,
@@ -5884,7 +6769,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_add(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5910,12 +6801,13 @@ class AIPHAProcessing:
 			 itertable_params = ['infile', 'outfile']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'multiply_constant',
 			                False,
@@ -5925,7 +6817,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.multiply_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5953,12 +6851,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_assign',
 			                False,
@@ -5968,7 +6867,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_assign(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -5994,12 +6899,13 @@ class AIPHAProcessing:
 			 itertable_params = ['filename_in', 'filename_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'count_unique_values',
 			                False,
@@ -6009,7 +6915,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.count_unique_values(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6037,12 +6949,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values_in', 'file_mask_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'masked_assing_constant',
 			                False,
@@ -6052,7 +6965,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.masked_assing_constant(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6076,12 +6995,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'hstack',
 			                False,
@@ -6091,7 +7011,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.hstack(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6119,12 +7045,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_multiply',
 			                False,
@@ -6134,7 +7061,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_multiply(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6162,12 +7095,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_equal',
 			                False,
@@ -6177,7 +7111,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_equal(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6203,12 +7143,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_mask_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_masked_assing',
 			                False,
@@ -6218,7 +7159,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_masked_assing(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6250,12 +7197,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'remap_values',
 			                False,
@@ -6265,7 +7213,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.remap_values(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -6293,12 +7247,13 @@ class AIPHAProcessing:
 			 itertable_params = ['file_values1_in', 'file_values2_in', 'file_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_subtract',
 			                False,
@@ -6308,21 +7263,27 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.val.values_subtract(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_divide_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values divide
@@ -6338,13 +7299,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_divide_folder',
 			                True,
@@ -6355,19 +7317,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_divide_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def divide_constant_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			constant=1.0,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Divide a constant value from a matrix.
@@ -6382,13 +7350,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'divide_constant_folder',
 			                True,
@@ -6399,20 +7368,26 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.divide_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_less_folder(self,
-			infolder1='infolder1', 
-			infolder2='infolder2', 
-			outfolder='outfolder', 
+			infolder1='__auto__', 
+			infolder2='__auto__', 
+			outfolder='__auto__', 
 			dtype='float',
-			extension_infolder1 = '.laz',
-			extension_infolder2 = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder1 = '.npy',
+			extension_infolder2 = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Elementwiese less operator on a matrix.
@@ -6427,13 +7402,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder1', 'infolder2', 'outfolder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_less_folder',
 			                True,
@@ -6444,19 +7420,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_less_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def add_constant_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			constant=0.0,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Add a constant value to a matrix.
@@ -6471,13 +7453,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'add_constant_folder',
 			                True,
@@ -6488,21 +7471,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.add_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_not_equal_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values not equal
@@ -6518,13 +7507,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_not_equal_folder',
 			                True,
@@ -6535,18 +7525,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_not_equal_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def max_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float',
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Maximum of a matrix.
@@ -6560,13 +7556,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'max_folder',
 			                True,
@@ -6577,19 +7574,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.max_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def replace_strings_folder(self,
-			folder_in='folder_in', 
-			folder_out='folder_out', 
+			folder_in='__auto__', 
+			folder_out='__auto__', 
 			replace_from='', 
 			replace_to='',
-			extension_folder_in = '.laz',
-			extension_folder_out = '.laz',
+			extension_folder_in = '.txt',
+			extension_folder_out = '.txt',
 		 ):
 			 '''
 				Substrings replacement in an ASCII file
@@ -6604,13 +7607,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_in', 'folder_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'replace_strings_folder',
 			                True,
@@ -6621,19 +7625,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.replace_strings_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def less_constant_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			constant=1,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Less operator on a matrix.
@@ -6648,13 +7658,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'less_constant_folder',
 			                True,
@@ -6665,19 +7676,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.less_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def subtract_constant_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			constant=0.0,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Subtract a constant value from a matrix.
@@ -6692,13 +7709,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'subtract_constant_folder',
 			                True,
@@ -6709,20 +7727,26 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.subtract_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_hstack_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			dtype='str',
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values hstack
@@ -6737,13 +7761,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_hstack_folder',
 			                True,
@@ -6754,20 +7779,26 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_hstack_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def resize_slice_matrix_folder(self,
-			foldername_in='foldername_in', 
-			foldername_out='foldername_out', 
+			foldername_in='__auto__', 
+			foldername_out='__auto__', 
 			dtype='float', 
 			indices=':,124:,:3', 
 			default_value=0.0,
-			extension_foldername_in = '.laz',
-			extension_foldername_out = '.laz',
+			extension_foldername_in = '.npy',
+			extension_foldername_out = '.npy',
 		 ):
 			 '''
 				Resize and slice a matrix based on indices.
@@ -6783,13 +7814,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['foldername_in', 'foldername_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'resize_slice_matrix_folder',
 			                True,
@@ -6800,19 +7832,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.resize_slice_matrix_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def sum_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			axis=-1,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Sum all values of a matrix.
@@ -6827,13 +7865,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'sum_folder',
 			                True,
@@ -6844,19 +7883,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.sum_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def greater_constant_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			constant=1,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Greater operator on a matrix.
@@ -6871,13 +7916,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'greater_constant_folder',
 			                True,
@@ -6888,20 +7934,26 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.greater_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def connected_components_labeling_folder(self,
-			foldername_in='foldername_in', 
-			foldername_out='foldername_out', 
+			foldername_in='__auto__', 
+			foldername_out='__auto__', 
 			dtype='float', 
 			no_type=0.0, 
 			value=1.0,
-			extension_foldername_in = '.laz',
-			extension_foldername_out = '.laz',
+			extension_foldername_in = '.npy',
+			extension_foldername_out = '.npy',
 		 ):
 			 '''
 				Perform connected components labeling on a matrix.
@@ -6917,13 +7969,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['foldername_in', 'foldername_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'connected_components_labeling_folder',
 			                True,
@@ -6934,23 +7987,29 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.connected_components_labeling_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_distance_folder(self,
-			foldername_is='foldername_is', 
-			foldername_should='foldername_should', 
-			output_folder='output_folder', 
+			foldername_is='__auto__', 
+			foldername_should='__auto__', 
+			output_folder='__auto__', 
 			dtype='float', 
 			no_type=0.0, 
 			value=1.0, 
 			gridsize=1.0,
-			extension_foldername_is = '.laz',
-			extension_foldername_should = '.laz',
-			extension_output_folder = '.laz',
+			extension_foldername_is = '.npy',
+			extension_foldername_should = '.npy',
+			extension_output_folder = '.npy',
 		 ):
 			 '''
 				Compute Euclidean distance from is matrix to should matrix.
@@ -6968,13 +8027,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['foldername_is', 'foldername_should', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_distance_folder',
 			                True,
@@ -6985,20 +8045,26 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_distance_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_greater_folder(self,
-			infolder1='infolder1', 
-			infolder2='infolder2', 
-			outfolder='outfolder', 
+			infolder1='__auto__', 
+			infolder2='__auto__', 
+			outfolder='__auto__', 
 			dtype='float',
-			extension_infolder1 = '.laz',
-			extension_infolder2 = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder1 = '.npy',
+			extension_infolder2 = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Elementwiese greater operator on a matrix.
@@ -7013,13 +8079,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder1', 'infolder2', 'outfolder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_greater_folder',
 			                True,
@@ -7030,21 +8097,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_greater_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_add_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values add
@@ -7060,13 +8133,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_add_folder',
 			                True,
@@ -7077,19 +8151,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_add_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def multiply_constant_folder(self,
-			infolder='infolder', 
-			outfolder='outfolder', 
+			infolder='__auto__', 
+			outfolder='__auto__', 
 			dtype='float', 
 			constant=1.0,
-			extension_infolder = '.laz',
-			extension_outfolder = '.laz',
+			extension_infolder = '.npy',
+			extension_outfolder = '.npy',
 		 ):
 			 '''
 				Multiply a constant value from a matrix.
@@ -7104,13 +8184,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['infolder', 'outfolder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'multiply_constant_folder',
 			                True,
@@ -7121,21 +8202,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.multiply_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_assign_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values assign
@@ -7151,13 +8238,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_assign_folder',
 			                True,
@@ -7168,19 +8256,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_assign_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def count_unique_values_folder(self,
-			foldername_in='foldername_in', 
-			foldername_out='foldername_out', 
+			foldername_in='__auto__', 
+			foldername_out='__auto__', 
 			dtype='float', 
 			ignore='nan',
-			extension_foldername_in = '.laz',
-			extension_foldername_out = '.laz',
+			extension_foldername_in = '.npy',
+			extension_foldername_out = '.npy',
 		 ):
 			 '''
 				Count unique occurrences of values in a matrix.
@@ -7195,13 +8289,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['foldername_in', 'foldername_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'count_unique_values_folder',
 			                True,
@@ -7212,21 +8307,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.count_unique_values_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def masked_assing_constant_folder(self,
-			folder_values_in='folder_values_in', 
-			folder_mask_in='folder_mask_in', 
-			folder_values_out='folder_values_out', 
+			folder_values_in='__auto__', 
+			folder_mask_in='__auto__', 
+			folder_values_out='__auto__', 
 			dtype='float', 
 			constant=1,
-			extension_folder_values_in = '.laz',
-			extension_folder_mask_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values_in = '.npy',
+			extension_folder_mask_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				masked assing constant
@@ -7242,13 +8343,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values_in', 'folder_mask_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'masked_assing_constant_folder',
 			                True,
@@ -7259,18 +8361,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.masked_assing_constant_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def hstack_folder(self,
-			folder_values_in='folder_values_in', 
-			folder_values_out='folder_values_out', 
+			folder_values_in='__auto__', 
+			folder_values_out='__auto__', 
 			dtype='str',
-			extension_folder_values_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				hstack
@@ -7284,13 +8392,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'hstack_folder',
 			                True,
@@ -7301,21 +8410,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.hstack_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_multiply_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values multiply
@@ -7331,13 +8446,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_multiply_folder',
 			                True,
@@ -7348,21 +8464,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_multiply_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_equal_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values equal
@@ -7378,13 +8500,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_equal_folder',
 			                True,
@@ -7395,21 +8518,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_equal_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_masked_assing_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_mask_in='folder_mask_in', 
-			folder_values_out='folder_values_out',
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_mask_in = '.laz',
-			extension_folder_values_out = '.laz',
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_mask_in='__auto__', 
+			folder_values_out='__auto__',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_mask_in = '.npy',
+			extension_folder_values_out = '.txt',
 		 ):
 			 '''
 				values masked assing
@@ -7424,13 +8553,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_mask_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_masked_assing_folder',
 			                True,
@@ -7441,22 +8571,28 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_masked_assing_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def remap_values_folder(self,
-			folder_values_in='folder_values_in', 
-			folder_values_out='folder_values_out', 
+			folder_values_in='__auto__', 
+			folder_values_out='__auto__', 
 			map_in='1,2,3,4', 
 			map_out='3,1,2,2', 
 			dtype_in='int32', 
 			dtype_out='int32', 
 			unmapped='0',
-			extension_folder_values_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				remap values
@@ -7474,13 +8610,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'remap_values_folder',
 			                True,
@@ -7491,21 +8628,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.remap_values_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def values_subtract_folder(self,
-			folder_values1_in='folder_values1_in', 
-			folder_values2_in='folder_values2_in', 
-			folder_values_out='folder_values_out', 
+			folder_values1_in='__auto__', 
+			folder_values2_in='__auto__', 
+			folder_values_out='__auto__', 
 			ignore_label=float('nan'), 
 			value_subset1=float('nan'),
-			extension_folder_values1_in = '.laz',
-			extension_folder_values2_in = '.laz',
-			extension_folder_values_out = '.laz',
+			extension_folder_values1_in = '.npy',
+			extension_folder_values2_in = '.npy',
+			extension_folder_values_out = '.npy',
 		 ):
 			 '''
 				values subtract
@@ -7521,13 +8664,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_values_out']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['npy', 'npy', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'values_subtract_folder',
 			                True,
@@ -7538,7 +8682,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.val.values_subtract_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          val,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7581,12 +8731,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'retile_images',
 			                False,
@@ -7596,7 +8747,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.retile_images(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7618,12 +8775,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['tif', 'json']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'image_metadata',
 			                False,
@@ -7633,7 +8791,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.image_metadata(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7659,12 +8823,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['tif', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'resize_image',
 			                False,
@@ -7674,7 +8839,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.resize_image(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7698,12 +8869,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['npy', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'matrix_to_image',
 			                False,
@@ -7713,7 +8885,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.matrix_to_image(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7735,12 +8913,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_file', 'output_file']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['tif', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'image_to_matrix',
 			                False,
@@ -7750,7 +8929,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.image_to_matrix(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7774,12 +8959,13 @@ class AIPHAProcessing:
 			 itertable_params = ['geotiff_file', 'pickle_file', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['tif', 'pickle', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'polygon_to_image',
 			                False,
@@ -7789,7 +8975,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.polygon_to_image(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7813,12 +9005,13 @@ class AIPHAProcessing:
 			 itertable_params = ['georeferenced_file', 'unreferenced_file', 'output_file']
 			 itertable_iotypes = ['in', 'in', 'out']
 			 iterable_file_types = ['tif', 'tif', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'assign_georeference',
 			                False,
@@ -7828,7 +9021,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.image.assign_georeference(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -7856,12 +9055,13 @@ class AIPHAProcessing:
 			 itertable_params = ['']
 			 itertable_iotypes = ['']
 			 iterable_file_types = ['']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'retile_images_folder',
 			                True,
@@ -7872,17 +9072,23 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.retile_images_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def image_metadata_folder(self,
-			input_folder='input_folder', 
-			output_folder='output_folder',
-			extension_input_folder = '.laz',
-			extension_output_folder = '.laz',
+			input_folder='__auto__', 
+			output_folder='__auto__',
+			extension_input_folder = '.tif',
+			extension_output_folder = '.json',
 		 ):
 			 '''
 				Obtain metadata of a georeferenced image and save it as a JSON file.
@@ -7895,13 +9101,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['tif', 'json']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'image_metadata_folder',
 			                True,
@@ -7912,19 +9119,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.image_metadata_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def resize_image_folder(self,
-			input_folder='input_folder', 
-			output_folder='output_folder', 
+			input_folder='__auto__', 
+			output_folder='__auto__', 
 			new_grid_size=1., 
 			compression='None',
-			extension_input_folder = '.laz',
-			extension_output_folder = '.laz',
+			extension_input_folder = '.tif',
+			extension_output_folder = '.tif',
 		 ):
 			 '''
 				resize image
@@ -7939,13 +9152,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['tif', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'resize_image_folder',
 			                True,
@@ -7956,18 +9170,24 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.resize_image_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def matrix_to_image_folder(self,
-			input_folder='input_folder', 
-			output_folder='output_folder', 
+			input_folder='__auto__', 
+			output_folder='__auto__', 
 			data_type='uint8',
-			extension_input_folder = '.laz',
-			extension_output_folder = '.laz',
+			extension_input_folder = '.npy',
+			extension_output_folder = '.tif',
 		 ):
 			 '''
 				Convert a matrix to an image.
@@ -7981,13 +9201,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['npy', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'matrix_to_image_folder',
 			                True,
@@ -7998,17 +9219,23 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.matrix_to_image_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def image_to_matrix_folder(self,
-			input_folder='input_folder', 
-			output_folder='output_folder',
-			extension_input_folder = '.laz',
-			extension_output_folder = '.laz',
+			input_folder='__auto__', 
+			output_folder='__auto__',
+			extension_input_folder = '.tif',
+			extension_output_folder = '.npy',
 		 ):
 			 '''
 				Convert an image to a matrix.
@@ -8021,13 +9248,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['tif', 'npy']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'image_to_matrix_folder',
 			                True,
@@ -8038,19 +9266,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.image_to_matrix_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def polygon_to_image_folder(self,
-			geotiff_folder='geotiff_folder', 
-			pickle_folder='pickle_folder', 
-			output_folder='output_folder',
-			extension_geotiff_folder = '.laz',
-			extension_pickle_folder = '.laz',
-			extension_output_folder = '.laz',
+			geotiff_folder='__auto__', 
+			pickle_folder='__auto__', 
+			output_folder='__auto__',
+			extension_geotiff_folder = '.tif',
+			extension_pickle_folder = '.pickle',
+			extension_output_folder = '.tif',
 		 ):
 			 '''
 				Generate an image of a multipolygon filled inside.
@@ -8064,13 +9298,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['geotiff_folder', 'pickle_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['tif', 'pickle', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'polygon_to_image_folder',
 			                True,
@@ -8081,19 +9316,25 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.polygon_to_image_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def assign_georeference_folder(self,
-			georeferenced_folder='georeferenced_folder', 
-			unreferenced_folder='unreferenced_folder', 
-			output_folder='output_folder',
-			extension_georeferenced_folder = '.laz',
-			extension_unreferenced_folder = '.laz',
-			extension_output_folder = '.laz',
+			georeferenced_folder='__auto__', 
+			unreferenced_folder='__auto__', 
+			output_folder='__auto__',
+			extension_georeferenced_folder = '.tif',
+			extension_unreferenced_folder = '.tif',
+			extension_output_folder = '.tif',
 		 ):
 			 '''
 				Assign georeference from a georeferenced image to an unreferenced image.
@@ -8107,13 +9348,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['georeferenced_folder', 'unreferenced_folder', 'output_folder']
 			 itertable_iotypes = ['in', 'in', 'out']
-			 iterable_file_types = ['laz', 'laz', 'laz']
+			 iterable_file_types = ['tif', 'tif', 'tif']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'assign_georeference_folder',
 			                True,
@@ -8124,7 +9366,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.image.assign_georeference_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          image,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8159,12 +9407,13 @@ class AIPHAProcessing:
 			 itertable_params = ['destination']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'create_directory_in_cloud',
 			                False,
@@ -8174,7 +9423,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.create_directory_in_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8204,12 +9459,13 @@ class AIPHAProcessing:
 			 itertable_params = ['url', 'target']
 			 itertable_iotypes = ['in', 'in']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'upload_data_from_cloud',
 			                False,
@@ -8219,7 +9475,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.upload_data_from_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8239,12 +9501,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'remove_files_from_cloud',
 			                False,
@@ -8254,7 +9517,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.remove_files_from_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8284,12 +9553,13 @@ class AIPHAProcessing:
 			 itertable_params = ['input_files', 'output_files']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'find_file_paths',
 			                False,
@@ -8299,7 +9569,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.find_file_paths(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8321,12 +9597,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target', 'destination']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'move_file_in_cloud',
 			                False,
@@ -8336,7 +9613,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.move_file_in_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8358,12 +9641,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target', 'destination']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'copy_file_in_cloud',
 			                False,
@@ -8373,7 +9657,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.copy_file_in_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8393,12 +9683,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'touch_file_in_cloud',
 			                False,
@@ -8408,7 +9699,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.touch_file_in_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8438,12 +9735,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'rename_file_in_cloud',
 			                False,
@@ -8453,7 +9751,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.rename_file_in_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8475,12 +9779,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target', 'file_out']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'list_files_in_cloud',
 			                False,
@@ -8490,7 +9795,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.list_files_in_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8522,12 +9833,13 @@ class AIPHAProcessing:
 			 itertable_params = ['url', 'destination']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'download_data_to_cloud',
 			                False,
@@ -8537,7 +9849,13 @@ class AIPHAProcessing:
 			 params_dict['client'] = self.client
 			 params_dict['instance_type'] = self.worker_instance_type 
 			 result_promise = ao.sys.download_data_to_cloud(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, False)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          False,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8558,12 +9876,13 @@ class AIPHAProcessing:
 			 itertable_params = ['destination']
 			 itertable_iotypes = ['out']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'create_directory_in_cloud_folder',
 			                True,
@@ -8574,7 +9893,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.create_directory_in_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8606,12 +9931,13 @@ class AIPHAProcessing:
 			 itertable_params = ['url', 'target']
 			 itertable_iotypes = ['in', 'in']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'upload_data_from_cloud_folder',
 			                True,
@@ -8622,7 +9948,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.upload_data_from_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8643,12 +9975,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'remove_files_from_cloud_folder',
 			                True,
@@ -8659,21 +9992,27 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.remove_files_from_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
 
 
 		 def find_file_paths_folder(self,
-			input_folders='input_folders', 
-			output_folders='output_folders', 
+			input_folders='__auto__', 
+			output_folders='__auto__', 
 			search_folder='/search_folder', 
 			replace_in='', 
 			replace_out='', 
 			substrings='',
-			extension_input_folders = '.laz',
-			extension_output_folders = '.laz',
+			extension_input_folders = '.txt',
+			extension_output_folders = '.txt',
 		 ):
 			 '''
 				find file paths
@@ -8690,13 +10029,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['input_folders', 'output_folders']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['txt', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'find_file_paths_folder',
 			                True,
@@ -8707,7 +10047,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.find_file_paths_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8731,12 +10077,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target', 'destination']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'move_file_in_cloud_folder',
 			                True,
@@ -8747,7 +10094,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.move_file_in_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8771,12 +10124,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target', 'destination']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'copy_file_in_cloud_folder',
 			                True,
@@ -8787,7 +10141,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.copy_file_in_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8795,7 +10155,7 @@ class AIPHAProcessing:
 
 		 def touch_file_in_cloud_folder(self,
 			target='__auto__',
-			extension_target = '.laz',
+			extension_target = '.txt',
 		 ):
 			 '''
 				touch file in cloud
@@ -8807,13 +10167,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['target']
 			 itertable_iotypes = ['in']
-			 iterable_file_types = ['laz']
+			 iterable_file_types = ['txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'touch_file_in_cloud_folder',
 			                True,
@@ -8824,7 +10185,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.touch_file_in_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8855,12 +10222,13 @@ class AIPHAProcessing:
 			 itertable_params = ['target']
 			 itertable_iotypes = ['in']
 			 iterable_file_types = ['laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'rename_file_in_cloud_folder',
 			                True,
@@ -8871,7 +10239,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.rename_file_in_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8879,9 +10253,9 @@ class AIPHAProcessing:
 
 		 def list_files_in_cloud_folder(self,
 			target='__auto__', 
-			folder_out='folder_out',
+			folder_out='__auto__',
 			extension_target = '.laz',
-			extension_folder_out = '.laz',
+			extension_folder_out = '.txt',
 		 ):
 			 '''
 				list files in cloud
@@ -8894,13 +10268,14 @@ class AIPHAProcessing:
 			 params_dict.pop('self')
 			 itertable_params = ['target', 'folder_out']
 			 itertable_iotypes = ['in', 'out']
-			 iterable_file_types = ['laz', 'laz']
+			 iterable_file_types = ['laz', 'txt']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'list_files_in_cloud_folder',
 			                True,
@@ -8911,7 +10286,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.list_files_in_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
@@ -8945,12 +10326,13 @@ class AIPHAProcessing:
 			 itertable_params = ['url', 'destination']
 			 itertable_iotypes = ['in', 'out']
 			 iterable_file_types = ['laz', 'laz']
+			 uid = self.get_unique_id()
 			 connector = AIPHAConnector(
 			                params_dict,
 			                itertable_params, 
 			                itertable_iotypes, 
 			                iterable_file_types,
-			                self.get_unique_id(),
+			                uid,
 			                self.processing_folder,
 			                'download_data_to_cloud_folder',
 			                True,
@@ -8961,7 +10343,13 @@ class AIPHAProcessing:
 			 params_dict['worker_instance_type'] = self.worker_instance_type,
 			 params_dict['manager_instance_type'] = self.manager_instance_type 
 			 result_promise = ao.sys.download_data_to_cloud_folder(**params_dict)
-			 operator = AIPHAOperator(connector, params_dict, result_promise, True)
+			 operator = AIPHAOperator(connector, 
+			                          params_dict, 
+			                          result_promise, 
+			                          self.outer_class, 
+			                          sys,
+			                          True,
+			                          uid)
 			 self.add_call_stack(operator)
 			 return operator
 
