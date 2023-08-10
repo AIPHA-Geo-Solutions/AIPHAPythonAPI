@@ -6296,6 +6296,107 @@ class fvo:
 
 
 class val:
+   def equal_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+      '''Equal operator on a matrix.
+    | 
+    | equal_constant( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      constant=1,
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "equal constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def equal_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+      '''Equal operator on a matrix.
+    | 
+    | equal_constant_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      constant=1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy" )
+
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "equal constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def values_divide(client,
      file_values1_in='file1.npy',
      file_values2_in='file2.npy',
@@ -6716,6 +6817,213 @@ class val:
          client.get_verify_ssl())
 
 
+   def values_less_equal(client,
+     infile1='in.npy',
+     infile2='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     instance_type='x2large'):
+      '''Elementwiese less equal operator on a matrix.
+    | 
+    | values_less_equal( client,
+    |      infile1='in.npy',
+    |      infile2='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      instance_type='x2large' )
+
+:param infile1: Input file path
+:param infile2: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values less equal",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_less_equal_folder(client,
+     infolder1='/infolder1',
+     infolder2='/infolder2',
+     outfolder='/outfolder',
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile1=".npy",
+     extension_infile2=".npy",
+     extension_outfile=".npy"):
+      '''Elementwiese less equal operator on a matrix.
+    | 
+    | values_less_equal_folder(client,
+    |      infolder1='/infolder1',
+    |      infolder2='/infolder2',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder1=".npy",
+    |      extension_infolder2=".npy",
+    |      extension_outfolder=".npy" )
+
+:param dtype: Data type of the matrix (default: float)
+:param infolder1: Input folder folder
+:param infolder2: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder1: File extension of files in folder for infolder1
+:param extension_infolder2: File extension of files in folder for infolder2
+:param extension_outfolder: File extension of files in folder for outfolder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder1']
+      del all_parameters['infolder2']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile1']
+      del all_parameters['extension_infile2']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile1,infile2,outfile"
+      folders = infolder1 + "," + infolder2 + "," + outfolder
+      extensions = extension_infile1 + "," + extension_infile2 + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values less equal" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def greater_equal_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+      '''Greater equal operator on a matrix.
+    | 
+    | greater_equal_constant( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      constant=1,
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "greater equal constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def greater_equal_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+      '''Greater equal operator on a matrix.
+    | 
+    | greater_equal_constant_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      constant=1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy" )
+
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "greater equal constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def values_not_equal(client,
      file_values1_in='file1.npy',
      file_values2_in='file2.npy',
@@ -7005,6 +7313,112 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "replace strings" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_greater_equal(client,
+     infile1='in.npy',
+     infile2='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     instance_type='x2large'):
+      '''Elementwiese greater equal operator on a matrix.
+    | 
+    | values_greater_equal( client,
+    |      infile1='in.npy',
+    |      infile2='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      instance_type='x2large' )
+
+:param infile1: Input file path
+:param infile2: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "values greater equal",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def values_greater_equal_folder(client,
+     infolder1='/infolder1',
+     infolder2='/infolder2',
+     outfolder='/outfolder',
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile1=".npy",
+     extension_infile2=".npy",
+     extension_outfile=".npy"):
+      '''Elementwiese greater equal operator on a matrix.
+    | 
+    | values_greater_equal_folder(client,
+    |      infolder1='/infolder1',
+    |      infolder2='/infolder2',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder1=".npy",
+    |      extension_infolder2=".npy",
+    |      extension_outfolder=".npy" )
+
+:param dtype: Data type of the matrix (default: float)
+:param infolder1: Input folder folder
+:param infolder2: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder1: File extension of files in folder for infolder1
+:param extension_infolder2: File extension of files in folder for infolder2
+:param extension_outfolder: File extension of files in folder for outfolder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder1']
+      del all_parameters['infolder2']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile1']
+      del all_parameters['extension_infile2']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile1,infile2,outfile"
+      folders = infolder1 + "," + infolder2 + "," + outfolder
+      extensions = extension_infile1 + "," + extension_infile2 + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "values greater equal" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -8084,6 +8498,107 @@ class val:
          client.get_verify_ssl())
 
 
+   def not_equal_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+      '''Not equal operator on a matrix.
+    | 
+    | not_equal_constant( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      constant=1,
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "not equal constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def not_equal_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+      '''Not equal operator on a matrix.
+    | 
+    | not_equal_constant_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      constant=1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy" )
+
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "not equal constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def multiply_constant(client,
      infile='in.npy',
      outfile='out.npy',
@@ -8921,6 +9436,202 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "values masked assing" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def less_equal_constant(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     constant=1,
+     instance_type='x2large'):
+      '''Less equal operator on a matrix.
+    | 
+    | less_equal_constant( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      constant=1,
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "less equal constant",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def less_equal_constant_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     constant=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy"):
+      '''Less equal operator on a matrix.
+    | 
+    | less_equal_constant_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      constant=1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy" )
+
+:param dtype: Data type of the matrix (default: float)
+:param constant: Value to compare (default: 1)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "less equal constant" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def vstack(client,
+     file_values_in='file1.npy',
+     file_values_out='values.npy',
+     dtype='str',
+     instance_type='x2large'):
+      '''
+    | 
+    | vstack( client,
+    |      file_values_in='file1.npy',
+    |      file_values_out='values.npy',
+    |      dtype='str',
+    |      instance_type='x2large' )
+
+:param file_values_in: input file [.npy, .labels or .txt]
+:param file_values_out: output file [.txt or .npy]
+:param dtype: data type
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "vstack",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def vstack_folder(client,
+     folder_values_in='/folder_values_in',
+     folder_values_out='/folder_values_out',
+     dtype='str',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_values_in=".npy",
+     extension_file_values_out=".npy"):
+      '''
+    | 
+    | vstack_folder(client,
+    |      folder_values_in='/folder_values_in',
+    |      folder_values_out='/folder_values_out',
+    |      dtype='str',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_values_in=".npy",
+    |      extension_folder_values_out=".npy" )
+
+:param dtype: data type
+:param folder_values_in: input folder [.npy, .labels or .txt]
+:param folder_values_out: output folder [.txt or .npy]
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_values_in: File extension of files in folder for folder_values_in
+:param extension_folder_values_out: File extension of files in folder for folder_values_out
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+
+      del all_parameters['folder_values_in']
+      del all_parameters['folder_values_out']
+      del all_parameters['extension_file_values_in']
+      del all_parameters['extension_file_values_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_values_in,file_values_out"
+      folders = folder_values_in + "," + folder_values_out
+      extensions = extension_file_values_in + "," + extension_file_values_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "vstack" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
