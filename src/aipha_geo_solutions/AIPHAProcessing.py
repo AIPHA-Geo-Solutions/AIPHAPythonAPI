@@ -186,7 +186,18 @@ class AIPHAOperator:
 		 if not self._check_op_is_value_type(self, output_key):
 			 raise RuntimeError('Cannot use slice operator on non-value type. Please convert from {scope} to value type first.')
 		 slices_str = ''
-		 for idx in args:
+		 print(args)
+		 indices = args[0]
+		 this_file = self.io(output_key, 'out')
+		 if isinstance(indices, AIPHAOperator):
+			 mask_file = indices.io(0, 'out')
+			 if self.folder_level_operator:
+				 return self.processing_class.val.mask_subset(this_file, mask_file, folder_parallel_processing=True)
+			 else:
+				 return self.processing_class.val.mask_subset(this_file, mask_file, folder_parallel_processing=False)
+		
+		 for idx in indices:
+			 print(type(idx), idx)
 			 if isinstance(idx, int):
 			   slices_str += str(idx) + ','
 			 elif isinstance(idx, slice):
@@ -194,11 +205,10 @@ class AIPHAOperator:
 			 else:
 			   raise RuntimeError('Invalid slice operator.')
 		 slices_str = slices_str[:-1]
-
 		 if self.folder_level_operator:
-			 op = self.processing_class.val.resize_slice_matrix_folder(folder_name_in = self.io(output_key, 'out'), indices=slices_str)
+			 op = self.processing_class.val.resize_slice_matrix(this_file, indices=slices_str, folder_parallel_processing=True)
 		 else:
-			 op = self.processing_class.val.resize_slice_matrix(file_name_in = self.io(output_key, 'out'), indices=slices_str)
+			 op = self.processing_class.val.resize_slice_matrix(this_file, indices=slices_str, folder_parallel_processing=False)
 		 if blocking:
 			 self.processing_class.execute()
 		 return op
@@ -207,15 +217,40 @@ class AIPHAOperator:
 		 if not self._check_op_is_value_type(self, output_key):
 			 raise RuntimeError('Cannot use slice operator on non-value type. Please convert from {scope} to value type first.')
 		 slices_str = ''
-		 for idx in args:
-			 if isinstance(idx, int):
-			   slices_str += str(idx) + ','
-			 elif isinstance(idx, slice):
-			   slices_str += str(idx.start) + ':' + str(idx.stop) + ':' + str(idx.step) + ','
+		 indices = args[0]
+		 assignment_val = args[1]
+		 this_file = self.io(output_key, 'out')
+		 if isinstance(indices, AIPHAOperator):
+			 mask_file = indices.io(0, 'out')
+			 if isinstance(assignment_val, int) or isinstance(assignment_val, float):
+				 if self.folder_level_operator:
+					 return self.processing_class.val.masked_assign_constant(this_file, path_mask_in=mask_file, constant=assignment_val, folder_parallel_processing=True)
+				 else:
+					 return self.processing_class.val.masked_assign_constant(this_file, path_mask_in=mask_file, constant=assignment_val, folder_parallel_processing=False)
+			 value_file = assignment_val.io(0, 'out')
+			 if self.folder_level_operator:
+				 return self.processing_class.val.values_masked_assign(this_file, value_file, path_mask_in=mask_file, folder_parallel_processing=True)
 			 else:
-			   raise RuntimeError('Invalid slice operator.')
-		 slices_str = slices_str[:-1]
-		 #TODO: value operator sliced assign
+				 return self.processing_class.val.values_masked_assign(this_file, value_file, path_mask_in=mask_file, folder_parallel_processing=False)
+		 else:
+			 for idx in indices:
+				 if isinstance(idx, int):
+				   slices_str += str(idx) + ','
+				 elif isinstance(idx, slice):
+				   slices_str += str(idx.start) + ':' + str(idx.stop) + ':' + str(idx.step) + ','
+				 else:
+				   raise RuntimeError('Invalid slice operator.')
+			 slices_str = slices_str[:-1]
+			 if isinstance(assignment_val, int) or isinstance(assignment_val, float):
+				 if self.folder_level_operator:
+					 return self.processing_class.val.sliced_assign_constant(this_file, indices=slices_str, constant=assignment_val, folder_parallel_processing=True)
+				 else:
+					 return self.processing_class.val.sliced_assign_constant(this_file, indices=slices_str, constant=assignment_val, folder_parallel_processing=False)
+			 value_file = assignment_val.io(0, 'out')
+			 if self.folder_level_operator:
+				 return self.processing_class.val.values_sliced_assign(this_file, value_file, indices=slices_str, folder_parallel_processing=True)
+			 else:
+				 return self.processing_class.val.values_sliced_assign(this_file, value_file, indices=slices_str, folder_parallel_processing=False)
 
 	 def _is_value_type(self, value):
 		 if isinstance(value, int):
@@ -226,7 +261,7 @@ class AIPHAOperator:
 			 return True
 		 return False
 
-	 def _perform_operator(self, other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking=True):
+	 def _perform_operator(self, other, fv, fc, this_output_key, other_output_key, blocking=True):
 		 if not self._check_op_is_value_type(self, this_output_key):
 			 raise RuntimeError('Cannot use slice operator on non-value type. Please convert from {scope} to value type first.')
 		 if not isinstance(other, AIPHAOperator) and not self._is_value_type(other):
@@ -238,14 +273,14 @@ class AIPHAOperator:
 				 raise RuntimeError('Cannot use arithmetic operator on operators with different folder level.')
 		 if self.folder_level_operator:
 			 if self._is_value_type(other):
-				 op = ffc(self.io(this_output_key, 'out'), constant=other, folder_parallel_processing=True)
+				 op = fc(self.io(this_output_key, 'out'), constant=other, folder_parallel_processing=True)
 			 else:
-				 op = ffv(self.io(this_output_key, 'out'), other.io(other_output_key, 'out'), folder_parallel_processing = True)
+				 op = fv(self.io(this_output_key, 'out'), other.io(other_output_key, 'out'), folder_parallel_processing = True)
 		 else:
 			 if self._is_value_type(other):
-				 op = fvc(self.io(this_output_key, 'out'), constant=other, folder_parallel_processing=False)
+				 op = fc(self.io(this_output_key, 'out'), constant=other, folder_parallel_processing=False)
 			 else:
-				 op = fvv(self.io(this_output_key, 'out'), other.io(other_output_key, 'out'), folder_parallel_processing = False)
+				 op = fv(self.io(this_output_key, 'out'), other.io(other_output_key, 'out'), folder_parallel_processing = False)
 		 if blocking:
 			 self.processing_class.execute()
 		 return op
@@ -253,72 +288,52 @@ class AIPHAOperator:
 	 def __add__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.add_constant
 		 ffv = self.processing_class.val.values_add
-		 fvc = self.processing_class.val.add_constant
-		 fvv = self.processing_class.val.values_add
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __sub__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.subtract_constant
 		 ffv = self.processing_class.val.values_subtract
-		 fvc = self.processing_class.val.subtract_constant
-		 fvv = self.processing_class.val.values_subtract
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __mul__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.multiply_constant
 		 ffv = self.processing_class.val.values_multiply
-		 fvc = self.processing_class.val.multiply_constant
-		 fvv = self.processing_class.val.values_multiply
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __truediv__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.divide_constant
 		 ffv = self.processing_class.val.values_divide
-		 fvc = self.processing_class.val.divide_constant
-		 fvv = self.processing_class.val.values_divide
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __eq__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.equal_constant
 		 ffv = self.processing_class.val.values_equal
-		 fvc = self.processing_class.val.equal_constant
-		 fvv = self.processing_class.val.values_equal
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __ne__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.not_equal_constant
 		 ffv = self.processing_class.val.values_not_equal
-		 fvc = self.processing_class.val.not_equal_constant
-		 fvv = self.processing_class.val.values_not_equal
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __lt__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.less_constant
 		 ffv = self.processing_class.val.values_less
-		 fvc = self.processing_class.val.less_constant
-		 fvv = self.processing_class.val.values_less
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __gt__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.greater_constant
 		 ffv = self.processing_class.val.values_greater
-		 fvc = self.processing_class.val.greater_constant
-		 fvv = self.processing_class.val.values_greater
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __ge__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.greater_equal_constant
 		 ffv = self.processing_class.val.values_greater_equal
-		 fvc = self.processing_class.val.greater_equal_constant
-		 fvv = self.processing_class.val.values_greater_equal
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 	 def __le__(self, other, this_output_key = 0, other_output_key = 0, blocking=True):
 		 ffc = self.processing_class.val.less_equal_constant
 		 ffv = self.processing_class.val.values_less_equal
-		 fvc = self.processing_class.val.less_equal_constant
-		 fvv = self.processing_class.val.values_less_equal
-		 return self._perform_operator(other, ffv, ffc, fvv, fvc, this_output_key, other_output_key, blocking)
+		 return self._perform_operator(other, ffv, ffc, this_output_key, other_output_key, blocking)
 
 
 class AIPHAProcessing:
@@ -446,6 +461,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_out_file']
 			 iterable_names = ['out_path']
 			 print(iterable_names, params_dict)
@@ -548,6 +564,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values_in', 'extension_file_points_out']
 			 iterable_names = ['path_values_in','path_points_out']
 			 print(iterable_names, params_dict)
@@ -649,6 +666,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -748,6 +766,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_point_cloud_files', 'extension_polygon_file', 'extension_output_file']
 			 iterable_names = ['point_cloud_paths','polygon_path','output_path']
 			 print(iterable_names, params_dict)
@@ -848,6 +867,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_source_in', 'extension_file_labels_out']
 			 iterable_names = ['path_source_in','path_labels_out']
 			 print(iterable_names, params_dict)
@@ -958,6 +978,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_filename', 'extension_cluster_id_filename', 'extension_cluster_centers_filename', 'extension_wireframe_filename']
 			 iterable_names = ['pathname','cluster_id_pathname','cluster_centers_pathname','wireframe_pathname']
 			 print(iterable_names, params_dict)
@@ -1057,6 +1078,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -1162,6 +1184,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -1270,6 +1293,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_source_in', 'extension_file_target_in', 'extension_file_source_out', 'extension_file_trafo_out']
 			 iterable_names = ['path_source_in','path_target_in','path_source_out','path_trafo_out']
 			 print(iterable_names, params_dict)
@@ -1369,6 +1393,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_points_file', 'extension_in_polygon_file', 'extension_out_file']
 			 iterable_names = ['in_points_path','in_polygon_path','out_path']
 			 print(iterable_names, params_dict)
@@ -1476,6 +1501,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_in_data', 'extension_file_in_labels', 'extension_file_out']
 			 iterable_names = ['path_in_data','path_in_labels','path_out']
 			 print(iterable_names, params_dict)
@@ -1585,6 +1611,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_out_file', 'extension_lat_lon_file']
 			 iterable_names = ['in_path','out_path','lat_lon_path']
 			 print(iterable_names, params_dict)
@@ -1689,6 +1716,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_source_in', 'extension_file_source_out']
 			 iterable_names = ['path_source_in','path_source_out']
 			 print(iterable_names, params_dict)
@@ -1807,6 +1835,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_points_in', 'extension_file_labels_in', 'extension_file_label_disagrement_in', 'extension_file_label_disagrement_out']
 			 iterable_names = ['path_points_in','path_labels_in','path_label_disagrement_in','path_label_disagrement_out']
 			 print(iterable_names, params_dict)
@@ -1908,6 +1937,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_source_in', 'extension_file_labels_in', 'extension_file_source_out']
 			 iterable_names = ['path_source_in','path_labels_in','path_source_out']
 			 print(iterable_names, params_dict)
@@ -2011,6 +2041,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -2115,6 +2146,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_points_in', 'extension_file_dsm_out', 'extension_file_dtm_out', 'extension_file_chm_out']
 			 iterable_names = ['path_points_in','path_dsm_out','path_dtm_out','path_chm_out']
 			 print(iterable_names, params_dict)
@@ -2212,6 +2244,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -2308,6 +2341,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_out_file']
 			 iterable_names = ['in_path','out_path']
 			 print(iterable_names, params_dict)
@@ -2407,6 +2441,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_out_file']
 			 iterable_names = ['out_path']
 			 print(iterable_names, params_dict)
@@ -2512,6 +2547,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -2628,6 +2664,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -2729,6 +2766,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_shp_file']
 			 iterable_names = ['shp_path']
 			 print(iterable_names, params_dict)
@@ -2828,6 +2866,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_edges_file', 'extension_output_file']
 			 iterable_names = ['input_path','edges_path','output_path']
 			 print(iterable_names, params_dict)
@@ -2926,6 +2965,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -3059,6 +3099,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_data_in_path']
 			 iterable_names = ['data_in_path']
 			 print(iterable_names, params_dict)
@@ -3166,6 +3207,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_data_in_path', 'extension_results_labels_path', 'extension_results_probabilities_path']
 			 iterable_names = ['data_in_path','results_labels_path','results_probabilities_path']
 			 print(iterable_names, params_dict)
@@ -3279,6 +3321,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_data_in_path']
 			 iterable_names = ['data_in_path']
 			 print(iterable_names, params_dict)
@@ -3395,6 +3438,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_data_in_path', 'extension_results_labels_path', 'extension_in_model_parameters_path', 'extension_results_probabilities_path']
 			 iterable_names = ['data_in_path','results_labels_path','in_model_parameters_path','results_probabilities_path']
 			 print(iterable_names, params_dict)
@@ -3495,6 +3539,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_files', 'extension_out_result_files']
 			 iterable_names = ['in_paths','out_result_paths']
 			 print(iterable_names, params_dict)
@@ -3595,6 +3640,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_files', 'extension_out_files']
 			 iterable_names = ['in_paths','out_paths']
 			 print(iterable_names, params_dict)
@@ -3728,6 +3774,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -3859,6 +3906,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -3994,6 +4042,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -4094,6 +4143,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_files', 'extension_out_files']
 			 iterable_names = ['in_paths','out_paths']
 			 print(iterable_names, params_dict)
@@ -4214,6 +4264,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_out_file']
 			 iterable_names = ['in_path','out_path']
 			 print(iterable_names, params_dict)
@@ -4323,6 +4374,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_in_meta_data_file', 'extension_out_file']
 			 iterable_names = ['in_path','in_meta_data_path','out_path']
 			 print(iterable_names, params_dict)
@@ -4429,6 +4481,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_out_file']
 			 iterable_names = ['in_path','out_path']
 			 print(iterable_names, params_dict)
@@ -4535,6 +4588,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_out_file']
 			 iterable_names = ['in_path','out_path']
 			 print(iterable_names, params_dict)
@@ -4655,6 +4709,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_in', 'extension_file_out']
 			 iterable_names = ['path_in','path_out']
 			 print(iterable_names, params_dict)
@@ -4753,6 +4808,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_in', 'extension_file_out']
 			 iterable_names = ['path_in','path_out']
 			 print(iterable_names, params_dict)
@@ -4861,6 +4917,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_points_file', 'extension_in_labels_file']
 			 iterable_names = ['in_points_path','in_labels_path']
 			 print(iterable_names, params_dict)
@@ -4968,6 +5025,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_in_data', 'extension_file_in_labels', 'extension_file_out']
 			 iterable_names = ['path_in_data','path_in_labels','path_out']
 			 print(iterable_names, params_dict)
@@ -5080,6 +5138,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_laz_in_file_new', 'extension_laz_in_file_old', 'extension_laz_in_file_ref', 'extension_results_out_file']
 			 iterable_names = ['laz_in_path_new','laz_in_path_old','laz_in_path_ref','results_out_path']
 			 print(iterable_names, params_dict)
@@ -5197,6 +5256,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_source_in', 'extension_file_trafo_out', 'extension_file_source_out']
 			 iterable_names = ['path_source_in','path_trafo_out','path_source_out']
 			 print(iterable_names, params_dict)
@@ -5306,6 +5366,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_input_file2', 'extension_input_file_features', 'extension_output_file', 'extension_output_file_features']
 			 iterable_names = ['input_path','input_path2','input_path_features','output_path','output_path_features']
 			 print(iterable_names, params_dict)
@@ -5405,6 +5466,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_target_file', 'extension_output_file']
 			 iterable_names = ['input_path','target_path','output_path']
 			 print(iterable_names, params_dict)
@@ -5501,6 +5563,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -5608,6 +5671,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_cloud_file', 'extension_input_vertices_file', 'extension_output_graph_file']
 			 iterable_names = ['input_cloud_path','input_vertices_path','output_graph_path']
 			 print(iterable_names, params_dict)
@@ -5706,6 +5770,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_in_file', 'extension_out_file']
 			 iterable_names = ['in_path','out_path']
 			 print(iterable_names, params_dict)
@@ -5811,6 +5876,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_points_file', 'extension_output_file']
 			 iterable_names = ['input_path','points_path','output_path']
 			 print(iterable_names, params_dict)
@@ -5929,6 +5995,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -6032,6 +6099,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -6132,6 +6200,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -6233,6 +6302,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile1', 'extension_infile2', 'extension_outfile']
 			 iterable_names = ['inpath1','inpath2','outpath']
 			 print(iterable_names, params_dict)
@@ -6333,6 +6403,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -6434,6 +6505,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile1', 'extension_infile2', 'extension_outfile']
 			 iterable_names = ['inpath1','inpath2','outpath']
 			 print(iterable_names, params_dict)
@@ -6515,6 +6587,212 @@ class AIPHAProcessing:
 
 
 
+		 def values_sliced_assign(self,
+			path_in='__auto__', 
+			path_out='__auto__', 
+			indices=':', 
+			path_values_in='__auto__', 
+			default_value=0.0,
+			extension_file_in = '.npy',
+			extension_file_out = '.txt',
+			extension_file_values_in = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				values sliced assign
+				
+				:param path_in: input folder [.txt or .npy]
+				:param path_out: output folder [.txt or .npy]
+				:param indices: indices to slice
+				:param path_values_in: input folder [.txt or .npy]
+				:param default_value: default value to assign
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_in', 'extension_file_out', 'extension_file_values_in']
+			 iterable_names = ['path_in','path_out','path_values_in']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_in': 'folder_in', 'path_out': 'folder_out', 'indices': 'indices', 'path_values_in': 'folder_values_in', 'default_value': 'default_value'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_in', 'folder_out', 'folder_values_in']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['npy', 'txt', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'values_sliced_assign_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.values_sliced_assign_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_in': 'file_in', 'path_out': 'file_out', 'indices': 'indices', 'path_values_in': 'file_values_in', 'default_value': 'default_value'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_in', 'file_out', 'file_values_in']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['npy', 'txt', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'values_sliced_assign',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.values_sliced_assign(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def masked_assign_constant(self,
+			path_values_in='__auto__', 
+			constant=0.0, 
+			path_mask_in='__auto__', 
+			path_values_out='__auto__',
+			extension_file_values_in = '.npy',
+			extension_file_mask_in = '.npy',
+			extension_file_values_out = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				masked assign constant
+				
+				:param path_values_in: input folder [.txt or .npy]
+				:param constant: constant value to assign
+				:param path_mask_in: input folder that contains [0,1] values
+				:param path_values_out: output folder [.txt or .npy]
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_values_in', 'extension_file_mask_in', 'extension_file_values_out']
+			 iterable_names = ['path_values_in','path_mask_in','path_values_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_values_in': 'folder_values_in', 'constant': 'constant', 'path_mask_in': 'folder_mask_in', 'path_values_out': 'folder_values_out'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_values_in', 'folder_mask_in', 'folder_values_out']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['npy', 'npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'masked_assign_constant_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.masked_assign_constant_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_values_in': 'file_values_in', 'constant': 'constant', 'path_mask_in': 'file_mask_in', 'path_values_out': 'file_values_out'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_values_in', 'file_mask_in', 'file_values_out']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['npy', 'npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'masked_assign_constant',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.masked_assign_constant(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def greater_equal_constant(self,
 			inpath='__auto__', 
 			outpath='__auto__', 
@@ -6534,6 +6812,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -6637,6 +6916,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -6735,6 +7015,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -6816,6 +7097,109 @@ class AIPHAProcessing:
 
 
 
+		 def values_masked_assign(self,
+			path_values1_in='__auto__', 
+			path_values2_in='__auto__', 
+			path_mask_in='__auto__', 
+			path_values_out='__auto__',
+			extension_file_values1_in = '.npy',
+			extension_file_values2_in = '.npy',
+			extension_file_mask_in = '.npy',
+			extension_file_values_out = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				values masked assign
+				
+				:param path_values1_in: input folder [.txt or .npy]
+				:param path_values2_in: input folder [.txt or .npy]
+				:param path_mask_in: input folder that contains [0,1] values
+				:param path_values_out: output folder [.txt or .npy]
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_mask_in', 'extension_file_values_out']
+			 iterable_names = ['path_values1_in','path_values2_in','path_mask_in','path_values_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_values1_in': 'folder_values1_in', 'path_values2_in': 'folder_values2_in', 'path_mask_in': 'folder_mask_in', 'path_values_out': 'folder_values_out'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_mask_in', 'folder_values_out']
+				 itertable_iotypes = ['in', 'in', 'in', 'out']
+				 iterable_file_types = ['npy', 'npy', 'npy', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'values_masked_assign_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.values_masked_assign_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_values1_in': 'file_values1_in', 'path_values2_in': 'file_values2_in', 'path_mask_in': 'file_mask_in', 'path_values_out': 'file_values_out'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_values1_in', 'file_values2_in', 'file_mask_in', 'file_values_out']
+				 itertable_iotypes = ['in', 'in', 'in', 'out']
+				 iterable_file_types = ['npy', 'npy', 'npy', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'values_masked_assign',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.values_masked_assign(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def replace_strings(self,
 			path_in='__auto__', 
 			path_out='__auto__', 
@@ -6835,6 +7219,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_in', 'extension_file_out']
 			 iterable_names = ['path_in','path_out']
 			 print(iterable_names, params_dict)
@@ -6936,6 +7321,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile1', 'extension_infile2', 'extension_outfile']
 			 iterable_names = ['inpath1','inpath2','outpath']
 			 print(iterable_names, params_dict)
@@ -7036,6 +7422,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -7136,6 +7523,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -7237,6 +7625,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -7339,6 +7728,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_filename_in', 'extension_filename_out']
 			 iterable_names = ['pathname_in','pathname_out']
 			 print(iterable_names, params_dict)
@@ -7439,6 +7829,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -7539,6 +7930,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -7641,6 +8033,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_filename_in', 'extension_filename_out']
 			 iterable_names = ['pathname_in','pathname_out']
 			 print(iterable_names, params_dict)
@@ -7748,6 +8141,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_filename_is', 'extension_filename_should', 'extension_output_file']
 			 iterable_names = ['pathname_is','pathname_should','output_path']
 			 print(iterable_names, params_dict)
@@ -7849,6 +8243,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile1', 'extension_infile2', 'extension_outfile']
 			 iterable_names = ['inpath1','inpath2','outpath']
 			 print(iterable_names, params_dict)
@@ -7952,6 +8347,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -8052,6 +8448,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -8152,6 +8549,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -8255,6 +8653,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -8336,6 +8735,107 @@ class AIPHAProcessing:
 
 
 
+		 def sliced_assign_constant(self,
+			path_in='__auto__', 
+			path_out='__auto__', 
+			indices=':', 
+			constant=0.0,
+			extension_file_in = '.npy',
+			extension_file_out = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				sliced assign constant
+				
+				:param path_in: input folder [.txt or .npy]
+				:param path_out: output folder [.txt or .npy]
+				:param indices: indices to slice
+				:param constant: constant value to assign
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_in', 'extension_file_out']
+			 iterable_names = ['path_in','path_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_in': 'folder_in', 'path_out': 'folder_out', 'indices': 'indices', 'constant': 'constant'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_in', 'folder_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'sliced_assign_constant_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.sliced_assign_constant_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_in': 'file_in', 'path_out': 'file_out', 'indices': 'indices', 'constant': 'constant'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_in', 'file_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'sliced_assign_constant',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.sliced_assign_constant(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def count_unique_values(self,
 			pathname_in='__auto__', 
 			pathname_out='__auto__', 
@@ -8355,6 +8855,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_filename_in', 'extension_filename_out']
 			 iterable_names = ['pathname_in','pathname_out']
 			 print(iterable_names, params_dict)
@@ -8436,109 +8937,6 @@ class AIPHAProcessing:
 
 
 
-		 def masked_assing_constant(self,
-			path_values_in='__auto__', 
-			path_mask_in='__auto__', 
-			path_values_out='__auto__', 
-			dtype='float', 
-			constant=1,
-			extension_file_values_in = '.npy',
-			extension_file_mask_in = '.npy',
-			extension_file_values_out = '.npy',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				masked assing constant
-				
-				:param path_values_in: input folder [.txt or .npy]
-				:param path_mask_in: input folder [.txt or .npy]
-				:param path_values_out: output folder [.txt or .npy]
-				:param dtype: data type
-				:param constant: constant value
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 extension_names = ['extension_file_values_in', 'extension_file_mask_in', 'extension_file_values_out']
-			 iterable_names = ['path_values_in','path_mask_in','path_values_out']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'path_values_in': 'folder_values_in', 'path_mask_in': 'folder_mask_in', 'path_values_out': 'folder_values_out', 'dtype': 'dtype', 'constant': 'constant'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['folder_values_in', 'folder_mask_in', 'folder_values_out']
-				 itertable_iotypes = ['in', 'in', 'out']
-				 iterable_file_types = ['npy', 'npy', 'npy']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'masked_assing_constant_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.val.masked_assing_constant_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'val',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'path_values_in': 'file_values_in', 'path_mask_in': 'file_mask_in', 'path_values_out': 'file_values_out', 'dtype': 'dtype', 'constant': 'constant'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['file_values_in', 'file_mask_in', 'file_values_out']
-				 itertable_iotypes = ['in', 'in', 'out']
-				 iterable_file_types = ['npy', 'npy', 'npy']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'masked_assing_constant',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.val.masked_assing_constant(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'val',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
 		 def hstack(self,
 			path_values_in='__auto__', 
 			path_values_out='__auto__', 
@@ -8556,6 +8954,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values_in', 'extension_file_values_out']
 			 iterable_names = ['path_values_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -8637,6 +9036,106 @@ class AIPHAProcessing:
 
 
 
+		 def mask_subset(self,
+			path_values1_in='__auto__', 
+			path_mask_in='__auto__', 
+			path_values_out='__auto__',
+			extension_file_values1_in = '.npy',
+			extension_file_mask_in = '.npy',
+			extension_file_values_out = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				mask subset
+				
+				:param path_values1_in: input folder [.txt or .npy]
+				:param path_mask_in: input folder that contains [0,1] values
+				:param path_values_out: output folder [.txt or .npy]
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_values1_in', 'extension_file_mask_in', 'extension_file_values_out']
+			 iterable_names = ['path_values1_in','path_mask_in','path_values_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_values1_in': 'folder_values1_in', 'path_mask_in': 'folder_mask_in', 'path_values_out': 'folder_values_out'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_values1_in', 'folder_mask_in', 'folder_values_out']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['npy', 'npy', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'mask_subset_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.mask_subset_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_values1_in': 'file_values1_in', 'path_mask_in': 'file_mask_in', 'path_values_out': 'file_values_out'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_values1_in', 'file_mask_in', 'file_values_out']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['npy', 'npy', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'mask_subset',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.mask_subset(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def values_multiply(self,
 			path_values1_in='__auto__', 
 			path_values2_in='__auto__', 
@@ -8659,6 +9158,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -8762,6 +9262,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -8843,108 +9344,6 @@ class AIPHAProcessing:
 
 
 
-		 def values_masked_assing(self,
-			path_values1_in='__auto__', 
-			path_values2_in='__auto__', 
-			path_mask_in='__auto__', 
-			path_values_out='__auto__',
-			extension_file_values1_in = '.npy',
-			extension_file_values2_in = '.npy',
-			extension_file_mask_in = '.npy',
-			extension_file_values_out = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				values masked assing
-				
-				:param path_values1_in: input folder [.txt or .npy]
-				:param path_values2_in: input folder [.txt or .npy]
-				:param path_mask_in: input folder that contains [0,1] values
-				:param path_values_out: output folder [.txt or .npy]
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_mask_in', 'extension_file_values_out']
-			 iterable_names = ['path_values1_in','path_values2_in','path_mask_in','path_values_out']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'path_values1_in': 'folder_values1_in', 'path_values2_in': 'folder_values2_in', 'path_mask_in': 'folder_mask_in', 'path_values_out': 'folder_values_out'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['folder_values1_in', 'folder_values2_in', 'folder_mask_in', 'folder_values_out']
-				 itertable_iotypes = ['in', 'in', 'in', 'out']
-				 iterable_file_types = ['npy', 'npy', 'npy', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'values_masked_assing_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.val.values_masked_assing_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'val',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'path_values1_in': 'file_values1_in', 'path_values2_in': 'file_values2_in', 'path_mask_in': 'file_mask_in', 'path_values_out': 'file_values_out'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['file_values1_in', 'file_values2_in', 'file_mask_in', 'file_values_out']
-				 itertable_iotypes = ['in', 'in', 'in', 'out']
-				 iterable_file_types = ['npy', 'npy', 'npy', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'values_masked_assing',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.val.values_masked_assing(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'val',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
 		 def less_equal_constant(self,
 			inpath='__auto__', 
 			outpath='__auto__', 
@@ -8964,6 +9363,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_infile', 'extension_outfile']
 			 iterable_names = ['inpath','outpath']
 			 print(iterable_names, params_dict)
@@ -9062,6 +9462,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values_in', 'extension_file_values_out']
 			 iterable_names = ['path_values_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -9168,6 +9569,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values_in', 'extension_file_values_out']
 			 iterable_names = ['path_values_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -9271,6 +9673,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_file_values1_in', 'extension_file_values2_in', 'extension_file_values_out']
 			 iterable_names = ['path_values1_in','path_values2_in','path_values_out']
 			 print(iterable_names, params_dict)
@@ -9390,6 +9793,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = []
 			 iterable_names = []
 			 print(iterable_names, params_dict)
@@ -9486,6 +9890,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -9586,6 +9991,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -9684,6 +10090,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -9780,6 +10187,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_file', 'extension_output_file']
 			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
@@ -9879,6 +10287,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_geotiff_file', 'extension_pickle_file', 'extension_output_file']
 			 iterable_names = ['geotiff_path','pickle_path','output_path']
 			 print(iterable_names, params_dict)
@@ -9978,6 +10387,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_georeferenced_file', 'extension_unreferenced_file', 'extension_output_file']
 			 iterable_names = ['georeferenced_path','unreferenced_path','output_path']
 			 print(iterable_names, params_dict)
@@ -10089,6 +10499,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_destination']
 			 iterable_names = ['destination']
 			 print(iterable_names, params_dict)
@@ -10193,6 +10604,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_url', 'extension_target']
 			 iterable_names = ['url','target']
 			 print(iterable_names, params_dict)
@@ -10286,6 +10698,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_target']
 			 iterable_names = ['target']
 			 print(iterable_names, params_dict)
@@ -10390,6 +10803,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_input_files', 'extension_output_files']
 			 iterable_names = ['input_paths','output_paths']
 			 print(iterable_names, params_dict)
@@ -10486,6 +10900,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_target', 'extension_destination']
 			 iterable_names = ['target','destination']
 			 print(iterable_names, params_dict)
@@ -10582,6 +10997,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_target', 'extension_destination']
 			 iterable_names = ['target','destination']
 			 print(iterable_names, params_dict)
@@ -10675,6 +11091,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_target']
 			 iterable_names = ['target']
 			 print(iterable_names, params_dict)
@@ -10778,6 +11195,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_target']
 			 iterable_names = ['target']
 			 print(iterable_names, params_dict)
@@ -10874,6 +11292,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_target', 'extension_file_out']
 			 iterable_names = ['target','path_out']
 			 print(iterable_names, params_dict)
@@ -10980,6 +11399,7 @@ class AIPHAProcessing:
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
+			 print(params_dict)
 			 extension_names = ['extension_url', 'extension_destination']
 			 iterable_names = ['url','destination']
 			 print(iterable_names, params_dict)
@@ -11080,6 +11500,7 @@ class AIPHAProcessing:
 	 def create_operator_from_path(self, path, extension = '', is_folder_level = '__auto__'):
 		 '''
 			 Create an "operator" pointing to a path.
+
 			 :param path: path to file or folder
 			 :param extension: extension of file
 			 :param is_folder_level: if True, the operator will be executed massive parallel for each file in a folder level, if False, the operator will be executed on file level, if '__auto__', the operator will be executed on folder level if the path is a folder, otherwise on file level
@@ -11091,9 +11512,10 @@ class AIPHAProcessing:
 				 is_folder_level = True
 		 unique_id = self.get_unique_id()
 		 connector = AIPHAConnector(
+                 {'path': path},    
 	             ['path'], 
 	             ['out'], 
-	             [extension], 
+	             [extension.replace('.', '')], 
 	             unique_id, 
 	             self.processing_folder, 
 	             'path',
