@@ -132,6 +132,36 @@ def running_services_request(
       raise RuntimeError('AIPHAProcessingError: ' + r.text)
   return result
 
+def finished_services_request(
+        username,
+        password,
+        service_ids,
+        server_address,
+        verifySSL = True):
+  payload = { \
+          'customerId': username, \
+          'customerPassword': password, \
+          'taskNames': service_ids, \
+            }
+  url = 'https://' + server_address +':443/tasks-are-finished'
+  r = requests.post(url, json=payload, verify=verifySSL)
+  try:
+    result = json.loads(r.text)
+    if 'error' in result:
+      for idx in range(10): #10 times retry
+        time.sleep(60)
+        r = requests.post(url, json=payload, verify=verifySSL)
+        result = json.loads(r.text)
+        if not 'error' in result:
+            break
+      if 'error' in result:
+        raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
+  except:
+      raise RuntimeError('AIPHAProcessingError: ' + r.text)
+  return result
+
+
+
 def check_services_completed(
         username,
         password,
@@ -148,6 +178,7 @@ def check_services_completed(
     services_dict = json.loads(running_services['running_processes'])
     for service_promise in services:
       service_id = service_promise
+      print(service_id)
       this_complete = True #ignore services that have been deleted
       for running_service in services_dict:
         if service_id.startswith(running_service['ID']):
