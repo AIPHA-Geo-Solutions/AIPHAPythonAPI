@@ -144,17 +144,17 @@ def finished_services_request(
           'taskNames': service_ids, \
             }
   url = 'https://' + server_address +':443/tasks-are-finished'
-  r = requests.post(url, json=payload, verify=verifySSL)
+  for idx in range(200): #max 200 times retry with 3 seconds delay
+    try:
+        r = requests.post(url, json=payload, verify=verifySSL)
+        if r.status_code == 200:
+          break
+        time.sleep(3)
+    except:
+        time.sleep(3)
   try:
     result = json.loads(r.text)
     if 'error' in result:
-      for idx in range(10): #10 times retry
-        time.sleep(60)
-        r = requests.post(url, json=payload, verify=verifySSL)
-        result = json.loads(r.text)
-        if not 'error' in result:
-            break
-      if 'error' in result:
         raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
   except:
       raise RuntimeError('AIPHAProcessingError: ' + r.text)

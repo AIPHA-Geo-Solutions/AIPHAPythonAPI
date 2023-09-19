@@ -16,6 +16,7 @@ def list_running_services(client):
         client.get_verify_ssl())
 
 
+
 def wait_for_completion(client, req_list):
   services = execute(req_list)
   results = []
@@ -36,9 +37,8 @@ def wait_for_completion(client, req_list):
       else:
         pid_services.append(service)
     completed = False
-    time.sleep(1)
     while not completed:
-      time.sleep(0.2)
+      time.sleep(0.10)
       tasks_completed =  finished_services_request(
         client.get_username(),
         client.get_token(),
@@ -54,7 +54,7 @@ def wait_for_completion(client, req_list):
       completed = all_complited
   await_completion(client, results)
   return results
-  
+
 def las2las(client,
      i='file.las',
      o='file.las',
@@ -88,8 +88,7 @@ def las2las_folder(client,
      worker_instance_type='nano',
      manager_instance_type="small",
      extension_i=".las",
-     extension_o=".las",
-     skip_existing_files = False):
+     extension_o=".las"):
       '''
     | 
     | las2las_folder(client,
@@ -98,8 +97,7 @@ def las2las_folder(client,
     |      worker_instance_type='nano',
     |      manager_instance_type="small",
     |      extension_i=".las",
-    |      extension_o=".las",
-    |      skip_existing_files = False )
+    |      extension_o=".las" )
 
 :param folder_i: 
 :param folder_o: 
@@ -107,14 +105,12 @@ def las2las_folder(client,
 :param manager_instance_type: cloud instance type of manager node
 :param extension_i: File extension of files in folder for folder_i
 :param extension_o: File extension of files in folder for folder_o
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_i']
       del all_parameters['folder_o']
@@ -136,8 +132,7 @@ def las2las_folder(client,
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -172,25 +167,21 @@ def sleep_infinity(client,
 
 def sleep_infinity_folder(client,
      worker_instance_type='P2',
-     manager_instance_type="small",
-     skip_existing_files = False):
+     manager_instance_type="small"):
       '''
     | 
     | sleep_infinity_folder(client,
     |      worker_instance_type='P2',
-    |      manager_instance_type="small",
-    |      skip_existing_files = False )
+    |      manager_instance_type="small" )
 
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
 
       cmd_str = json.dumps(all_parameters)
@@ -208,8 +199,7 @@ def sleep_infinity_folder(client,
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -257,8 +247,7 @@ class ops3d:
      out_folder='/out_folder',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_out_file=".laz",
-     skip_existing_files = False):
+     extension_out_file=".laz"):
       '''
     | 
     | union_point_clouds_folder(client,
@@ -266,22 +255,19 @@ class ops3d:
     |      out_folder='/out_folder',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_out_folder=".laz_files_merged",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".laz_files_merged" )
 
 :param in_files:  input files as comma separated list
 :param out_folder: output directory
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['out_folder']
       del all_parameters['extension_out_file']
@@ -301,8 +287,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -359,8 +344,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_values_in=".npy",
-     extension_file_points_out=".laz",
-     skip_existing_files = False):
+     extension_file_points_out=".laz"):
       '''
     | 
     | make_laz_from_values_folder(client,
@@ -372,8 +356,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_values_in=".npy",
-    |      extension_folder_points_out=".laz",
-    |      skip_existing_files = False )
+    |      extension_folder_points_out=".laz" )
 
 :param dtype: data channels
 :param scale: scale value
@@ -384,14 +367,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_values_in: File extension of files in folder for folder_values_in
 :param extension_folder_points_out: File extension of files in folder for folder_points_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values_in']
       del all_parameters['folder_points_out']
@@ -413,8 +394,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -471,8 +451,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_folder_in=".laz",
-     extension_folder_out=".laz",
-     skip_existing_files = False):
+     extension_folder_out=".laz"):
       '''
     | 
     | iterative_outlier_removal_folder(client,
@@ -484,8 +463,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_in=".segmented_object",
-    |      extension_folder_out=".iterative_outlier_removal",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".iterative_outlier_removal" )
 
 :param decay_factor: maximum quantile
 :param iteration_count: minimum quantile
@@ -496,14 +474,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_folder_in
 :param extension_folder_out: File extension of files in folder for folder_folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder_in']
       del all_parameters['folder_folder_out']
@@ -525,8 +501,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -576,8 +551,7 @@ class ops3d:
      manager_instance_type="small",
      extension_point_cloud_files=".laz",
      extension_polygon_file=".pickle",
-     extension_output_file=".laz",
-     skip_existing_files = False):
+     extension_output_file=".laz"):
       '''
     | 
     | crop_and_merge_polygons_folder(client,
@@ -588,8 +562,7 @@ class ops3d:
     |      manager_instance_type="small",
     |      extension_point_cloud_folders=".laz",
     |      extension_polygon_folder=".pickle",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".laz" )
 
 :param point_cloud_folders: Input folder folder for the point clouds
 :param polygon_folder: Input folder folder for the polygon (pickle)
@@ -599,14 +572,12 @@ class ops3d:
 :param extension_point_cloud_folders: File extension of files in folder for point_cloud_folders
 :param extension_polygon_folder: File extension of files in folder for polygon_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['point_cloud_folders']
       del all_parameters['polygon_folder']
@@ -630,8 +601,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -684,8 +654,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_source_in=".laz",
-     extension_file_labels_out=".txt",
-     skip_existing_files = False):
+     extension_file_labels_out=".txt"):
       '''
     | 
     | get_point_values_folder(client,
@@ -696,8 +665,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_source_in=".laz",
-    |      extension_folder_labels_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_labels_out=".txt" )
 
 :param dtype: type
 :param decomposed_labels: type
@@ -707,14 +675,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_source_in: File extension of files in folder for folder_source_in
 :param extension_folder_labels_out: File extension of files in folder for folder_labels_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_source_in']
       del all_parameters['folder_labels_out']
@@ -736,8 +702,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -808,8 +773,7 @@ class ops3d:
      extension_filename=".laz",
      extension_cluster_id_filename=".npy",
      extension_cluster_centers_filename=".laz",
-     extension_wireframe_filename=".npy",
-     skip_existing_files = False):
+     extension_wireframe_filename=".npy"):
       '''Density-based Point Cloud Clustering
     | 
     | density_based_clustering_folder(client,
@@ -826,8 +790,7 @@ class ops3d:
     |      extension_foldername=".laz",
     |      extension_cluster_id_foldername=".npy",
     |      extension_cluster_centers_foldername=".laz",
-    |      extension_wireframe_foldername=".npy",
-    |      skip_existing_files = False )
+    |      extension_wireframe_foldername=".npy" )
 
 :param epsilon: DBSCAN epsilon
 :param min_samples: DBSCAN min_samples
@@ -843,14 +806,12 @@ class ops3d:
 :param extension_cluster_id_foldername: File extension of files in folder for cluster_id_foldername
 :param extension_cluster_centers_foldername: File extension of files in folder for cluster_centers_foldername
 :param extension_wireframe_foldername: File extension of files in folder for wireframe_foldername
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['foldername']
       del all_parameters['cluster_id_foldername']
@@ -876,8 +837,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -930,8 +890,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_folder_in=".laz",
-     extension_folder_out=".laz",
-     skip_existing_files = False):
+     extension_folder_out=".laz"):
       '''
     | 
     | make_line_model_from_points_folder(client,
@@ -942,8 +901,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_in=".segmented_object",
-    |      extension_folder_out=".vobject_coordinates3D",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".vobject_coordinates3D" )
 
 :param dim: dimension
 :param max_num_processes: maximum number of processes
@@ -953,14 +911,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_folder_in
 :param extension_folder_out: File extension of files in folder for folder_folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder_in']
       del all_parameters['folder_folder_out']
@@ -982,8 +938,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1048,8 +1003,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_folder_in=".laz",
-     extension_folder_out=".laz",
-     skip_existing_files = False):
+     extension_folder_out=".laz"):
       '''
     | 
     | fit_line_model_folder(client,
@@ -1063,8 +1017,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_in=".segmented_object",
-    |      extension_folder_out=".fit_line_model",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".fit_line_model" )
 
 :param residual_threshold: maximum quantile
 :param min_samples: minimum quantile
@@ -1077,14 +1030,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_folder_in
 :param extension_folder_out: File extension of files in folder for folder_folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder_in']
       del all_parameters['folder_folder_out']
@@ -1106,8 +1057,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1174,8 +1124,7 @@ class ops3d:
      extension_file_source_in=".laz",
      extension_file_target_in=".laz",
      extension_file_source_out=".laz",
-     extension_file_trafo_out=".txt",
-     skip_existing_files = False):
+     extension_file_trafo_out=".txt"):
       '''
     | 
     | iterative_closest_point_folder(client,
@@ -1191,8 +1140,7 @@ class ops3d:
     |      extension_folder_source_in=".laz",
     |      extension_folder_target_in=".laz",
     |      extension_folder_source_out=".laz",
-    |      extension_folder_trafo_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_trafo_out=".txt" )
 
 :param metric: [max, min, same]: same value range relative to maximum point [max], relative to minimum point [min] or absolute coordinates [same]
 :param threshold: threshold to crop values
@@ -1207,14 +1155,12 @@ class ops3d:
 :param extension_folder_target_in: File extension of files in folder for folder_target_in
 :param extension_folder_source_out: File extension of files in folder for folder_source_out
 :param extension_folder_trafo_out: File extension of files in folder for folder_trafo_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_source_in']
       del all_parameters['folder_target_in']
@@ -1240,8 +1186,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1291,8 +1236,7 @@ class ops3d:
      manager_instance_type="small",
      extension_in_points_file=".laz",
      extension_in_polygon_file=".pickle",
-     extension_out_file=".laz",
-     skip_existing_files = False):
+     extension_out_file=".laz"):
       '''
     | 
     | crop_points_to_polygon_folder(client,
@@ -1303,8 +1247,7 @@ class ops3d:
     |      manager_instance_type="small",
     |      extension_in_points_folder=".laz",
     |      extension_in_polygon_folder=".pickle",
-    |      extension_out_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".laz" )
 
 :param in_points_folder: Input folder folder for the point cloud
 :param in_polygon_folder: Input folder folder for the polygon (pickle)
@@ -1314,14 +1257,12 @@ class ops3d:
 :param extension_in_points_folder: File extension of files in folder for in_points_folder
 :param extension_in_polygon_folder: File extension of files in folder for in_polygon_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_points_folder']
       del all_parameters['in_polygon_folder']
@@ -1345,8 +1286,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1412,8 +1352,7 @@ class ops3d:
      manager_instance_type="small",
      extension_file_in_data=".laz",
      extension_file_in_labels=".labels",
-     extension_file_out=".laz",
-     skip_existing_files = False):
+     extension_file_out=".laz"):
       '''
     | 
     | filter_label_noise_folder(client,
@@ -1428,8 +1367,7 @@ class ops3d:
     |      manager_instance_type="small",
     |      extension_folder_in_data=".laz",
     |      extension_folder_in_labels=".labels",
-    |      extension_folder_out=".laz",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".laz" )
 
 :param k_nearest_neighbours: k nearest neighbours
 :param sigma: sigma
@@ -1443,14 +1381,12 @@ class ops3d:
 :param extension_folder_in_data: File extension of files in folder for folder_in_data
 :param extension_folder_in_labels: File extension of files in folder for folder_in_labels
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in_data']
       del all_parameters['folder_in_labels']
@@ -1474,8 +1410,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1545,8 +1480,7 @@ class ops3d:
      manager_instance_type="small",
      extension_in_file=".laz",
      extension_out_file=".laz",
-     extension_lat_lon_file=".laz",
-     skip_existing_files = False):
+     extension_lat_lon_file=".laz"):
       '''
     | 
     | crop_circle_folder(client,
@@ -1562,8 +1496,7 @@ class ops3d:
     |      manager_instance_type="small",
     |      extension_in_folder=".laz",
     |      extension_out_folder=".laz",
-    |      extension_lat_lon_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_lat_lon_folder=".laz" )
 
 :param latitude: latitude
 :param longitude: longitude
@@ -1578,14 +1511,12 @@ class ops3d:
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_out_folder: File extension of files in folder for out_folder
 :param extension_lat_lon_folder: File extension of files in folder for lat_lon_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['out_folder']
@@ -1609,8 +1540,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1671,8 +1601,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_source_in=".laz",
-     extension_file_source_out=".laz",
-     skip_existing_files = False):
+     extension_file_source_out=".laz"):
       '''Selects points by value of attribute
     | 
     | select_points_by_value_folder(client,
@@ -1685,8 +1614,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_source_in=".segmented_object",
-    |      extension_folder_source_out=".aligned_points",
-    |      skip_existing_files = False )
+    |      extension_folder_source_out=".aligned_points" )
 
 :param min_value: minimum value
 :param max_value: maximum value
@@ -1698,14 +1626,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_source_in: File extension of files in folder for folder_source_in
 :param extension_folder_source_out: File extension of files in folder for folder_source_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_source_in']
       del all_parameters['folder_source_out']
@@ -1727,8 +1653,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1815,8 +1740,7 @@ class ops3d:
      extension_file_points_in=".laz",
      extension_file_labels_in=".npy",
      extension_file_label_disagrement_in=".npy",
-     extension_file_label_disagrement_out=".npy",
-     skip_existing_files = False):
+     extension_file_label_disagrement_out=".npy"):
       '''
     | 
     | filter_label_disagreement_knn_folder(client,
@@ -1837,8 +1761,7 @@ class ops3d:
     |      extension_folder_points_in=".laz",
     |      extension_folder_labels_in=".npy",
     |      extension_folder_label_disagrement_in=".npy",
-    |      extension_folder_label_disagrement_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_label_disagrement_out=".npy" )
 
 :param distance: distance threshold
 :param classes_to_compare: classes to compare, comma separated
@@ -1858,14 +1781,12 @@ class ops3d:
 :param extension_folder_labels_in: File extension of files in folder for folder_labels_in
 :param extension_folder_label_disagrement_in: File extension of files in folder for folder_label_disagrement_in
 :param extension_folder_label_disagrement_out: File extension of files in folder for folder_label_disagrement_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_points_in']
       del all_parameters['folder_labels_in']
@@ -1891,8 +1812,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -1946,8 +1866,7 @@ class ops3d:
      manager_instance_type="small",
      extension_file_source_in=".laz",
      extension_file_labels_in=".npy",
-     extension_file_source_out=".laz",
-     skip_existing_files = False):
+     extension_file_source_out=".laz"):
       '''
     | 
     | assign_point_labels_folder(client,
@@ -1959,8 +1878,7 @@ class ops3d:
     |      manager_instance_type="small",
     |      extension_folder_source_in=".laz",
     |      extension_folder_labels_in=".npy",
-    |      extension_folder_source_out=".laz",
-    |      skip_existing_files = False )
+    |      extension_folder_source_out=".laz" )
 
 :param dtype: value
 :param folder_source_in: input folder data
@@ -1971,14 +1889,12 @@ class ops3d:
 :param extension_folder_source_in: File extension of files in folder for folder_source_in
 :param extension_folder_labels_in: File extension of files in folder for folder_labels_in
 :param extension_folder_source_out: File extension of files in folder for folder_source_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_source_in']
       del all_parameters['folder_labels_in']
@@ -2002,8 +1918,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2064,8 +1979,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_folder_in=".laz",
-     extension_folder_out=".laz",
-     skip_existing_files = False):
+     extension_folder_out=".laz"):
       '''
     | 
     | quantile_filter_folder(client,
@@ -2078,8 +1992,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_in=".segmented_object",
-    |      extension_folder_out=".quantile_filterd",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".quantile_filterd" )
 
 :param max_quantile: maximum quantile
 :param min_quantile: minimum quantile
@@ -2091,14 +2004,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_folder_in
 :param extension_folder_out: File extension of files in folder for folder_folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder_in']
       del all_parameters['folder_folder_out']
@@ -2120,8 +2031,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2180,8 +2090,7 @@ class ops3d:
      extension_file_points_in=".laz",
      extension_file_dsm_out=".tif",
      extension_file_dtm_out=".tif",
-     extension_file_chm_out=".tif",
-     skip_existing_files = False):
+     extension_file_chm_out=".tif"):
       '''
     | 
     | point_cloud_to_dsm_folder(client,
@@ -2195,8 +2104,7 @@ class ops3d:
     |      extension_folder_points_in=".laz",
     |      extension_folder_dsm_out=".tif",
     |      extension_folder_dtm_out=".tif",
-    |      extension_folder_chm_out=".tif",
-    |      skip_existing_files = False )
+    |      extension_folder_chm_out=".tif" )
 
 :param grid_size: grid size
 :param folder_points_in: input points
@@ -2209,14 +2117,12 @@ class ops3d:
 :param extension_folder_dsm_out: File extension of files in folder for folder_dsm_out
 :param extension_folder_dtm_out: File extension of files in folder for folder_dtm_out
 :param extension_folder_chm_out: File extension of files in folder for folder_chm_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_points_in']
       del all_parameters['folder_dsm_out']
@@ -2242,8 +2148,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2293,8 +2198,7 @@ class ops3d:
      manager_instance_type="small",
      extension_folder_source_in=".laz",
      extension_folder_transformation_in=".laz",
-     extension_folder_source_out=".laz",
-     skip_existing_files = False):
+     extension_folder_source_out=".laz"):
       '''
     | 
     | align_points_folder(client,
@@ -2305,8 +2209,7 @@ class ops3d:
     |      manager_instance_type="small",
     |      extension_folder_source_in=".segmented_object",
     |      extension_folder_transformation_in=".transformations",
-    |      extension_folder_source_out=".aligned_points",
-    |      skip_existing_files = False )
+    |      extension_folder_source_out=".aligned_points" )
 
 :param folder_folder_source_in: input folder data
 :param folder_folder_transformation_in: input folder transformation
@@ -2316,14 +2219,12 @@ class ops3d:
 :param extension_folder_source_in: File extension of files in folder for folder_folder_source_in
 :param extension_folder_transformation_in: File extension of files in folder for folder_folder_transformation_in
 :param extension_folder_source_out: File extension of files in folder for folder_folder_source_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder_source_in']
       del all_parameters['folder_folder_transformation_in']
@@ -2347,8 +2248,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2393,8 +2293,7 @@ class ops3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_file=".laz",
-     extension_out_file=".json",
-     skip_existing_files = False):
+     extension_out_file=".json"):
       '''Get meta data from las or laz file
     | 
     | get_meta_data_folder(client,
@@ -2403,8 +2302,7 @@ class ops3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".laz",
-    |      extension_out_folder=".json",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".json" )
 
 :param in_folder: Input .laz folder folder
 :param out_folder: Output meta data folder folder
@@ -2412,14 +2310,12 @@ class ops3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['out_folder']
@@ -2441,8 +2337,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2494,8 +2389,7 @@ class ops3d:
      longitude=1,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_out_file=".laz",
-     skip_existing_files = False):
+     extension_out_file=".laz"):
       '''
     | 
     | select_center_object_folder(client,
@@ -2505,8 +2399,7 @@ class ops3d:
     |      longitude=1,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_out_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".laz" )
 
 :param in_directory: input directory
 :param latitude: latitude
@@ -2515,14 +2408,12 @@ class ops3d:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['out_folder']
       del all_parameters['extension_out_file']
@@ -2542,8 +2433,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2610,8 +2500,7 @@ class ops3d:
      extension_folder1_in=".laz",
      extension_folder2_in=".laz",
      extension_folder1_out=".laz",
-     extension_folder2_out=".laz",
-     skip_existing_files = False):
+     extension_folder2_out=".laz"):
       '''
     | 
     | crop_to_equal_value_range_folder(client,
@@ -2627,8 +2516,7 @@ class ops3d:
     |      extension_folder1_in=".segmented_object1",
     |      extension_folder2_in=".segmented_object2",
     |      extension_folder1_out=".crop_relative_height1",
-    |      extension_folder2_out=".crop_relative_height2",
-    |      skip_existing_files = False )
+    |      extension_folder2_out=".crop_relative_height2" )
 
 :param reference: [max, min, same]: same value range relative to maximum point [max], relative to minimum point [min] or absolute coordinates [same]
 :param axis: axis to crop values
@@ -2643,14 +2531,12 @@ class ops3d:
 :param extension_folder2_in: File extension of files in folder for folder_folder2_in
 :param extension_folder1_out: File extension of files in folder for folder_folder1_out
 :param extension_folder2_out: File extension of files in folder for folder_folder2_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder1_in']
       del all_parameters['folder_folder2_in']
@@ -2676,8 +2562,7 @@ class ops3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2730,8 +2615,7 @@ class shp:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".pickle",
-     extension_output_file=".txt",
-     skip_existing_files = False):
+     extension_output_file=".txt"):
       '''
     | 
     | intersecting_polygons_folder(client,
@@ -2741,8 +2625,7 @@ class shp:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".pickle",
-    |      extension_output_folder=".txt",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".txt" )
 
 :param comparison_folder:  Input folder containing polygons for comparison
 :param input_folder: Input folder for the polygon
@@ -2751,14 +2634,12 @@ class shp:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -2780,8 +2661,7 @@ class shp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2839,8 +2719,7 @@ class shp:
      manager_instance_type="small",
      extension_shp_file=".laz",
      extension_out_polygon_folder=".laz",
-     extension_out_attributes_folder=".laz",
-     skip_existing_files = False):
+     extension_out_attributes_folder=".laz"):
       '''
     | 
     | extract_multipolygons_from_shp_folder(client,
@@ -2853,8 +2732,7 @@ class shp:
     |      manager_instance_type="small",
     |      extension_shp_folder=".",
     |      extension_out_polygon_folder=".polygons/",
-    |      extension_out_attributes_folder=".attributes/",
-    |      skip_existing_files = False )
+    |      extension_out_attributes_folder=".attributes/" )
 
 :param shape_id: id of polygon: [-1 parses all polygons]
 :param name_id: id of polygon: [-1 ignores name]
@@ -2866,14 +2744,12 @@ class shp:
 :param extension_shp_folder: File extension of files in folder for shp_folder
 :param extension_out_polygon_folder: File extension of files in folder for folder_out_polygon_folder
 :param extension_out_attributes_folder: File extension of files in folder for folder_out_attributes_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['shp_folder']
       del all_parameters['folder_out_polygon_folder']
@@ -2897,8 +2773,7 @@ class shp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -2948,8 +2823,7 @@ class shp:
      manager_instance_type="small",
      extension_input_file=".laz",
      extension_edges_file=".npy",
-     extension_output_file=".dxf",
-     skip_existing_files = False):
+     extension_output_file=".dxf"):
       '''
     | 
     | wireframe_to_dxf_folder(client,
@@ -2960,8 +2834,7 @@ class shp:
     |      manager_instance_type="small",
     |      extension_input_folder=".laz",
     |      extension_edges_folder=".npy",
-    |      extension_output_folder=".dxf",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".dxf" )
 
 :param input_folder: Input folder for the vertices
 :param edges_folder: Input folder for the edges
@@ -2971,14 +2844,12 @@ class shp:
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_edges_folder: File extension of files in folder for edges_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['edges_folder']
@@ -3002,8 +2873,7 @@ class shp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3052,8 +2922,7 @@ class shp:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".json",
-     extension_output_file=".pickle",
-     skip_existing_files = False):
+     extension_output_file=".pickle"):
       '''
     | 
     | make_polygon_from_json_folder(client,
@@ -3063,8 +2932,7 @@ class shp:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".json",
-    |      extension_output_folder=".pickle",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".pickle" )
 
 :param point_identifiers: Point identifiers for the polygon
 :param input_folder: Input folder for the json folder
@@ -3073,14 +2941,12 @@ class shp:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -3102,8 +2968,7 @@ class shp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3191,8 +3056,7 @@ class ml3d:
      learning_gradient_clip_norm=100,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_data_in_path=".laz",
-     skip_existing_files = False):
+     extension_data_in_path=".laz"):
       '''
     | 
     | semantic_training_rfcr_folder(client,
@@ -3210,8 +3074,7 @@ class ml3d:
     |      learning_gradient_clip_norm=100,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_data_in_folder="./data/files/",
-    |      skip_existing_files = False )
+    |      extension_data_in_folder="./data/files/" )
 
 :param out_model_parameters_path:  path to model
 :param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
@@ -3228,14 +3091,12 @@ class ml3d:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_data_in_folder: File extension of files in folder for data_in_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['data_in_folder']
       del all_parameters['extension_data_in_path']
@@ -3255,8 +3116,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3322,8 +3182,7 @@ class ml3d:
      manager_instance_type="small",
      extension_data_in_path=".laz",
      extension_results_labels_path=".labels",
-     extension_results_probabilities_path=".npy",
-     skip_existing_files = False):
+     extension_results_probabilities_path=".npy"):
       '''
     | 
     | semantic_inference_rfcr_folder(client,
@@ -3338,8 +3197,7 @@ class ml3d:
     |      manager_instance_type="small",
     |      extension_data_in_folder=".laz",
     |      extension_results_labels_folder=".labels",
-    |      extension_results_probabilities_folder=".npy",
-    |      skip_existing_files = False )
+    |      extension_results_probabilities_folder=".npy" )
 
 :param in_model_parameters_path:  path to model
 :param number_of_votes: number of votes to vote for a class
@@ -3353,14 +3211,12 @@ class ml3d:
 :param extension_data_in_folder: File extension of files in folder for data_in_folder
 :param extension_results_labels_folder: File extension of files in folder for results_labels_folder
 :param extension_results_probabilities_folder: File extension of files in folder for results_probabilities_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['data_in_folder']
       del all_parameters['results_labels_folder']
@@ -3384,8 +3240,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3465,8 +3320,7 @@ class ml3d:
      batch_size=2,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_data_in_path=".laz",
-     skip_existing_files = False):
+     extension_data_in_path=".laz"):
       '''
     | 
     | semantic_training_scf_folder(client,
@@ -3483,8 +3337,7 @@ class ml3d:
     |      batch_size=2,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_data_in_folder="./data/files/",
-    |      skip_existing_files = False )
+    |      extension_data_in_folder="./data/files/" )
 
 :param out_model_parameters_path:  path to model
 :param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
@@ -3500,14 +3353,12 @@ class ml3d:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_data_in_folder: File extension of files in folder for data_in_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['data_in_folder']
       del all_parameters['extension_data_in_path']
@@ -3527,8 +3378,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3611,8 +3461,7 @@ class ml3d:
      extension_data_in_path=".laz",
      extension_results_labels_path=".labels",
      extension_in_model_parameters_path=".laz",
-     extension_results_probabilities_path=".npy",
-     skip_existing_files = False):
+     extension_results_probabilities_path=".npy"):
       '''
     | 
     | semantic_inference_scf_folder(client,
@@ -3632,8 +3481,7 @@ class ml3d:
     |      extension_data_in_folder=".laz",
     |      extension_results_labels_folder=".labels",
     |      extension_in_model_parameters_folder=".[atr] results/Log_2022-11-10_11-42-05",
-    |      extension_results_probabilities_folder=".npy",
-    |      skip_existing_files = False )
+    |      extension_results_probabilities_folder=".npy" )
 
 :param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
 :param feature_names: comma separated list of features that are provided
@@ -3652,14 +3500,12 @@ class ml3d:
 :param extension_results_labels_folder: File extension of files in folder for results_labels_folder
 :param extension_in_model_parameters_folder: File extension of files in folder for in_model_parameters_folder
 :param extension_results_probabilities_folder: File extension of files in folder for results_probabilities_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['data_in_folder']
       del all_parameters['results_labels_folder']
@@ -3685,8 +3531,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3739,8 +3584,7 @@ class ml3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_files=".laz",
-     extension_out_result_files=".laz",
-     skip_existing_files = False):
+     extension_out_result_files=".laz"):
       '''
     | 
     | wireframe_estimation_inference_folder(client,
@@ -3751,8 +3595,7 @@ class ml3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folders=".data_eval",
-    |      extension_out_result_folders=".result_wireframes",
-    |      skip_existing_files = False )
+    |      extension_out_result_folders=".result_wireframes" )
 
 :param in_model_path:  model path
 :param batch_size: batch size for training
@@ -3762,14 +3605,12 @@ class ml3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folders: File extension of files in folder for in_folders
 :param extension_out_result_folders: File extension of files in folder for out_result_folders
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folders']
       del all_parameters['out_result_folders']
@@ -3791,8 +3632,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -3845,8 +3685,7 @@ class ml3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_files=".laz",
-     extension_out_files=".laz",
-     skip_existing_files = False):
+     extension_out_files=".laz"):
       '''
     | 
     | vertices_estimation_inference_folder(client,
@@ -3857,8 +3696,7 @@ class ml3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folders=".data_eval",
-    |      extension_out_folders=".result_vertices",
-    |      skip_existing_files = False )
+    |      extension_out_folders=".result_vertices" )
 
 :param in_model_path:  model path
 :param batch_size: batch size for training
@@ -3868,14 +3706,12 @@ class ml3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folders: File extension of files in folder for in_folders
 :param extension_out_folders: File extension of files in folder for out_folders
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folders']
       del all_parameters['out_folders']
@@ -3897,8 +3733,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4019,8 +3854,7 @@ class ml3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_folder=".laz",
-     extension_in_wireframe_folder=".laz",
-     skip_existing_files = False):
+     extension_in_wireframe_folder=".laz"):
       '''
     | 
     | wireframe_estimation_training_folder(client,
@@ -4048,8 +3882,7 @@ class ml3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".data_train",
-    |      extension_in_wireframe_folder=".data_train_wireframe",
-    |      skip_existing_files = False )
+    |      extension_in_wireframe_folder=".data_train_wireframe" )
 
 :param out_model_path:  model path
 :param voxel_size: voxel size
@@ -4076,14 +3909,12 @@ class ml3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for folder_in_folder
 :param extension_in_wireframe_folder: File extension of files in folder for folder_in_wireframe_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in_folder']
       del all_parameters['folder_in_wireframe_folder']
@@ -4105,8 +3936,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4222,8 +4052,7 @@ class ml3d:
      hidden_layers=8,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_in_folder=".laz",
-     skip_existing_files = False):
+     extension_in_folder=".laz"):
       '''
     | 
     | universal_training_folder(client,
@@ -4249,8 +4078,7 @@ class ml3d:
     |      hidden_layers=8,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_in_folder=".data_train",
-    |      skip_existing_files = False )
+    |      extension_in_folder=".data_train" )
 
 :param out_model_path:  model path
 :param voxel_size: voxel size
@@ -4275,14 +4103,12 @@ class ml3d:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for folder_in_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in_folder']
       del all_parameters['extension_in_folder']
@@ -4302,8 +4128,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4428,8 +4253,7 @@ class ml3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_folder=".laz",
-     extension_in_vertices_folder=".laz",
-     skip_existing_files = False):
+     extension_in_vertices_folder=".laz"):
       '''
     | 
     | vertices_estimation_training_folder(client,
@@ -4458,8 +4282,7 @@ class ml3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".data_train",
-    |      extension_in_vertices_folder=".data_train_vertices",
-    |      skip_existing_files = False )
+    |      extension_in_vertices_folder=".data_train_vertices" )
 
 :param out_model_path:  model path
 :param voxel_size: voxel size
@@ -4487,14 +4310,12 @@ class ml3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for folder_in_folder
 :param extension_in_vertices_folder: File extension of files in folder for folder_in_vertices_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in_folder']
       del all_parameters['folder_in_vertices_folder']
@@ -4516,8 +4337,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4570,8 +4390,7 @@ class ml3d:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_files=".laz",
-     extension_out_files=".laz",
-     skip_existing_files = False):
+     extension_out_files=".laz"):
       '''
     | 
     | universal_inference_folder(client,
@@ -4582,8 +4401,7 @@ class ml3d:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folders=".data_eval",
-    |      extension_out_folders=".results",
-    |      skip_existing_files = False )
+    |      extension_out_folders=".results" )
 
 :param in_model_path:  model path
 :param batch_size: batch size
@@ -4593,14 +4411,12 @@ class ml3d:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folders: File extension of files in folder for in_folders
 :param extension_out_folders: File extension of files in folder for out_folders
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folders']
       del all_parameters['out_folders']
@@ -4622,8 +4438,7 @@ class ml3d:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4684,8 +4499,7 @@ class qc:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_file=".laz",
-     extension_out_file=".txt",
-     skip_existing_files = False):
+     extension_out_file=".txt"):
       '''
     | 
     | report_qc_classification_folder(client,
@@ -4697,8 +4511,7 @@ class qc:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".laz",
-    |      extension_out_folder=".txt",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".txt" )
 
 :param error_classes: error classes
 :param error_names: error names
@@ -4709,14 +4522,12 @@ class qc:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['out_folder']
@@ -4738,8 +4549,7 @@ class qc:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4809,8 +4619,7 @@ class qc:
      manager_instance_type="small",
      extension_in_file=".txt",
      extension_in_meta_data_file=".json",
-     extension_out_file=".txt",
-     skip_existing_files = False):
+     extension_out_file=".txt"):
       '''
     | 
     | report_image_completeness_folder(client,
@@ -4826,8 +4635,7 @@ class qc:
     |      manager_instance_type="small",
     |      extension_in_folder=".txt",
     |      extension_in_meta_data_folder=".json",
-    |      extension_out_folder=".txt",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".txt" )
 
 :param grid_size: grid size
 :param populated_class: populated class
@@ -4842,14 +4650,12 @@ class qc:
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_in_meta_data_folder: File extension of files in folder for in_meta_data_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['in_meta_data_folder']
@@ -4873,8 +4679,7 @@ class qc:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -4939,8 +4744,7 @@ class qc:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_file=".txt",
-     extension_out_file=".txt",
-     skip_existing_files = False):
+     extension_out_file=".txt"):
       '''
     | 
     | report_vegetation_occurance_folder(client,
@@ -4954,8 +4758,7 @@ class qc:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".txt",
-    |      extension_out_folder=".txt",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".txt" )
 
 :param ground_classes_old: ground classes
 :param ground_classes_new: ground classes
@@ -4968,14 +4771,12 @@ class qc:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['out_folder']
@@ -4997,8 +4798,7 @@ class qc:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5063,8 +4863,7 @@ class qc:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_file=".txt",
-     extension_out_file=".txt",
-     skip_existing_files = False):
+     extension_out_file=".txt"):
       '''
     | 
     | report_lidar_completeness_folder(client,
@@ -5078,8 +4877,7 @@ class qc:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".txt",
-    |      extension_out_folder=".txt",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".txt" )
 
 :param grid_size: grid size
 :param populated_class: populated class
@@ -5092,14 +4890,12 @@ class qc:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['out_folder']
@@ -5121,8 +4917,7 @@ class qc:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5183,8 +4978,7 @@ class tdp:
      worker_instance_type='P2',
      manager_instance_type="small",
      extension_file_in=".laz",
-     extension_file_out=".labels",
-     skip_existing_files = False):
+     extension_file_out=".labels"):
       '''
     | 
     | point_cloud_classification_inference_folder(client,
@@ -5196,8 +4990,7 @@ class tdp:
     |      worker_instance_type='P2',
     |      manager_instance_type="small",
     |      extension_folder_in=".laz",
-    |      extension_folder_out=".labels",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".labels" )
 
 :param model_path:  path to model
 :param cols_data: attributes used
@@ -5208,14 +5001,12 @@ class tdp:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_in
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in']
       del all_parameters['folder_out']
@@ -5237,8 +5028,7 @@ class tdp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5287,8 +5077,7 @@ class tdp:
      worker_instance_type='P2',
      manager_instance_type="small",
      extension_file_in=".laz",
-     extension_file_out=".labels",
-     skip_existing_files = False):
+     extension_file_out=".labels"):
       '''
     | 
     | convert_laz_point_formats_folder(client,
@@ -5298,8 +5087,7 @@ class tdp:
     |      worker_instance_type='P2',
     |      manager_instance_type="small",
     |      extension_folder_in=".laz",
-    |      extension_folder_out=".labels",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".labels" )
 
 :param format: format
 :param folder_in: input folder
@@ -5308,14 +5096,12 @@ class tdp:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_in
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in']
       del all_parameters['folder_out']
@@ -5337,8 +5123,7 @@ class tdp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5407,8 +5192,7 @@ class tdp:
      worker_instance_type='P2',
      manager_instance_type="small",
      extension_in_points_file=".laz",
-     extension_in_labels_file=".laz",
-     skip_existing_files = False):
+     extension_in_labels_file=".laz"):
       '''
     | 
     | segment_objects_folder(client,
@@ -5423,8 +5207,7 @@ class tdp:
     |      worker_instance_type='P2',
     |      manager_instance_type="small",
     |      extension_in_points_folder=".laz_files_test",
-    |      extension_in_labels_folder=".laz_files_test",
-    |      skip_existing_files = False )
+    |      extension_in_labels_folder=".laz_files_test" )
 
 :param out_directory: output directory
 :param out_prefix: output filename prefix
@@ -5438,14 +5221,12 @@ class tdp:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_points_folder: File extension of files in folder for in_points_folder
 :param extension_in_labels_folder: File extension of files in folder for in_labels_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_points_folder']
       del all_parameters['in_labels_folder']
@@ -5467,8 +5248,7 @@ class tdp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5534,8 +5314,7 @@ class tdp:
      manager_instance_type="small",
      extension_file_in_data=".laz",
      extension_file_in_labels=".labels",
-     extension_file_out=".laz",
-     skip_existing_files = False):
+     extension_file_out=".laz"):
       '''
     | 
     | point_cloud_filter_label_noise_folder(client,
@@ -5550,8 +5329,7 @@ class tdp:
     |      manager_instance_type="small",
     |      extension_folder_in_data=".laz",
     |      extension_folder_in_labels=".labels",
-    |      extension_folder_out=".laz",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".laz" )
 
 :param k_nearest_neighbours: k nearest neighbours
 :param sigma: sigma
@@ -5565,14 +5343,12 @@ class tdp:
 :param extension_folder_in_data: File extension of files in folder for folder_in_data
 :param extension_folder_in_labels: File extension of files in folder for folder_in_labels
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in_data']
       del all_parameters['folder_in_labels']
@@ -5596,8 +5372,7 @@ class tdp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5673,8 +5448,7 @@ class tdp:
      extension_laz_in_file_old=".laz",
      extension_laz_in_file_ref=".laz",
      extension_results_out_file=".txt",
-     extension_plots_out_folder=".laz",
-     skip_existing_files = False):
+     extension_plots_out_folder=".laz"):
       '''
     | 
     | tower_displacement_folder(client,
@@ -5693,8 +5467,7 @@ class tdp:
     |      extension_laz_in_folder_old=".laz",
     |      extension_laz_in_folder_ref=".laz",
     |      extension_results_out_folder=".txt",
-    |      extension_plots_out_folder=".plots/",
-    |      skip_existing_files = False )
+    |      extension_plots_out_folder=".plots/" )
 
 :param tower_name: tower name
 :param year_new: year of new data
@@ -5712,14 +5485,12 @@ class tdp:
 :param extension_laz_in_folder_ref: File extension of files in folder for laz_in_folder_ref
 :param extension_results_out_folder: File extension of files in folder for results_out_folder
 :param extension_plots_out_folder: File extension of files in folder for folder_plots_out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['laz_in_folder_new']
       del all_parameters['laz_in_folder_old']
@@ -5747,8 +5518,7 @@ class tdp:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5802,8 +5572,7 @@ class fvo:
      manager_instance_type="small",
      extension_file_source_in=".laz",
      extension_file_trafo_out=".txt",
-     extension_file_source_out=".laz",
-     skip_existing_files = False):
+     extension_file_source_out=".laz"):
       '''
     | 
     | estimate_vobject_coordinates_folder(client,
@@ -5814,8 +5583,7 @@ class fvo:
     |      manager_instance_type="small",
     |      extension_folder_source_in=".laz",
     |      extension_folder_trafo_out=".txt",
-    |      extension_folder_source_out=".laz",
-    |      skip_existing_files = False )
+    |      extension_folder_source_out=".laz" )
 
 :param folder_source_in: input folder data
 :param folder_trafo_out: output trafo
@@ -5825,14 +5593,12 @@ class fvo:
 :param extension_folder_source_in: File extension of files in folder for folder_source_in
 :param extension_folder_trafo_out: File extension of files in folder for folder_trafo_out
 :param extension_folder_source_out: File extension of files in folder for folder_source_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_source_in']
       del all_parameters['folder_trafo_out']
@@ -5856,8 +5622,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -5925,8 +5690,7 @@ class fvo:
      extension_input_file2=".laz",
      extension_input_file_features=".npy",
      extension_output_file=".laz",
-     extension_output_file_features=".npy",
-     skip_existing_files = False):
+     extension_output_file_features=".npy"):
       '''Filter valid vertices from a DXF file.
     | 
     | filter_valid_vertices_folder(client,
@@ -5943,8 +5707,7 @@ class fvo:
     |      extension_input_folder2=".laz",
     |      extension_input_folder_features=".npy",
     |      extension_output_folder=".laz",
-    |      extension_output_folder_features=".npy",
-    |      skip_existing_files = False )
+    |      extension_output_folder_features=".npy" )
 
 :param min_distance: Minimum distance.
 :param max_distance: Maximum distance.
@@ -5960,14 +5723,12 @@ class fvo:
 :param extension_input_folder_features: File extension of files in folder for input_folder_features
 :param extension_output_folder: File extension of files in folder for output_folder
 :param extension_output_folder_features: File extension of files in folder for output_folder_features
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['input_folder2']
@@ -5995,8 +5756,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6046,8 +5806,7 @@ class fvo:
      manager_instance_type="small",
      extension_input_file=".laz",
      extension_target_file=".laz",
-     extension_output_file=".laz",
-     skip_existing_files = False):
+     extension_output_file=".laz"):
       '''Zero centering of XYZ points in a LAZ file
     | 
     | align_top_folder(client,
@@ -6058,8 +5817,7 @@ class fvo:
     |      manager_instance_type="small",
     |      extension_input_folder=".laz",
     |      extension_target_folder=".laz",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".laz" )
 
 :param input_folder: input LAZ folder folder
 :param target_folder: input LAZ folder folder
@@ -6069,14 +5827,12 @@ class fvo:
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_target_folder: File extension of files in folder for target_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['target_folder']
@@ -6100,8 +5856,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6146,8 +5901,7 @@ class fvo:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".laz",
-     extension_output_file=".laz",
-     skip_existing_files = False):
+     extension_output_file=".laz"):
       '''Zero centering of XYZ points in a LAZ file
     | 
     | zero_centering_folder(client,
@@ -6156,8 +5910,7 @@ class fvo:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".laz",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".laz" )
 
 :param input_folder: input LAZ folder folder
 :param output_folder: output LAZ folder folder
@@ -6165,14 +5918,12 @@ class fvo:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -6194,8 +5945,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6261,8 +6011,7 @@ class fvo:
      manager_instance_type="small",
      extension_input_cloud_file=".laz",
      extension_input_vertices_file=".laz",
-     extension_output_graph_file=".dxf",
-     skip_existing_files = False):
+     extension_output_graph_file=".dxf"):
       '''Connect neighbouring vertices
     | 
     | connect_neighbouring_vertices_folder(client,
@@ -6277,8 +6026,7 @@ class fvo:
     |      manager_instance_type="small",
     |      extension_input_cloud_folder=".laz",
     |      extension_input_vertices_folder=".laz",
-    |      extension_output_graph_folder=".dxf",
-    |      skip_existing_files = False )
+    |      extension_output_graph_folder=".dxf" )
 
 :param max_distance: max distance between vertices
 :param min_num_inliers: min number of inliers to fit line
@@ -6292,14 +6040,12 @@ class fvo:
 :param extension_input_cloud_folder: File extension of files in folder for input_cloud_folder
 :param extension_input_vertices_folder: File extension of files in folder for input_vertices_folder
 :param extension_output_graph_folder: File extension of files in folder for output_graph_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_cloud_folder']
       del all_parameters['input_vertices_folder']
@@ -6323,8 +6069,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6373,8 +6118,7 @@ class fvo:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_file=".dxf",
-     extension_out_file=".laz",
-     skip_existing_files = False):
+     extension_out_file=".laz"):
       '''Extract visible face3d vertices from a DXF file.
     | 
     | import_vertices_folder(client,
@@ -6384,8 +6128,7 @@ class fvo:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".dxf",
-    |      extension_out_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_out_folder=".laz" )
 
 :param layer: Layer names as comma-separated list
 :param in_folder: Input DXF folder folder
@@ -6394,14 +6137,12 @@ class fvo:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_in_folder: File extension of files in folder for in_folder
 :param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['in_folder']
       del all_parameters['out_folder']
@@ -6423,8 +6164,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6486,8 +6226,7 @@ class fvo:
      manager_instance_type="small",
      extension_input_file=".laz",
      extension_points_file=".laz",
-     extension_output_file=".laz",
-     skip_existing_files = False):
+     extension_output_file=".laz"):
       '''Compute class conditional probability distribution
     | 
     | likelihood_folder(client,
@@ -6501,8 +6240,7 @@ class fvo:
     |      manager_instance_type="small",
     |      extension_input_folder=".laz",
     |      extension_points_folder=".laz",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".laz" )
 
 :param max_distance: probability max distance
 :param missing_distance: interpolate missing points distance
@@ -6515,14 +6253,12 @@ class fvo:
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_points_folder: File extension of files in folder for points_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['points_folder']
@@ -6546,8 +6282,7 @@ class fvo:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6604,8 +6339,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Equal operator on a matrix.
     | 
     | equal_constant_folder(client,
@@ -6616,8 +6350,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Value to compare (default: 1)
@@ -6627,14 +6360,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -6656,8 +6387,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6715,8 +6445,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_divide_folder(client,
@@ -6729,8 +6458,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -6742,14 +6470,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -6773,8 +6499,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6827,8 +6552,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Divide a constant value from a matrix.
     | 
     | divide_constant_folder(client,
@@ -6839,8 +6563,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Constant value to divide (default: 1.0)
@@ -6850,14 +6573,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -6879,8 +6600,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -6934,8 +6654,7 @@ class val:
      manager_instance_type="small",
      extension_infile1=".npy",
      extension_infile2=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Elementwiese less operator on a matrix.
     | 
     | values_less_folder(client,
@@ -6947,8 +6666,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_infolder1=".npy",
     |      extension_infolder2=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param infolder1: Input folder folder
@@ -6959,14 +6677,12 @@ class val:
 :param extension_infolder1: File extension of files in folder for infolder1
 :param extension_infolder2: File extension of files in folder for infolder2
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder1']
       del all_parameters['infolder2']
@@ -6990,8 +6706,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7044,8 +6759,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Add a constant value to a matrix.
     | 
     | add_constant_folder(client,
@@ -7056,8 +6770,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Constant value to add (default: 0.0)
@@ -7067,14 +6780,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -7096,8 +6807,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7151,8 +6861,7 @@ class val:
      manager_instance_type="small",
      extension_infile1=".npy",
      extension_infile2=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Elementwiese less equal operator on a matrix.
     | 
     | values_less_equal_folder(client,
@@ -7164,8 +6873,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_infolder1=".npy",
     |      extension_infolder2=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param infolder1: Input folder folder
@@ -7176,14 +6884,12 @@ class val:
 :param extension_infolder1: File extension of files in folder for infolder1
 :param extension_infolder2: File extension of files in folder for infolder2
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder1']
       del all_parameters['infolder2']
@@ -7207,8 +6913,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7266,8 +6971,7 @@ class val:
      manager_instance_type="small",
      extension_file_in=".npy",
      extension_file_out=".txt",
-     extension_file_values_in=".npy",
-     skip_existing_files = False):
+     extension_file_values_in=".npy"):
       '''
     | 
     | values_sliced_assign_folder(client,
@@ -7280,8 +6984,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_in=".npy",
     |      extension_folder_out=".txt",
-    |      extension_folder_values_in=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_in=".npy" )
 
 :param indices: indices to slice
 :param default_value: default value to assign
@@ -7293,14 +6996,12 @@ class val:
 :param extension_folder_in: File extension of files in folder for folder_in
 :param extension_folder_out: File extension of files in folder for folder_out
 :param extension_folder_values_in: File extension of files in folder for folder_values_in
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in']
       del all_parameters['folder_out']
@@ -7324,8 +7025,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7379,8 +7079,7 @@ class val:
      manager_instance_type="small",
      extension_file_values_in=".npy",
      extension_file_mask_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | masked_assign_constant_folder(client,
@@ -7392,8 +7091,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values_in=".npy",
     |      extension_folder_mask_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param constant: constant value to assign
 :param folder_values_in: input folder [.txt or .npy]
@@ -7404,14 +7102,12 @@ class val:
 :param extension_folder_values_in: File extension of files in folder for folder_values_in
 :param extension_folder_mask_in: File extension of files in folder for folder_mask_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values_in']
       del all_parameters['folder_mask_in']
@@ -7435,8 +7131,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7489,8 +7184,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Greater equal operator on a matrix.
     | 
     | greater_equal_constant_folder(client,
@@ -7501,8 +7195,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Value to compare (default: 1)
@@ -7512,14 +7205,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -7541,8 +7232,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7600,8 +7290,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_not_equal_folder(client,
@@ -7614,8 +7303,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -7627,14 +7315,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -7658,8 +7344,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7708,8 +7393,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Maximum of a matrix.
     | 
     | max_folder(client,
@@ -7719,8 +7403,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param infolder: Input folder folder
@@ -7729,14 +7412,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -7758,8 +7439,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7814,8 +7494,7 @@ class val:
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
      extension_file_mask_in=".npy",
-     extension_file_values_out=".txt",
-     skip_existing_files = False):
+     extension_file_values_out=".txt"):
       '''
     | 
     | values_masked_assign_folder(client,
@@ -7828,8 +7507,7 @@ class val:
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
     |      extension_folder_mask_in=".npy",
-    |      extension_folder_values_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".txt" )
 
 :param folder_values1_in: input folder [.txt or .npy]
 :param folder_values2_in: input folder [.txt or .npy]
@@ -7841,14 +7519,12 @@ class val:
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_mask_in: File extension of files in folder for folder_mask_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -7874,8 +7550,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -7928,8 +7603,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_in=".txt",
-     extension_file_out=".txt",
-     skip_existing_files = False):
+     extension_file_out=".txt"):
       '''Substrings replacement in an ASCII file
     | 
     | replace_strings_folder(client,
@@ -7940,8 +7614,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_in=".txt",
-    |      extension_folder_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".txt" )
 
 :param replace_from: Comma-separated list of substrings to replace
 :param replace_to: Comma-separated list of replacement substrings
@@ -7951,14 +7624,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_in
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in']
       del all_parameters['folder_out']
@@ -7980,8 +7651,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8035,8 +7705,7 @@ class val:
      manager_instance_type="small",
      extension_infile1=".npy",
      extension_infile2=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Elementwiese greater equal operator on a matrix.
     | 
     | values_greater_equal_folder(client,
@@ -8048,8 +7717,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_infolder1=".npy",
     |      extension_infolder2=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param infolder1: Input folder folder
@@ -8060,14 +7728,12 @@ class val:
 :param extension_infolder1: File extension of files in folder for infolder1
 :param extension_infolder2: File extension of files in folder for infolder2
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder1']
       del all_parameters['infolder2']
@@ -8091,8 +7757,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8145,8 +7810,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Less operator on a matrix.
     | 
     | less_constant_folder(client,
@@ -8157,8 +7821,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Value to compare (default: 1)
@@ -8168,14 +7831,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -8197,8 +7858,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8251,8 +7911,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Subtract a constant value from a matrix.
     | 
     | subtract_constant_folder(client,
@@ -8263,8 +7922,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Constant value to subtract (default: 0.0)
@@ -8274,14 +7932,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -8303,8 +7959,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8358,8 +8013,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_hstack_folder(client,
@@ -8371,8 +8025,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param dtype: data type
 :param folder_values1_in: input folder [.npy, .labels or .txt]
@@ -8383,14 +8036,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -8414,8 +8065,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8472,8 +8122,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_filename_in=".npy",
-     extension_filename_out=".npy",
-     skip_existing_files = False):
+     extension_filename_out=".npy"):
       '''Resize and slice a matrix based on indices.
     | 
     | resize_slice_matrix_folder(client,
@@ -8485,8 +8134,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_foldername_in=".npy",
-    |      extension_foldername_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_foldername_out=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param indices: Indices to slice the matrix (in NumPy slicing convention)
@@ -8497,14 +8145,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_foldername_in: File extension of files in folder for foldername_in
 :param extension_foldername_out: File extension of files in folder for foldername_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['foldername_in']
       del all_parameters['foldername_out']
@@ -8526,8 +8172,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8580,8 +8225,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Sum all values of a matrix.
     | 
     | sum_folder(client,
@@ -8592,8 +8236,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param axis: axis to sum [default -1: no axis is used]
@@ -8603,14 +8246,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -8632,8 +8273,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8686,8 +8326,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Greater operator on a matrix.
     | 
     | greater_constant_folder(client,
@@ -8698,8 +8337,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Value to compare (default: 1)
@@ -8709,14 +8347,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -8738,8 +8374,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8796,8 +8431,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_filename_in=".npy",
-     extension_filename_out=".npy",
-     skip_existing_files = False):
+     extension_filename_out=".npy"):
       '''Perform connected components labeling on a matrix.
     | 
     | connected_components_labeling_folder(client,
@@ -8809,8 +8443,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_foldername_in=".npy",
-    |      extension_foldername_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_foldername_out=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param no_type: Value representing no_type in the matrix (default: 0.0)
@@ -8821,14 +8454,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_foldername_in: File extension of files in folder for foldername_in
 :param extension_foldername_out: File extension of files in folder for foldername_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['foldername_in']
       del all_parameters['foldername_out']
@@ -8850,8 +8481,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -8917,8 +8547,7 @@ class val:
      manager_instance_type="small",
      extension_filename_is=".npy",
      extension_filename_should=".npy",
-     extension_output_file=".npy",
-     skip_existing_files = False):
+     extension_output_file=".npy"):
       '''Compute Euclidean distance from is matrix to should matrix.
     | 
     | values_distance_folder(client,
@@ -8933,8 +8562,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_foldername_is=".npy",
     |      extension_foldername_should=".npy",
-    |      extension_output_folder=".npy",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".npy" )
 
 :param dtype: Data type of the matrices (default: float)
 :param no_type: Value representing no_type in the matrices (default: 0.0)
@@ -8948,14 +8576,12 @@ class val:
 :param extension_foldername_is: File extension of files in folder for foldername_is
 :param extension_foldername_should: File extension of files in folder for foldername_should
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['foldername_is']
       del all_parameters['foldername_should']
@@ -8979,8 +8605,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9034,8 +8659,7 @@ class val:
      manager_instance_type="small",
      extension_infile1=".npy",
      extension_infile2=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Elementwiese greater operator on a matrix.
     | 
     | values_greater_folder(client,
@@ -9047,8 +8671,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_infolder1=".npy",
     |      extension_infolder2=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param infolder1: Input folder folder
@@ -9059,14 +8682,12 @@ class val:
 :param extension_infolder1: File extension of files in folder for infolder1
 :param extension_infolder2: File extension of files in folder for infolder2
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder1']
       del all_parameters['infolder2']
@@ -9090,8 +8711,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9149,8 +8769,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_add_folder(client,
@@ -9163,8 +8782,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -9176,14 +8794,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -9207,8 +8823,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9261,8 +8876,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Not equal operator on a matrix.
     | 
     | not_equal_constant_folder(client,
@@ -9273,8 +8887,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Value to compare (default: 1)
@@ -9284,14 +8897,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -9313,8 +8924,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9367,8 +8977,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Multiply a constant value from a matrix.
     | 
     | multiply_constant_folder(client,
@@ -9379,8 +8988,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Constant value to multiply (default: 1.0)
@@ -9390,14 +8998,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -9419,8 +9025,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9478,8 +9083,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_assign_folder(client,
@@ -9492,8 +9096,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -9505,14 +9108,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -9536,8 +9137,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9590,8 +9190,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_in=".npy",
-     extension_file_out=".txt",
-     skip_existing_files = False):
+     extension_file_out=".txt"):
       '''
     | 
     | sliced_assign_constant_folder(client,
@@ -9602,8 +9201,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_in=".npy",
-    |      extension_folder_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".txt" )
 
 :param indices: indices to slice
 :param constant: constant value to assign
@@ -9613,14 +9211,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_in: File extension of files in folder for folder_in
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_in']
       del all_parameters['folder_out']
@@ -9642,8 +9238,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9696,8 +9291,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_filename_in=".npy",
-     extension_filename_out=".npy",
-     skip_existing_files = False):
+     extension_filename_out=".npy"):
       '''Count unique occurrences of values in a matrix.
     | 
     | count_unique_values_folder(client,
@@ -9708,8 +9302,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_foldername_in=".npy",
-    |      extension_foldername_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_foldername_out=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param ignore: Data value to ignore
@@ -9719,14 +9312,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_foldername_in: File extension of files in folder for foldername_in
 :param extension_foldername_out: File extension of files in folder for foldername_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['foldername_in']
       del all_parameters['foldername_out']
@@ -9748,8 +9339,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9798,8 +9388,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_values_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | hstack_folder(client,
@@ -9809,8 +9398,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_values_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param dtype: data type
 :param folder_values_in: input folder [.npy, .labels or .txt]
@@ -9819,14 +9407,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_values_in: File extension of files in folder for folder_values_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values_in']
       del all_parameters['folder_values_out']
@@ -9848,8 +9434,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -9899,8 +9484,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_mask_in=".npy",
-     extension_file_values_out=".txt",
-     skip_existing_files = False):
+     extension_file_values_out=".txt"):
       '''
     | 
     | mask_subset_folder(client,
@@ -9911,8 +9495,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_mask_in=".npy",
-    |      extension_folder_values_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".txt" )
 
 :param folder_values1_in: input folder [.txt or .npy]
 :param folder_mask_in: input folder that contains [0,1] values
@@ -9922,14 +9505,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_mask_in: File extension of files in folder for folder_mask_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_mask_in']
@@ -9953,8 +9534,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10012,8 +9592,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_multiply_folder(client,
@@ -10026,8 +9605,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -10039,14 +9617,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -10070,8 +9646,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10129,8 +9704,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_equal_folder(client,
@@ -10143,8 +9717,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -10156,14 +9729,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -10187,8 +9758,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10241,8 +9811,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_infile=".npy",
-     extension_outfile=".npy",
-     skip_existing_files = False):
+     extension_outfile=".npy"):
       '''Less equal operator on a matrix.
     | 
     | less_equal_constant_folder(client,
@@ -10253,8 +9822,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_infolder=".npy",
-    |      extension_outfolder=".npy",
-    |      skip_existing_files = False )
+    |      extension_outfolder=".npy" )
 
 :param dtype: Data type of the matrix (default: float)
 :param constant: Value to compare (default: 1)
@@ -10264,14 +9832,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_infolder: File extension of files in folder for infolder
 :param extension_outfolder: File extension of files in folder for outfolder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['infolder']
       del all_parameters['outfolder']
@@ -10293,8 +9859,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10343,8 +9908,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_values_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | vstack_folder(client,
@@ -10354,8 +9918,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_values_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param dtype: data type
 :param folder_values_in: input folder [.npy, .labels or .txt]
@@ -10364,14 +9927,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_values_in: File extension of files in folder for folder_values_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values_in']
       del all_parameters['folder_values_out']
@@ -10393,8 +9954,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10459,8 +10019,7 @@ class val:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_values_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | remap_values_folder(client,
@@ -10474,8 +10033,7 @@ class val:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_values_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param map_in: map in
 :param map_out: map out
@@ -10488,14 +10046,12 @@ class val:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_folder_values_in: File extension of files in folder for folder_values_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values_in']
       del all_parameters['folder_values_out']
@@ -10517,8 +10073,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10576,8 +10131,7 @@ class val:
      manager_instance_type="small",
      extension_file_values1_in=".npy",
      extension_file_values2_in=".npy",
-     extension_file_values_out=".npy",
-     skip_existing_files = False):
+     extension_file_values_out=".npy"):
       '''
     | 
     | values_subtract_folder(client,
@@ -10590,8 +10144,7 @@ class val:
     |      manager_instance_type="small",
     |      extension_folder_values1_in=".npy",
     |      extension_folder_values2_in=".npy",
-    |      extension_folder_values_out=".npy",
-    |      skip_existing_files = False )
+    |      extension_folder_values_out=".npy" )
 
 :param ignore_label: ignore value default: nan
 :param value_subset1: ignore value default: nan
@@ -10603,14 +10156,12 @@ class val:
 :param extension_folder_values1_in: File extension of files in folder for folder_values1_in
 :param extension_folder_values2_in: File extension of files in folder for folder_values2_in
 :param extension_folder_values_out: File extension of files in folder for folder_values_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_values1_in']
       del all_parameters['folder_values2_in']
@@ -10634,8 +10185,7 @@ class val:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10697,8 +10247,7 @@ class image:
      manager_instance_type="small",
      extension_folder_reference="",
      extension_folder_to_retile="",
-     extension_output_folder=".laz",
-     skip_existing_files = False):
+     extension_output_folder=".laz"):
       '''
     | 
     | retile_images_folder(client,
@@ -10711,8 +10260,7 @@ class image:
     |      manager_instance_type="small",
     |      extension_folder_reference=".",
     |      extension_folder_to_retile=".",
-    |      extension_output_folder=".out1",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".out1" )
 
 :param folder_folder_reference: Reference folder with image dimensions and geolocations that should be used for retiling
 :param folder_folder_to_retile: Folder with images that should be retiled to match reference
@@ -10724,14 +10272,12 @@ class image:
 :param extension_folder_reference: File extension of files in folder for folder_folder_reference
 :param extension_folder_to_retile: File extension of files in folder for folder_folder_to_retile
 :param extension_output_folder: File extension of files in folder for folder_output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_folder_reference']
       del all_parameters['folder_folder_to_retile']
@@ -10755,8 +10301,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10801,8 +10346,7 @@ class image:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".tif",
-     extension_output_file=".json",
-     skip_existing_files = False):
+     extension_output_file=".json"):
       '''Obtain metadata of a georeferenced image and save it as a JSON file.
     | 
     | image_metadata_folder(client,
@@ -10811,8 +10355,7 @@ class image:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".tif",
-    |      extension_output_folder=".json",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".json" )
 
 :param input_folder: Input georeferenced image folder
 :param output_folder: Output JSON folder
@@ -10820,14 +10363,12 @@ class image:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -10849,8 +10390,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -10903,8 +10443,7 @@ class image:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".tif",
-     extension_output_file=".tif",
-     skip_existing_files = False):
+     extension_output_file=".tif"):
       '''
     | 
     | resize_image_folder(client,
@@ -10915,8 +10454,7 @@ class image:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".tif",
-    |      extension_output_folder=".tif",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".tif" )
 
 :param new_grid_size: New grid size in meters
 :param compression: Compression method (e.g., deflate, lzw)
@@ -10926,14 +10464,12 @@ class image:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -10955,8 +10491,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11005,8 +10540,7 @@ class image:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".npy",
-     extension_output_file=".tif",
-     skip_existing_files = False):
+     extension_output_file=".tif"):
       '''Convert a matrix to an image.
     | 
     | matrix_to_image_folder(client,
@@ -11016,8 +10550,7 @@ class image:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".npy",
-    |      extension_output_folder=".tif",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".tif" )
 
 :param data_type: Data type of the output image
 :param input_folder: Input matrix folder (either .npy or .txt)
@@ -11026,14 +10559,12 @@ class image:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -11055,8 +10586,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11101,8 +10631,7 @@ class image:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_file=".tif",
-     extension_output_file=".npy",
-     skip_existing_files = False):
+     extension_output_file=".npy"):
       '''Convert an image to a matrix.
     | 
     | image_to_matrix_folder(client,
@@ -11111,8 +10640,7 @@ class image:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folder=".tif",
-    |      extension_output_folder=".npy",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".npy" )
 
 :param input_folder: Input image folder
 :param output_folder: Output matrix folder (either .npy or .txt)
@@ -11120,14 +10648,12 @@ class image:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folder: File extension of files in folder for input_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folder']
       del all_parameters['output_folder']
@@ -11149,8 +10675,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11200,8 +10725,7 @@ class image:
      manager_instance_type="small",
      extension_geotiff_file=".tif",
      extension_pickle_file=".pickle",
-     extension_output_file=".tif",
-     skip_existing_files = False):
+     extension_output_file=".tif"):
       '''Generate an image of a multipolygon filled inside.
     | 
     | polygon_to_image_folder(client,
@@ -11212,8 +10736,7 @@ class image:
     |      manager_instance_type="small",
     |      extension_geotiff_folder=".tif",
     |      extension_pickle_folder=".pickle",
-    |      extension_output_folder=".tif",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".tif" )
 
 :param geotiff_folder: Geotiff folder with size and resolution information
 :param pickle_folder: Pickle folder containing the Shapely polygon
@@ -11223,14 +10746,12 @@ class image:
 :param extension_geotiff_folder: File extension of files in folder for geotiff_folder
 :param extension_pickle_folder: File extension of files in folder for pickle_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['geotiff_folder']
       del all_parameters['pickle_folder']
@@ -11254,8 +10775,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11305,8 +10825,7 @@ class image:
      manager_instance_type="small",
      extension_georeferenced_file=".tif",
      extension_unreferenced_file=".tif",
-     extension_output_file=".tif",
-     skip_existing_files = False):
+     extension_output_file=".tif"):
       '''Assign georeference from a georeferenced image to an unreferenced image.
     | 
     | assign_georeference_folder(client,
@@ -11317,8 +10836,7 @@ class image:
     |      manager_instance_type="small",
     |      extension_georeferenced_folder=".tif",
     |      extension_unreferenced_folder=".tif",
-    |      extension_output_folder=".tif",
-    |      skip_existing_files = False )
+    |      extension_output_folder=".tif" )
 
 :param georeferenced_folder: Georeferenced image folder
 :param unreferenced_folder: Unreferenced image folder
@@ -11328,14 +10846,12 @@ class image:
 :param extension_georeferenced_folder: File extension of files in folder for georeferenced_folder
 :param extension_unreferenced_folder: File extension of files in folder for unreferenced_folder
 :param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['georeferenced_folder']
       del all_parameters['unreferenced_folder']
@@ -11359,8 +10875,7 @@ class image:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11404,29 +10919,25 @@ class sys:
      folder_destination='/folder_destination',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
+     extension_destination=".laz"):
       '''
     | 
     | create_directory_in_cloud_folder(client,
     |      destination='/destination',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_destination=".data",
-    |      skip_existing_files = False )
+    |      extension_destination=".data" )
 
 :param folder_destination: Destionation location on host. default folder: ./data
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_destination']
       del all_parameters['extension_destination']
@@ -11446,8 +10957,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11507,8 +11017,7 @@ class sys:
      port=21,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
+     extension_target=".laz"):
       '''
     | 
     | upload_data_from_cloud_folder(client,
@@ -11520,8 +11029,7 @@ class sys:
     |      port=21,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_target=".data",
-    |      skip_existing_files = False )
+    |      extension_target=".data" )
 
 :param url: destination URL
 :param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
@@ -11532,14 +11040,12 @@ class sys:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['extension_target']
@@ -11559,8 +11065,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11600,29 +11105,25 @@ class sys:
      folder_target='/folder_target',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
+     extension_target=".laz"):
       '''
     | 
     | remove_files_from_cloud_folder(client,
     |      target='/target',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_target=".",
-    |      skip_existing_files = False )
+    |      extension_target="." )
 
 :param folder_target: Target to be deleted
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['extension_target']
@@ -11642,8 +11143,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11704,8 +11204,7 @@ class sys:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_input_files=".txt",
-     extension_output_files=".txt",
-     skip_existing_files = False):
+     extension_output_files=".txt"):
       '''
     | 
     | find_file_paths_folder(client,
@@ -11718,8 +11217,7 @@ class sys:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_input_folders=".txt",
-    |      extension_output_folders=".txt",
-    |      skip_existing_files = False )
+    |      extension_output_folders=".txt" )
 
 :param search_folder:  Folder to traverse for finding files
 :param replace_in: The part to replace in the filenames
@@ -11731,14 +11229,12 @@ class sys:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_input_folders: File extension of files in folder for input_folders
 :param extension_output_folders: File extension of files in folder for output_folders
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['input_folders']
       del all_parameters['output_folders']
@@ -11760,8 +11256,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11806,8 +11301,7 @@ class sys:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_target=".laz",
-     extension_destination=".laz",
-     skip_existing_files = False):
+     extension_destination=".laz"):
       '''
     | 
     | move_file_in_cloud_folder(client,
@@ -11816,8 +11310,7 @@ class sys:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_target=".",
-    |      extension_destination=".",
-    |      skip_existing_files = False )
+    |      extension_destination="." )
 
 :param folder_target: Target to be moved
 :param folder_destination: Destination
@@ -11825,14 +11318,12 @@ class sys:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
 :param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['folder_destination']
@@ -11854,8 +11345,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11900,8 +11390,7 @@ class sys:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_target=".laz",
-     extension_destination=".laz",
-     skip_existing_files = False):
+     extension_destination=".laz"):
       '''
     | 
     | copy_file_in_cloud_folder(client,
@@ -11910,8 +11399,7 @@ class sys:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_target=".",
-    |      extension_destination=".",
-    |      skip_existing_files = False )
+    |      extension_destination="." )
 
 :param folder_target: Target to be moved
 :param folder_destination: Destination
@@ -11919,14 +11407,12 @@ class sys:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
 :param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['folder_destination']
@@ -11948,8 +11434,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -11989,29 +11474,25 @@ class sys:
      folder_target='/folder_target',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_target=".txt",
-     skip_existing_files = False):
+     extension_target=".txt"):
       '''
     | 
     | touch_file_in_cloud_folder(client,
     |      target='/target',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_target=".txt",
-    |      skip_existing_files = False )
+    |      extension_target=".txt" )
 
 :param folder_target: File to be touched
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['extension_target']
@@ -12031,8 +11512,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -12092,8 +11572,7 @@ class sys:
      replace_count=0,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
+     extension_target=".laz"):
       '''
     | 
     | rename_file_in_cloud_folder(client,
@@ -12105,8 +11584,7 @@ class sys:
     |      replace_count=0,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_target=".",
-    |      skip_existing_files = False )
+    |      extension_target="." )
 
 :param prefix: add prefix
 :param suffix: add suffix
@@ -12117,14 +11595,12 @@ class sys:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['extension_target']
@@ -12144,8 +11620,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -12190,8 +11665,7 @@ class sys:
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_target=".laz",
-     extension_file_out=".txt",
-     skip_existing_files = False):
+     extension_file_out=".txt"):
       '''
     | 
     | list_files_in_cloud_folder(client,
@@ -12200,8 +11674,7 @@ class sys:
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_target=".folder/",
-    |      extension_folder_out=".txt",
-    |      skip_existing_files = False )
+    |      extension_folder_out=".txt" )
 
 :param folder_target: Target to be listet
 :param folder_out: output_folder
@@ -12209,14 +11682,12 @@ class sys:
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
 :param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
       del all_parameters['folder_out']
@@ -12238,8 +11709,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
@@ -12303,8 +11773,7 @@ class sys:
      port=21,
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
+     extension_destination=".laz"):
       '''
     | 
     | download_data_to_cloud_folder(client,
@@ -12317,8 +11786,7 @@ class sys:
     |      port=21,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_destination=".data",
-    |      skip_existing_files = False )
+    |      extension_destination=".data" )
 
 :param url: URL to data
 :param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
@@ -12330,14 +11798,12 @@ class sys:
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
 '''
 
       all_parameters = locals().copy()
       del all_parameters['client']
       del all_parameters['worker_instance_type']
       del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
 
       del all_parameters['folder_destination']
       del all_parameters['extension_destination']
@@ -12357,8 +11823,7 @@ class sys:
         "parameters": parameters,
         "extensions": extensions,
         "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
+        "instance_type": manager_instance_type
       }
 
       return command_request(
