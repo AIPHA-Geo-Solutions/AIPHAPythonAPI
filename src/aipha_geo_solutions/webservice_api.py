@@ -104,7 +104,40 @@ def command_request(
   return r
 
 def execute(requests):
-    return grequests.map(requests, size=25)
+  all_responses = [None] * len(requests)
+  
+  open_requests = requests
+  open_request_idx = [idx for idx in range(len(requests))]
+  
+  def exception_handler(request, exception):
+    print("Request failed")
+    print(str(exception))
+    return None
+  
+  req_size = 25
+  while len(open_requests) > 0:
+    print("open requests", len(open_requests))
+    this_open_requests = open_requests[:min(req_size, len(open_requests))]
+    responses = grequests.map(this_open_requests, exception_handler=exception_handler)
+    too_many_requests = False
+    for idx in range(len(responses)):
+      if responses[idx] is not None:
+        if responses[idx].status_code == 500:
+          too_many_requests = True
+          continue
+        all_responses[open_request_idx[idx]] = responses[idx]
+    open_requests = []
+    open_request_idx = []
+    for idx in range(len(all_responses)):
+      if all_responses[idx] is None:
+        open_requests.append(requests[idx])
+        open_request_idx.append(idx)
+    if too_many_requests:
+      print("...Too many operator-requests... Waiting for operators to finish")
+      time.sleep(2)
+
+  #return responses in the order of requests
+  return all_responses
 
 def running_services_request(
         username,
@@ -148,6 +181,7 @@ def finished_services_request(
     try:
         r = requests.post(url, json=payload, verify=verifySSL)
         if r.status_code == 200:
+          result = json.loads(r.text)
           break
         time.sleep(3)
     except:
@@ -155,9 +189,9 @@ def finished_services_request(
   try:
     result = json.loads(r.text)
     if 'error' in result:
-        raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
+      raise RuntimeError('AIPHAProcessingError: ' + str(result['error']))
   except:
-      raise RuntimeError('AIPHAProcessingError: ' + r.text)
+    pass
   return result
 
 
