@@ -240,6 +240,3855 @@ def sleep_infinity_folder(client,
 
 
 
+class sys:
+   def create_directory_in_cloud(client,
+     destination='data',
+     instance_type='x2large'):
+      '''
+    | 
+    | create_directory_in_cloud( client,
+    |      destination='data',
+    |      instance_type='x2large' )
+
+:param destination: Destionation location on host. default folder: ./data
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "create directory in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def create_directory_in_cloud_folder(client,
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | create_directory_in_cloud_folder(client,
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_destination=".data",
+    |      skip_existing_files = False )
+
+:param folder_destination: Destionation location on host. default folder: ./data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "create directory in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_data_from_cloud(client,
+     url='',
+     target='data',
+     protocol='',
+     username='',
+     password='',
+     port=21,
+     instance_type='x2large'):
+      '''
+    | 
+    | upload_data_from_cloud( client,
+    |      url='',
+    |      target='data',
+    |      protocol='',
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      instance_type='x2large' )
+
+:param url: destination URL
+:param target: Target location on host for upload. default folder: ./data
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param username: Username
+:param password: Password
+:param port: port
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "upload data from cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_data_from_cloud_folder(client,
+     url='',
+     folder_target='/folder_target',
+     protocol='',
+     username='',
+     password='',
+     port=21,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | upload_data_from_cloud_folder(client,
+    |      url='',
+    |      target='/target',
+    |      protocol='',
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".data",
+    |      skip_existing_files = False )
+
+:param url: destination URL
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param username: Username
+:param password: Password
+:param port: port
+:param folder_target: Target location on host for upload. default folder: ./data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "upload data from cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_corresponding_path(client,
+     original_file='path.txt',
+     original_identifier_file='idx.txt',
+     corresponding_file='cor.txt',
+     output_file='res.txt',
+     selection_criteria='oldest',
+     default_value='__original__',
+     instance_type='x2large'):
+      '''
+    | 
+    | select_corresponding_path( client,
+    |      original_file='path.txt',
+    |      original_identifier_file='idx.txt',
+    |      corresponding_file='cor.txt',
+    |      output_file='res.txt',
+    |      selection_criteria='oldest',
+    |      default_value='__original__',
+    |      instance_type='x2large' )
+
+:param original_file: original paths
+:param original_identifier_file: original identifiers
+:param corresponding_file: corresponding paths
+:param output_file: output file
+:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
+:param default_value: default value if no corresponding path is found
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "select corresponding path",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_corresponding_path_folder(client,
+     original_folder='/original_folder',
+     original_identifier_folder='/original_identifier_folder',
+     corresponding_folder='/corresponding_folder',
+     output_folder='/output_folder',
+     selection_criteria='oldest',
+     default_value='__original__',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_original_file=".txt",
+     extension_original_identifier_file=".txt",
+     extension_corresponding_file=".txt",
+     extension_output_file=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | select_corresponding_path_folder(client,
+    |      original_folder='/original_folder',
+    |      original_identifier_folder='/original_identifier_folder',
+    |      corresponding_folder='/corresponding_folder',
+    |      output_folder='/output_folder',
+    |      selection_criteria='oldest',
+    |      default_value='__original__',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_original_folder=".txt",
+    |      extension_original_identifier_folder=".txt",
+    |      extension_corresponding_folder=".txt",
+    |      extension_output_folder=".txt",
+    |      skip_existing_files = False )
+
+:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
+:param default_value: default value if no corresponding path is found
+:param original_folder: original folders
+:param original_identifier_folder: original identifiers
+:param corresponding_folder: corresponding folders
+:param output_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_original_folder: File extension of files in folder for original_folder
+:param extension_original_identifier_folder: File extension of files in folder for original_identifier_folder
+:param extension_corresponding_folder: File extension of files in folder for corresponding_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['original_folder']
+      del all_parameters['original_identifier_folder']
+      del all_parameters['corresponding_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_original_file']
+      del all_parameters['extension_original_identifier_file']
+      del all_parameters['extension_corresponding_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "original_file,original_identifier_file,corresponding_file,output_file"
+      folders = original_folder + "," + original_identifier_folder + "," + corresponding_folder + "," + output_folder
+      extensions = extension_original_file + "," + extension_original_identifier_file + "," + extension_corresponding_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "select corresponding path" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remove_files_from_cloud(client,
+     target='',
+     instance_type='x2large'):
+      '''
+    | 
+    | remove_files_from_cloud( client,
+    |      target='',
+    |      instance_type='x2large' )
+
+:param target: Target to be deleted
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "remove files from cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remove_files_from_cloud_folder(client,
+     folder_target='/folder_target',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | remove_files_from_cloud_folder(client,
+    |      target='/target',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be deleted
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "remove files from cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def split_path(client,
+     in_path='',
+     out_path='',
+     split_type='filename',
+     instance_type='x2large'):
+      '''
+    | 
+    | split_path( client,
+    |      in_path='',
+    |      out_path='',
+    |      split_type='filename',
+    |      instance_type='x2large' )
+
+:param in_path: input path
+:param out_path: output path
+:param split_type: split type: [filename, dirname, basename, ext]
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "split path",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def split_path_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     split_type='filename',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_path=".laz",
+     extension_out_path=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | split_path_folder(client,
+    |      in_folder='/in_folder',
+    |      out_folder='/out_folder',
+    |      split_type='filename',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".",
+    |      extension_out_folder=".",
+    |      skip_existing_files = False )
+
+:param split_type: split type: [filename, dirname, basename, ext]
+:param in_folder: input folder
+:param out_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder: File extension of files in folder for out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_path']
+      del all_parameters['extension_out_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_path,out_path"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_path + "," + extension_out_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "split path" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def find_file_paths(client,
+     input_files='files.txt',
+     output_files='paths.txt',
+     search_folder='/search_folder',
+     replace_in='',
+     replace_out='',
+     substrings='',
+     instance_type='x2large'):
+      '''
+    | 
+    | find_file_paths( client,
+    |      input_files='files.txt',
+    |      output_files='paths.txt',
+    |      search_folder='/search_folder',
+    |      replace_in='',
+    |      replace_out='',
+    |      substrings='',
+    |      instance_type='x2large' )
+
+:param input_files: File containing the list of filenames
+:param output_files: Path to save the modified filelist
+:param search_folder:  Folder to traverse for finding files
+:param replace_in: The part to replace in the filenames
+:param replace_out: The new part to replace with
+:param substrings:  a list of substrings that need to occure in the file paths to be vallid
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "find file paths",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def find_file_paths_folder(client,
+     input_folders='/input_folders',
+     output_folders='/output_folders',
+     search_folder='/search_folder',
+     replace_in='',
+     replace_out='',
+     substrings='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_files=".txt",
+     extension_output_files=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | find_file_paths_folder(client,
+    |      input_folders='/input_folders',
+    |      output_folders='/output_folders',
+    |      search_folder='/search_folder',
+    |      replace_in='',
+    |      replace_out='',
+    |      substrings='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folders=".txt",
+    |      extension_output_folders=".txt",
+    |      skip_existing_files = False )
+
+:param search_folder:  Folder to traverse for finding files
+:param replace_in: The part to replace in the filenames
+:param replace_out: The new part to replace with
+:param substrings:  a list of substrings that need to occure in the file paths to be vallid
+:param input_folders: File containing the list of foldernames
+:param output_folders: Path to save the modified folderlist
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folders: File extension of files in folder for input_folders
+:param extension_output_folders: File extension of files in folder for output_folders
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folders']
+      del all_parameters['output_folders']
+      del all_parameters['extension_input_files']
+      del all_parameters['extension_output_files']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_files,output_files"
+      folders = input_folders + "," + output_folders
+      extensions = extension_input_files + "," + extension_output_files
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "find file paths" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def move_file_in_cloud(client,
+     target='',
+     destination='',
+     instance_type='x2large'):
+      '''
+    | 
+    | move_file_in_cloud( client,
+    |      target='',
+    |      destination='',
+    |      instance_type='x2large' )
+
+:param target: Target to be moved
+:param destination: Destination
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "move file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def move_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | move_file_in_cloud_folder(client,
+    |      target='/target',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      extension_destination=".",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be moved
+:param folder_destination: Destination
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "move file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def copy_file_in_cloud(client,
+     target='',
+     destination='',
+     instance_type='x2large'):
+      '''
+    | 
+    | copy_file_in_cloud( client,
+    |      target='',
+    |      destination='',
+    |      instance_type='x2large' )
+
+:param target: Target to be moved
+:param destination: Destination
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "copy file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def copy_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | copy_file_in_cloud_folder(client,
+    |      target='/target',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      extension_destination=".",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be moved
+:param folder_destination: Destination
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "copy file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def touch_file_in_cloud(client,
+     target='file.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | touch_file_in_cloud( client,
+    |      target='file.txt',
+    |      instance_type='x2large' )
+
+:param target: File to be touched
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "touch file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def touch_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | touch_file_in_cloud_folder(client,
+    |      target='/target',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".txt",
+    |      skip_existing_files = False )
+
+:param folder_target: File to be touched
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "touch file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_by_identifier(client,
+     original_folder='original_folder',
+     original_identifier_file='idx.txt',
+     output_folder='output_folder',
+     instance_type='x2large'):
+      '''
+    | 
+    | select_by_identifier( client,
+    |      original_folder='original_folder',
+    |      original_identifier_file='idx.txt',
+    |      output_folder='output_folder',
+    |      instance_type='x2large' )
+
+:param original_folder: original folder
+:param original_identifier_file: original identifiers
+:param output_folder: output folder
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "select by identifier",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_by_identifier_folder(client,
+     folder_original_folder='/folder_original_folder',
+     original_identifier_folder='/original_identifier_folder',
+     folder_output_folder='/folder_output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_original_folder=".laz",
+     extension_original_identifier_file=".txt",
+     extension_output_folder=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | select_by_identifier_folder(client,
+    |      original_folder='/original_folder',
+    |      original_identifier_folder='/original_identifier_folder',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_original_folder=".original_folder",
+    |      extension_original_identifier_folder=".txt",
+    |      extension_output_folder=".output_folder",
+    |      skip_existing_files = False )
+
+:param folder_original_folder: original folder
+:param original_identifier_folder: original identifiers
+:param folder_output_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_original_folder: File extension of files in folder for folder_original_folder
+:param extension_original_identifier_folder: File extension of files in folder for original_identifier_folder
+:param extension_output_folder: File extension of files in folder for folder_output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_original_folder']
+      del all_parameters['original_identifier_folder']
+      del all_parameters['folder_output_folder']
+      del all_parameters['extension_original_folder']
+      del all_parameters['extension_original_identifier_file']
+      del all_parameters['extension_output_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "original_folder,original_identifier_file,output_folder"
+      folders = folder_original_folder + "," + original_identifier_folder + "," + folder_output_folder
+      extensions = extension_original_folder + "," + extension_original_identifier_file + "," + extension_output_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "select by identifier" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def recursive_list(client,
+     target='target/',
+     destination='output.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | recursive_list( client,
+    |      target='target/',
+    |      destination='output.txt',
+    |      instance_type='x2large' )
+
+:param target: Target folder to be listed recursively
+:param destination: Output file
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "recursive list",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def recursive_list_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | recursive_list_folder(client,
+    |      target='/target',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".target/",
+    |      extension_destination=".txt",
+    |      skip_existing_files = False )
+
+:param folder_target: Target folder to be listed recursively
+:param folder_destination: Output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "recursive list" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def rename_file_in_cloud(client,
+     target='',
+     prefix='',
+     suffix='',
+     replace_from='',
+     replace_to='',
+     replace_count=0,
+     instance_type='x2large'):
+      '''
+    | 
+    | rename_file_in_cloud( client,
+    |      target='',
+    |      prefix='',
+    |      suffix='',
+    |      replace_from='',
+    |      replace_to='',
+    |      replace_count=0,
+    |      instance_type='x2large' )
+
+:param target: Target to be renamed
+:param prefix: add prefix
+:param suffix: add suffix
+:param replace_from: replace string in filename
+:param replace_to: replace string in filename
+:param replace_count: replace string in filename
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "rename file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def rename_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     prefix='',
+     suffix='',
+     replace_from='',
+     replace_to='',
+     replace_count=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | rename_file_in_cloud_folder(client,
+    |      target='/target',
+    |      prefix='',
+    |      suffix='',
+    |      replace_from='',
+    |      replace_to='',
+    |      replace_count=0,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      skip_existing_files = False )
+
+:param prefix: add prefix
+:param suffix: add suffix
+:param replace_from: replace string in filename
+:param replace_to: replace string in filename
+:param replace_count: replace string in filename
+:param folder_target: Target to be renamed
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "rename file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def list_files_in_cloud(client,
+     target='folder/',
+     file_out='files.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | list_files_in_cloud( client,
+    |      target='folder/',
+    |      file_out='files.txt',
+    |      instance_type='x2large' )
+
+:param target: Target to be listet
+:param file_out: output_file
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "list files in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def list_files_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_out='/folder_out',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_file_out=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | list_files_in_cloud_folder(client,
+    |      target='/target',
+    |      folder_out='/folder_out',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".folder/",
+    |      extension_folder_out=".txt",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be listet
+:param folder_out: output_folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_out']
+      del all_parameters['extension_target']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,file_out"
+      folders = folder_target + "," + folder_out
+      extensions = extension_target + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "list files in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_data_to_cloud(client,
+     url='',
+     destination='data',
+     protocol='',
+     download_type=0,
+     username='',
+     password='',
+     port=21,
+     instance_type='x2large'):
+      '''
+    | 
+    | download_data_to_cloud( client,
+    |      url='',
+    |      destination='data',
+    |      protocol='',
+    |      download_type=0,
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      instance_type='x2large' )
+
+:param url: URL to data
+:param destination: Destionation location on host. default folder: ./data
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param download_type: download type: 0: all files from folder, 1: individual file
+:param username: Username
+:param password: Password
+:param port: port
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "download data to cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_data_to_cloud_folder(client,
+     url='',
+     folder_destination='/folder_destination',
+     protocol='',
+     download_type=0,
+     username='',
+     password='',
+     port=21,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | download_data_to_cloud_folder(client,
+    |      url='',
+    |      destination='/destination',
+    |      protocol='',
+    |      download_type=0,
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_destination=".data",
+    |      skip_existing_files = False )
+
+:param url: URL to data
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param download_type: download type: 0: all files from folder, 1: individual file
+:param username: Username
+:param password: Password
+:param port: port
+:param folder_destination: Destionation location on host. default folder: ./data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "download data to cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class ml3d:
+   def semantic_training_scf(client,
+     data_in_path='/data/files/',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     max_epochs=500,
+     learning_rate=0.01,
+     learning_rate_decay=0.1,
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     instance_type='x2large'):
+      '''
+    | 
+    | semantic_training_scf( client,
+    |      data_in_path='/data/files/',
+    |      out_model_parameters_path='trained_model/model_1',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      label_name='classification',
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      learning_rate_decay=0.1,
+    |      feature_dimensions='12,48,96,192,384',
+    |      batch_size=2,
+    |      instance_type='x2large' )
+
+:param data_in_path:  path to folder that contains the training data
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param learning_rate_decay: learning rate decay
+:param feature_dimensions: feature dimensions
+:param batch_size: batch_size
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic training scf",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_scf_folder(client,
+     data_in_folder='/data_in_folder',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     max_epochs=500,
+     learning_rate=0.01,
+     learning_rate_decay=0.1,
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | semantic_training_scf_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      out_model_parameters_path='trained_model/model_1',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      label_name='classification',
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      learning_rate_decay=0.1,
+    |      feature_dimensions='12,48,96,192,384',
+    |      batch_size=2,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder="./data/files/",
+    |      skip_existing_files = False )
+
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param learning_rate_decay: learning rate decay
+:param feature_dimensions: feature dimensions
+:param batch_size: batch_size
+:param data_in_folder:  folder to folder that contains the training data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['extension_data_in_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path"
+      folders = data_in_folder
+      extensions = extension_data_in_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic training scf" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_scf(client,
+     data_in_path='file.laz',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     results_labels_path='result.labels',
+     in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+     results_probabilities_path='result_probs.npy',
+     number_of_votes=5,
+     instance_type='x2large'):
+      '''
+    | 
+    | semantic_inference_scf( client,
+    |      data_in_path='file.laz',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      label_name='classification',
+    |      feature_dimensions='12,48,96,192,384',
+    |      batch_size=2,
+    |      results_labels_path='result.labels',
+    |      in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+    |      results_probabilities_path='result_probs.npy',
+    |      number_of_votes=5,
+    |      instance_type='x2large' )
+
+:param data_in_path:  path to file that contains the training data
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param feature_dimensions: feature dimensions
+:param batch_size: batch_size
+:param results_labels_path:  path to labels
+:param in_model_parameters_path:  path to model
+:param results_probabilities_path:  path to probabilities
+:param number_of_votes: number of votes to vote for a class
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic inference scf",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_scf_folder(client,
+     data_in_folder='/data_in_folder',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     feature_dimensions='12,48,96,192,384',
+     batch_size=2,
+     results_labels_folder='/results_labels_folder',
+     in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+     results_probabilities_folder='/results_probabilities_folder',
+     number_of_votes=5,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     extension_results_labels_path=".labels",
+     extension_results_probabilities_path=".npy",
+     skip_existing_files = False):
+      '''
+    | 
+    | semantic_inference_scf_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      label_name='classification',
+    |      feature_dimensions='12,48,96,192,384',
+    |      batch_size=2,
+    |      results_labels_folder='/results_labels_folder',
+    |      in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+    |      results_probabilities_folder='/results_probabilities_folder',
+    |      number_of_votes=5,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder=".laz",
+    |      extension_results_labels_folder=".labels",
+    |      extension_results_probabilities_folder=".npy",
+    |      skip_existing_files = False )
+
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param feature_dimensions: feature dimensions
+:param batch_size: batch_size
+:param in_model_parameters_path:  path to model
+:param number_of_votes: number of votes to vote for a class
+:param data_in_folder:  folder to folder that contains the training data
+:param results_labels_folder:  folder to labels
+:param results_probabilities_folder:  folder to probabilities
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param extension_results_labels_folder: File extension of files in folder for results_labels_folder
+:param extension_results_probabilities_folder: File extension of files in folder for results_probabilities_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['results_labels_folder']
+      del all_parameters['results_probabilities_folder']
+      del all_parameters['extension_data_in_path']
+      del all_parameters['extension_results_labels_path']
+      del all_parameters['extension_results_probabilities_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path,results_labels_path,results_probabilities_path"
+      folders = data_in_folder + "," + results_labels_folder + "," + results_probabilities_folder
+      extensions = extension_data_in_path + "," + extension_results_labels_path + "," + extension_results_probabilities_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic inference scf" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_rfcr(client,
+     data_in_path='/data/files/',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     resolution=0.06,
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     learning_rate_decay=0.1,
+     learning_momentum=0.98,
+     learning_gradient_clip_norm=100,
+     first_features_dim=128,
+     instance_type='x2large'):
+      '''
+    | 
+    | semantic_training_rfcr( client,
+    |      data_in_path='/data/files/',
+    |      out_model_parameters_path='trained_model/model_1',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      label_name='classification',
+    |      resolution=0.06,
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      batch_size=10,
+    |      learning_rate_decay=0.1,
+    |      learning_momentum=0.98,
+    |      learning_gradient_clip_norm=100,
+    |      first_features_dim=128,
+    |      instance_type='x2large' )
+
+:param data_in_path:  path to folder that contains the training data
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param batch_size: batch size
+:param learning_rate_decay: learning rate decay
+:param learning_momentum: learning momentum
+:param learning_gradient_clip_norm: learning gradient clip threshold
+:param first_features_dim: dimension of the first feature maps
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic training rfcr",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_rfcr_folder(client,
+     data_in_folder='/data_in_folder',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     label_name='classification',
+     resolution=0.06,
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     learning_rate_decay=0.1,
+     learning_momentum=0.98,
+     learning_gradient_clip_norm=100,
+     first_features_dim=128,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | semantic_training_rfcr_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      out_model_parameters_path='trained_model/model_1',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      label_name='classification',
+    |      resolution=0.06,
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      batch_size=10,
+    |      learning_rate_decay=0.1,
+    |      learning_momentum=0.98,
+    |      learning_gradient_clip_norm=100,
+    |      first_features_dim=128,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder="./data/files/",
+    |      skip_existing_files = False )
+
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param batch_size: batch size
+:param learning_rate_decay: learning rate decay
+:param learning_momentum: learning momentum
+:param learning_gradient_clip_norm: learning gradient clip threshold
+:param first_features_dim: dimension of the first feature maps
+:param data_in_folder:  folder to folder that contains the training data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['extension_data_in_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path"
+      folders = data_in_folder
+      extensions = extension_data_in_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic training rfcr" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_rfcr(client,
+     data_in_path='data.laz',
+     results_labels_path='result_labels.labels',
+     results_probabilities_path='result_probabilities.npy',
+     in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+     number_of_votes=5,
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     instance_type='x2large'):
+      '''
+    | 
+    | semantic_inference_rfcr( client,
+    |      data_in_path='data.laz',
+    |      results_labels_path='result_labels.labels',
+    |      results_probabilities_path='result_probabilities.npy',
+    |      in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+    |      number_of_votes=5,
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      instance_type='x2large' )
+
+:param data_in_path:  path to data
+:param results_labels_path:  path to labels
+:param results_probabilities_path:  path to probabilities
+:param in_model_parameters_path:  path to model
+:param number_of_votes: number of votes to vote for a class
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic inference rfcr",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_rfcr_folder(client,
+     data_in_folder='/data_in_folder',
+     results_labels_folder='/results_labels_folder',
+     results_probabilities_folder='/results_probabilities_folder',
+     in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+     number_of_votes=5,
+     feature_names='red,green,blue',
+     point_names='x,y,z',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     extension_results_labels_path=".labels",
+     extension_results_probabilities_path=".npy",
+     skip_existing_files = False):
+      '''
+    | 
+    | semantic_inference_rfcr_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      results_labels_folder='/results_labels_folder',
+    |      results_probabilities_folder='/results_probabilities_folder',
+    |      in_model_parameters_path='results/Log_2022-11-10_11-42-05',
+    |      number_of_votes=5,
+    |      feature_names='red,green,blue',
+    |      point_names='x,y,z',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder=".laz",
+    |      extension_results_labels_folder=".labels",
+    |      extension_results_probabilities_folder=".npy",
+    |      skip_existing_files = False )
+
+:param in_model_parameters_path:  path to model
+:param number_of_votes: number of votes to vote for a class
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param data_in_folder:  folder to data
+:param results_labels_folder:  folder to labels
+:param results_probabilities_folder:  folder to probabilities
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param extension_results_labels_folder: File extension of files in folder for results_labels_folder
+:param extension_results_probabilities_folder: File extension of files in folder for results_probabilities_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['results_labels_folder']
+      del all_parameters['results_probabilities_folder']
+      del all_parameters['extension_data_in_path']
+      del all_parameters['extension_results_labels_path']
+      del all_parameters['extension_results_probabilities_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path,results_labels_path,results_probabilities_path"
+      folders = data_in_folder + "," + results_labels_folder + "," + results_probabilities_folder
+      extensions = extension_data_in_path + "," + extension_results_labels_path + "," + extension_results_probabilities_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic inference rfcr" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def wireframe_estimation_inference(client,
+     in_files='data_eval',
+     out_result_files='result_wireframes',
+     in_model_path='parameters_wireframe',
+     batch_size=1,
+     instance_type='x2large'):
+      '''[hidden] Wireframe estimation inference
+    | 
+    | wireframe_estimation_inference( client,
+    |      in_files='data_eval',
+    |      out_result_files='result_wireframes',
+    |      in_model_path='parameters_wireframe',
+    |      batch_size=1,
+    |      instance_type='x2large' )
+
+:param in_files: input files or directory with training data
+:param out_result_files: output files containing the wireframes
+:param in_model_path:  model path
+:param batch_size: batch size for training
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "wireframe estimation inference",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def wireframe_estimation_inference_folder(client,
+     in_folders='/in_folders',
+     out_result_folders='/out_result_folders',
+     in_model_path='parameters_wireframe',
+     batch_size=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_files=".laz",
+     extension_out_result_files=".laz",
+     skip_existing_files = False):
+      '''[hidden] Wireframe estimation inference
+    | 
+    | wireframe_estimation_inference_folder(client,
+    |      in_folders='/in_folders',
+    |      out_result_folders='/out_result_folders',
+    |      in_model_path='parameters_wireframe',
+    |      batch_size=1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folders=".data_eval",
+    |      extension_out_result_folders=".result_wireframes",
+    |      skip_existing_files = False )
+
+:param in_model_path:  model path
+:param batch_size: batch size for training
+:param in_folders: input folders or directory with training data
+:param out_result_folders: output folders containing the wireframes
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folders: File extension of files in folder for in_folders
+:param extension_out_result_folders: File extension of files in folder for out_result_folders
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folders']
+      del all_parameters['out_result_folders']
+      del all_parameters['extension_in_files']
+      del all_parameters['extension_out_result_files']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_files,out_result_files"
+      folders = in_folders + "," + out_result_folders
+      extensions = extension_in_files + "," + extension_out_result_files
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "wireframe estimation inference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def vertices_estimation_inference(client,
+     in_files='data_eval',
+     out_files='result_vertices',
+     in_model_path='parameters_model_test',
+     batch_size=1,
+     instance_type='x2large'):
+      '''
+    | 
+    | vertices_estimation_inference( client,
+    |      in_files='data_eval',
+    |      out_files='result_vertices',
+    |      in_model_path='parameters_model_test',
+    |      batch_size=1,
+    |      instance_type='x2large' )
+
+:param in_files: input files or directory with training data
+:param out_files: output files containing the vertices
+:param in_model_path:  model path
+:param batch_size: batch size for training
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "vertices estimation inference",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def vertices_estimation_inference_folder(client,
+     in_folders='/in_folders',
+     out_folders='/out_folders',
+     in_model_path='parameters_model_test',
+     batch_size=1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_files=".laz",
+     extension_out_files=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | vertices_estimation_inference_folder(client,
+    |      in_folders='/in_folders',
+    |      out_folders='/out_folders',
+    |      in_model_path='parameters_model_test',
+    |      batch_size=1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folders=".data_eval",
+    |      extension_out_folders=".result_vertices",
+    |      skip_existing_files = False )
+
+:param in_model_path:  model path
+:param batch_size: batch size for training
+:param in_folders: input folders or directory with training data
+:param out_folders: output folders containing the vertices
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folders: File extension of files in folder for in_folders
+:param extension_out_folders: File extension of files in folder for out_folders
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folders']
+      del all_parameters['out_folders']
+      del all_parameters['extension_in_files']
+      del all_parameters['extension_out_files']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_files,out_files"
+      folders = in_folders + "," + out_folders
+      extensions = extension_in_files + "," + extension_out_files
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "vertices estimation inference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def wireframe_estimation_training(client,
+     in_folder='data_train',
+     in_wireframe_folder='data_train_wireframe',
+     out_model_path='parameters_wireframe',
+     voxel_size=0.02,
+     zero_centering='True',
+     point_names='X,Y,Z',
+     feature_names='',
+     label_names='classification',
+     num_classes=1,
+     label_scales='0.01',
+     learning_rate=5e-6,
+     learning_decay=0.999,
+     num_epochs=2000000,
+     regularization_decay=1e-9,
+     batch_size=5 ,
+     save_after_epochs=100,
+     backbone_type='MinkUNet18B',
+     head_type_prob='HeadPointwise',
+     criterion_type_prob='L1Sum',
+     hidden_layers=8,
+     max_interpolation_distance=0.75,
+     dist_threshold=0.35,
+     score_threshold=0.4,
+     point_estimation_layers=3,
+     point_estimation_channels=8,
+     criterion_type_point='L1Sum',
+     wireframe_criterion_type='BCESum',
+     wireframe_estimation_layers=3,
+     wireframe_estimation_channels=8,
+     weight_pred=1,
+     weight_prob=1,
+     weight_reconstruction=4.5,
+     weight_wireframe=10,
+     knn_line=10,
+     distance_line=0.4,
+     probabilistic='True',
+     store_in_memory='True',
+     mode_wireframe_estimation='knn',
+     instance_type='x2large'):
+      '''[hidden] wireframe estimation training
+    | 
+    | wireframe_estimation_training( client,
+    |      in_folder='data_train',
+    |      in_wireframe_folder='data_train_wireframe',
+    |      out_model_path='parameters_wireframe',
+    |      voxel_size=0.02,
+    |      zero_centering='True',
+    |      point_names='X,Y,Z',
+    |      feature_names='',
+    |      label_names='classification',
+    |      num_classes=1,
+    |      label_scales='0.01',
+    |      learning_rate=5e-6,
+    |      learning_decay=0.999,
+    |      num_epochs=2000000,
+    |      regularization_decay=1e-9,
+    |      batch_size=5 ,
+    |      save_after_epochs=100,
+    |      backbone_type='MinkUNet18B',
+    |      head_type_prob='HeadPointwise',
+    |      criterion_type_prob='L1Sum',
+    |      hidden_layers=8,
+    |      max_interpolation_distance=0.75,
+    |      dist_threshold=0.35,
+    |      score_threshold=0.4,
+    |      point_estimation_layers=3,
+    |      point_estimation_channels=8,
+    |      criterion_type_point='L1Sum',
+    |      wireframe_criterion_type='BCESum',
+    |      wireframe_estimation_layers=3,
+    |      wireframe_estimation_channels=8,
+    |      weight_pred=1,
+    |      weight_prob=1,
+    |      weight_reconstruction=4.5,
+    |      weight_wireframe=10,
+    |      knn_line=10,
+    |      distance_line=0.4,
+    |      probabilistic='True',
+    |      store_in_memory='True',
+    |      mode_wireframe_estimation='knn',
+    |      instance_type='x2large' )
+
+:param in_folder: input directory with training data
+:param in_wireframe_folder: input directory with corresponding wireframe data
+:param out_model_path:  model path
+:param voxel_size: voxel size
+:param zero_centering: zero centering
+:param point_names: point names
+:param feature_names: feature names
+:param label_names: label names
+:param num_classes: number of classes
+:param label_scales: label scales
+:param learning_rate: learning rate
+:param learning_decay: learning rate decay
+:param num_epochs: number of epochs
+:param regularization_decay: regularization decay
+:param batch_size: batch size for training
+:param save_after_epochs: save after epochs
+:param backbone_type: model type of backbone network
+:param head_type_prob: model type of head network
+:param criterion_type_prob: model type of criterion
+:param hidden_layers: number of hidden layers
+:param max_interpolation_distance: maximum distance to interpolate occluded points
+:param dist_threshold: distance threshold for non-maxima suppression
+:param score_threshold: score threshold for non-maxima suppression
+:param point_estimation_layers: number of hidden layers for point estimation
+:param point_estimation_channels: number of channels for point estimation
+:param criterion_type_point: model type of criterion for point estimation
+:param wireframe_criterion_type: model type of criterion for wireframe estimation
+:param wireframe_estimation_layers: number of hidden layers for wireframe estimation
+:param wireframe_estimation_channels: number of channels for wireframe estimation
+:param weight_pred: weight for point estimation
+:param weight_prob: weight for probability estimation
+:param weight_reconstruction: weight for reconstruction
+:param weight_wireframe: weight for wireframe estimation
+:param knn_line: number of nearest neighbours for line estimation
+:param distance_line: distance threshold for line estimation
+:param probabilistic: probabilistic
+:param store_in_memory: store in memory
+:param mode_wireframe_estimation: wireframe mode
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "wireframe estimation training",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def wireframe_estimation_training_folder(client,
+     folder_in_folder='/folder_in_folder',
+     folder_in_wireframe_folder='/folder_in_wireframe_folder',
+     out_model_path='parameters_wireframe',
+     voxel_size=0.02,
+     zero_centering='True',
+     point_names='X,Y,Z',
+     feature_names='',
+     label_names='classification',
+     num_classes=1,
+     label_scales='0.01',
+     learning_rate=5e-6,
+     learning_decay=0.999,
+     num_epochs=2000000,
+     regularization_decay=1e-9,
+     batch_size=5 ,
+     save_after_epochs=100,
+     backbone_type='MinkUNet18B',
+     head_type_prob='HeadPointwise',
+     criterion_type_prob='L1Sum',
+     hidden_layers=8,
+     max_interpolation_distance=0.75,
+     dist_threshold=0.35,
+     score_threshold=0.4,
+     point_estimation_layers=3,
+     point_estimation_channels=8,
+     criterion_type_point='L1Sum',
+     wireframe_criterion_type='BCESum',
+     wireframe_estimation_layers=3,
+     wireframe_estimation_channels=8,
+     weight_pred=1,
+     weight_prob=1,
+     weight_reconstruction=4.5,
+     weight_wireframe=10,
+     knn_line=10,
+     distance_line=0.4,
+     probabilistic='True',
+     store_in_memory='True',
+     mode_wireframe_estimation='knn',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_folder=".laz",
+     extension_in_wireframe_folder=".laz",
+     skip_existing_files = False):
+      '''[hidden] wireframe estimation training
+    | 
+    | wireframe_estimation_training_folder(client,
+    |      in_folder='/in_folder',
+    |      in_wireframe_folder='/in_wireframe_folder',
+    |      out_model_path='parameters_wireframe',
+    |      voxel_size=0.02,
+    |      zero_centering='True',
+    |      point_names='X,Y,Z',
+    |      feature_names='',
+    |      label_names='classification',
+    |      num_classes=1,
+    |      label_scales='0.01',
+    |      learning_rate=5e-6,
+    |      learning_decay=0.999,
+    |      num_epochs=2000000,
+    |      regularization_decay=1e-9,
+    |      batch_size=5 ,
+    |      save_after_epochs=100,
+    |      backbone_type='MinkUNet18B',
+    |      head_type_prob='HeadPointwise',
+    |      criterion_type_prob='L1Sum',
+    |      hidden_layers=8,
+    |      max_interpolation_distance=0.75,
+    |      dist_threshold=0.35,
+    |      score_threshold=0.4,
+    |      point_estimation_layers=3,
+    |      point_estimation_channels=8,
+    |      criterion_type_point='L1Sum',
+    |      wireframe_criterion_type='BCESum',
+    |      wireframe_estimation_layers=3,
+    |      wireframe_estimation_channels=8,
+    |      weight_pred=1,
+    |      weight_prob=1,
+    |      weight_reconstruction=4.5,
+    |      weight_wireframe=10,
+    |      knn_line=10,
+    |      distance_line=0.4,
+    |      probabilistic='True',
+    |      store_in_memory='True',
+    |      mode_wireframe_estimation='knn',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".data_train",
+    |      extension_in_wireframe_folder=".data_train_wireframe",
+    |      skip_existing_files = False )
+
+:param out_model_path:  model path
+:param voxel_size: voxel size
+:param zero_centering: zero centering
+:param point_names: point names
+:param feature_names: feature names
+:param label_names: label names
+:param num_classes: number of classes
+:param label_scales: label scales
+:param learning_rate: learning rate
+:param learning_decay: learning rate decay
+:param num_epochs: number of epochs
+:param regularization_decay: regularization decay
+:param batch_size: batch size for training
+:param save_after_epochs: save after epochs
+:param backbone_type: model type of backbone network
+:param head_type_prob: model type of head network
+:param criterion_type_prob: model type of criterion
+:param hidden_layers: number of hidden layers
+:param max_interpolation_distance: maximum distance to interpolate occluded points
+:param dist_threshold: distance threshold for non-maxima suppression
+:param score_threshold: score threshold for non-maxima suppression
+:param point_estimation_layers: number of hidden layers for point estimation
+:param point_estimation_channels: number of channels for point estimation
+:param criterion_type_point: model type of criterion for point estimation
+:param wireframe_criterion_type: model type of criterion for wireframe estimation
+:param wireframe_estimation_layers: number of hidden layers for wireframe estimation
+:param wireframe_estimation_channels: number of channels for wireframe estimation
+:param weight_pred: weight for point estimation
+:param weight_prob: weight for probability estimation
+:param weight_reconstruction: weight for reconstruction
+:param weight_wireframe: weight for wireframe estimation
+:param knn_line: number of nearest neighbours for line estimation
+:param distance_line: distance threshold for line estimation
+:param probabilistic: probabilistic
+:param store_in_memory: store in memory
+:param mode_wireframe_estimation: wireframe mode
+:param folder_in_folder: input directory with training data
+:param folder_in_wireframe_folder: input directory with corresponding wireframe data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for folder_in_folder
+:param extension_in_wireframe_folder: File extension of files in folder for folder_in_wireframe_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in_folder']
+      del all_parameters['folder_in_wireframe_folder']
+      del all_parameters['extension_in_folder']
+      del all_parameters['extension_in_wireframe_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_folder,in_wireframe_folder"
+      folders = folder_in_folder + "," + folder_in_wireframe_folder
+      extensions = extension_in_folder + "," + extension_in_wireframe_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "wireframe estimation training" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def universal_training(client,
+     in_folder='data_train',
+     out_model_path='parameters_model_test',
+     voxel_size=0.02,
+     zero_centering='True',
+     point_names='X,Y,Z',
+     feature_names='',
+     label_names='classification',
+     num_classes=1,
+     label_scales='0.01',
+     learning_rate=3e-6,
+     learning_decay=0.9999,
+     num_epochs=200000,
+     regularization_decay=1e-9,
+     batch_size=2,
+     save_after_epochs=100,
+     backbone_type='MinkUNet14A',
+     head_type='HeadPointwise',
+     criterion_type='L1Sum',
+     probabilistic='True',
+     hidden_layers=8,
+     store_in_memory='True',
+     instance_type='x2large'):
+      '''
+    | 
+    | universal_training( client,
+    |      in_folder='data_train',
+    |      out_model_path='parameters_model_test',
+    |      voxel_size=0.02,
+    |      zero_centering='True',
+    |      point_names='X,Y,Z',
+    |      feature_names='',
+    |      label_names='classification',
+    |      num_classes=1,
+    |      label_scales='0.01',
+    |      learning_rate=3e-6,
+    |      learning_decay=0.9999,
+    |      num_epochs=200000,
+    |      regularization_decay=1e-9,
+    |      batch_size=2,
+    |      save_after_epochs=100,
+    |      backbone_type='MinkUNet14A',
+    |      head_type='HeadPointwise',
+    |      criterion_type='L1Sum',
+    |      probabilistic='True',
+    |      hidden_layers=8,
+    |      store_in_memory='True',
+    |      instance_type='x2large' )
+
+:param in_folder: input directory with training data
+:param out_model_path:  model path
+:param voxel_size: voxel size
+:param zero_centering: zero centering
+:param point_names: point names
+:param feature_names: feature names
+:param label_names: label names
+:param num_classes: number of classes
+:param label_scales: label scales
+:param learning_rate: learning rate
+:param learning_decay: learning rate decay
+:param num_epochs: number of epochs
+:param regularization_decay: regularization decay
+:param batch_size: batch size for training
+:param save_after_epochs: save after epochs
+:param backbone_type: model type of backbone network
+:param head_type: model type of head network
+:param criterion_type: model type of criterion
+:param probabilistic: estimate probabilities: labels in [0,1]
+:param hidden_layers: number of hidden layers
+:param store_in_memory: store training data in memory
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "universal training",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def universal_training_folder(client,
+     folder_in_folder='/folder_in_folder',
+     out_model_path='parameters_model_test',
+     voxel_size=0.02,
+     zero_centering='True',
+     point_names='X,Y,Z',
+     feature_names='',
+     label_names='classification',
+     num_classes=1,
+     label_scales='0.01',
+     learning_rate=3e-6,
+     learning_decay=0.9999,
+     num_epochs=200000,
+     regularization_decay=1e-9,
+     batch_size=2,
+     save_after_epochs=100,
+     backbone_type='MinkUNet14A',
+     head_type='HeadPointwise',
+     criterion_type='L1Sum',
+     probabilistic='True',
+     hidden_layers=8,
+     store_in_memory='True',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_folder=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | universal_training_folder(client,
+    |      in_folder='/in_folder',
+    |      out_model_path='parameters_model_test',
+    |      voxel_size=0.02,
+    |      zero_centering='True',
+    |      point_names='X,Y,Z',
+    |      feature_names='',
+    |      label_names='classification',
+    |      num_classes=1,
+    |      label_scales='0.01',
+    |      learning_rate=3e-6,
+    |      learning_decay=0.9999,
+    |      num_epochs=200000,
+    |      regularization_decay=1e-9,
+    |      batch_size=2,
+    |      save_after_epochs=100,
+    |      backbone_type='MinkUNet14A',
+    |      head_type='HeadPointwise',
+    |      criterion_type='L1Sum',
+    |      probabilistic='True',
+    |      hidden_layers=8,
+    |      store_in_memory='True',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".data_train",
+    |      skip_existing_files = False )
+
+:param out_model_path:  model path
+:param voxel_size: voxel size
+:param zero_centering: zero centering
+:param point_names: point names
+:param feature_names: feature names
+:param label_names: label names
+:param num_classes: number of classes
+:param label_scales: label scales
+:param learning_rate: learning rate
+:param learning_decay: learning rate decay
+:param num_epochs: number of epochs
+:param regularization_decay: regularization decay
+:param batch_size: batch size for training
+:param save_after_epochs: save after epochs
+:param backbone_type: model type of backbone network
+:param head_type: model type of head network
+:param criterion_type: model type of criterion
+:param probabilistic: estimate probabilities: labels in [0,1]
+:param hidden_layers: number of hidden layers
+:param store_in_memory: store training data in memory
+:param folder_in_folder: input directory with training data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for folder_in_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in_folder']
+      del all_parameters['extension_in_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_folder"
+      folders = folder_in_folder
+      extensions = extension_in_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "universal training" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def vertices_estimation_training(client,
+     in_folder='data_train',
+     in_vertices_folder='data_train_vertices',
+     out_model_path='parameters_model_test',
+     voxel_size=0.02,
+     zero_centering='True',
+     point_names='X,Y,Z',
+     feature_names='',
+     label_names='classification',
+     num_classes=1,
+     label_scales='0.01',
+     learning_rate=1e-5,
+     learning_decay=0.999,
+     num_epochs=2000000,
+     regularization_decay=1e-9,
+     batch_size=5 ,
+     save_after_epochs=100,
+     backbone_type='MinkUNet14A',
+     head_type_prob='HeadPointwise',
+     criterion_type_prob='L1Sum',
+     hidden_layers=8,
+     max_interpolation_distance=0.75,
+     dist_threshold=0.35,
+     score_threshold=0.4,
+     point_estimation_layers=3,
+     point_estimation_channels=8,
+     criterion_type_point='L1Sum',
+     weight_pred=1.0,
+     weight_prob=1.0,
+     weight_reconstruction=4.0,
+     probabilistic='True',
+     instance_type='x2large'):
+      '''
+    | 
+    | vertices_estimation_training( client,
+    |      in_folder='data_train',
+    |      in_vertices_folder='data_train_vertices',
+    |      out_model_path='parameters_model_test',
+    |      voxel_size=0.02,
+    |      zero_centering='True',
+    |      point_names='X,Y,Z',
+    |      feature_names='',
+    |      label_names='classification',
+    |      num_classes=1,
+    |      label_scales='0.01',
+    |      learning_rate=1e-5,
+    |      learning_decay=0.999,
+    |      num_epochs=2000000,
+    |      regularization_decay=1e-9,
+    |      batch_size=5 ,
+    |      save_after_epochs=100,
+    |      backbone_type='MinkUNet14A',
+    |      head_type_prob='HeadPointwise',
+    |      criterion_type_prob='L1Sum',
+    |      hidden_layers=8,
+    |      max_interpolation_distance=0.75,
+    |      dist_threshold=0.35,
+    |      score_threshold=0.4,
+    |      point_estimation_layers=3,
+    |      point_estimation_channels=8,
+    |      criterion_type_point='L1Sum',
+    |      weight_pred=1.0,
+    |      weight_prob=1.0,
+    |      weight_reconstruction=4.0,
+    |      probabilistic='True',
+    |      instance_type='x2large' )
+
+:param in_folder: input directory with training data
+:param in_vertices_folder: input directory with corresponding vertex data
+:param out_model_path:  model path
+:param voxel_size: voxel size
+:param zero_centering: zero centering
+:param point_names: point names
+:param feature_names: feature names
+:param label_names: label names
+:param num_classes: number of classes
+:param label_scales: label scales
+:param learning_rate: learning rate
+:param learning_decay: learning rate decay
+:param num_epochs: number of epochs
+:param regularization_decay: regularization decay
+:param batch_size: batch size for training
+:param save_after_epochs: save after epochs
+:param backbone_type: model type of backbone network
+:param head_type_prob: model type of head network
+:param criterion_type_prob: model type of criterion
+:param hidden_layers: number of hidden layers
+:param max_interpolation_distance: maximum distance to interpolate occluded points
+:param dist_threshold: distance threshold for non-maximum suppression
+:param score_threshold: score threshold for non-maximum suppression
+:param point_estimation_layers: number of hidden layers for point estimation
+:param point_estimation_channels: number of channels for point estimation
+:param criterion_type_point: model type of criterion for point estimation
+:param weight_pred: weight for point estimation
+:param weight_prob: weight for probability estimation
+:param weight_reconstruction: weight for reconstruction estimation
+:param probabilistic: probabilistic
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "vertices estimation training",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def vertices_estimation_training_folder(client,
+     folder_in_folder='/folder_in_folder',
+     folder_in_vertices_folder='/folder_in_vertices_folder',
+     out_model_path='parameters_model_test',
+     voxel_size=0.02,
+     zero_centering='True',
+     point_names='X,Y,Z',
+     feature_names='',
+     label_names='classification',
+     num_classes=1,
+     label_scales='0.01',
+     learning_rate=1e-5,
+     learning_decay=0.999,
+     num_epochs=2000000,
+     regularization_decay=1e-9,
+     batch_size=5 ,
+     save_after_epochs=100,
+     backbone_type='MinkUNet14A',
+     head_type_prob='HeadPointwise',
+     criterion_type_prob='L1Sum',
+     hidden_layers=8,
+     max_interpolation_distance=0.75,
+     dist_threshold=0.35,
+     score_threshold=0.4,
+     point_estimation_layers=3,
+     point_estimation_channels=8,
+     criterion_type_point='L1Sum',
+     weight_pred=1.0,
+     weight_prob=1.0,
+     weight_reconstruction=4.0,
+     probabilistic='True',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_folder=".laz",
+     extension_in_vertices_folder=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | vertices_estimation_training_folder(client,
+    |      in_folder='/in_folder',
+    |      in_vertices_folder='/in_vertices_folder',
+    |      out_model_path='parameters_model_test',
+    |      voxel_size=0.02,
+    |      zero_centering='True',
+    |      point_names='X,Y,Z',
+    |      feature_names='',
+    |      label_names='classification',
+    |      num_classes=1,
+    |      label_scales='0.01',
+    |      learning_rate=1e-5,
+    |      learning_decay=0.999,
+    |      num_epochs=2000000,
+    |      regularization_decay=1e-9,
+    |      batch_size=5 ,
+    |      save_after_epochs=100,
+    |      backbone_type='MinkUNet14A',
+    |      head_type_prob='HeadPointwise',
+    |      criterion_type_prob='L1Sum',
+    |      hidden_layers=8,
+    |      max_interpolation_distance=0.75,
+    |      dist_threshold=0.35,
+    |      score_threshold=0.4,
+    |      point_estimation_layers=3,
+    |      point_estimation_channels=8,
+    |      criterion_type_point='L1Sum',
+    |      weight_pred=1.0,
+    |      weight_prob=1.0,
+    |      weight_reconstruction=4.0,
+    |      probabilistic='True',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".data_train",
+    |      extension_in_vertices_folder=".data_train_vertices",
+    |      skip_existing_files = False )
+
+:param out_model_path:  model path
+:param voxel_size: voxel size
+:param zero_centering: zero centering
+:param point_names: point names
+:param feature_names: feature names
+:param label_names: label names
+:param num_classes: number of classes
+:param label_scales: label scales
+:param learning_rate: learning rate
+:param learning_decay: learning rate decay
+:param num_epochs: number of epochs
+:param regularization_decay: regularization decay
+:param batch_size: batch size for training
+:param save_after_epochs: save after epochs
+:param backbone_type: model type of backbone network
+:param head_type_prob: model type of head network
+:param criterion_type_prob: model type of criterion
+:param hidden_layers: number of hidden layers
+:param max_interpolation_distance: maximum distance to interpolate occluded points
+:param dist_threshold: distance threshold for non-maximum suppression
+:param score_threshold: score threshold for non-maximum suppression
+:param point_estimation_layers: number of hidden layers for point estimation
+:param point_estimation_channels: number of channels for point estimation
+:param criterion_type_point: model type of criterion for point estimation
+:param weight_pred: weight for point estimation
+:param weight_prob: weight for probability estimation
+:param weight_reconstruction: weight for reconstruction estimation
+:param probabilistic: probabilistic
+:param folder_in_folder: input directory with training data
+:param folder_in_vertices_folder: input directory with corresponding vertex data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for folder_in_folder
+:param extension_in_vertices_folder: File extension of files in folder for folder_in_vertices_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in_folder']
+      del all_parameters['folder_in_vertices_folder']
+      del all_parameters['extension_in_folder']
+      del all_parameters['extension_in_vertices_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_folder,in_vertices_folder"
+      folders = folder_in_folder + "," + folder_in_vertices_folder
+      extensions = extension_in_folder + "," + extension_in_vertices_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "vertices estimation training" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def universal_inference(client,
+     in_files='data_eval',
+     out_files='results',
+     in_model_path='parameters_model',
+     instance_type='x2large'):
+      '''
+    | 
+    | universal_inference( client,
+    |      in_files='data_eval',
+    |      out_files='results',
+    |      in_model_path='parameters_model',
+    |      instance_type='x2large' )
+
+:param in_files: input files with training data
+:param out_files: output files with training data
+:param in_model_path:  model path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "universal inference",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def universal_inference_folder(client,
+     in_folders='/in_folders',
+     out_folders='/out_folders',
+     in_model_path='parameters_model',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_files=".laz",
+     extension_out_files=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | universal_inference_folder(client,
+    |      in_folders='/in_folders',
+    |      out_folders='/out_folders',
+    |      in_model_path='parameters_model',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folders=".data_eval",
+    |      extension_out_folders=".results",
+    |      skip_existing_files = False )
+
+:param in_model_path:  model path
+:param in_folders: input folders with training data
+:param out_folders: output folders with training data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folders: File extension of files in folder for in_folders
+:param extension_out_folders: File extension of files in folder for out_folders
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folders']
+      del all_parameters['out_folders']
+      del all_parameters['extension_in_files']
+      del all_parameters['extension_out_files']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_files,out_files"
+      folders = in_folders + "," + out_folders
+      extensions = extension_in_files + "," + extension_out_files
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "universal inference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class tdp:
+   def point_cloud_classification_inference(client,
+     file_in='file.laz',
+     file_out='file.labels',
+     model_path='network_parameters',
+     cols_data='X,Y,Z',
+     cols_labels='classification',
+     instance_type='P2'):
+      '''
+    | 
+    | point_cloud_classification_inference( client,
+    |      file_in='file.laz',
+    |      file_out='file.labels',
+    |      model_path='network_parameters',
+    |      cols_data='X,Y,Z',
+    |      cols_labels='classification',
+    |      instance_type='P2' )
+
+:param file_in: input file
+:param file_out: results file
+:param model_path:  path to model
+:param cols_data: attributes used
+:param cols_labels: label name
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "point cloud classification inference",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_classification_inference_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     model_path='network_parameters',
+     cols_data='X,Y,Z',
+     cols_labels='classification',
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_file_in=".laz",
+     extension_file_out=".labels",
+     skip_existing_files = False):
+      '''
+    | 
+    | point_cloud_classification_inference_folder(client,
+    |      folder_in='/folder_in',
+    |      folder_out='/folder_out',
+    |      model_path='network_parameters',
+    |      cols_data='X,Y,Z',
+    |      cols_labels='classification',
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_folder_in=".laz",
+    |      extension_folder_out=".labels",
+    |      skip_existing_files = False )
+
+:param model_path:  path to model
+:param cols_data: attributes used
+:param cols_labels: label name
+:param folder_in: input folder
+:param folder_out: results folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in: File extension of files in folder for folder_in
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "point cloud classification inference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def convert_laz_point_formats(client,
+     file_in='file.laz',
+     file_out='file.labels',
+     format=7,
+     instance_type='P2'):
+      '''
+    | 
+    | convert_laz_point_formats( client,
+    |      file_in='file.laz',
+    |      file_out='file.labels',
+    |      format=7,
+    |      instance_type='P2' )
+
+:param file_in: input file
+:param file_out: results file
+:param format: format
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "convert laz point formats",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def convert_laz_point_formats_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     format=7,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_file_in=".laz",
+     extension_file_out=".labels",
+     skip_existing_files = False):
+      '''
+    | 
+    | convert_laz_point_formats_folder(client,
+    |      folder_in='/folder_in',
+    |      folder_out='/folder_out',
+    |      format=7,
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_folder_in=".laz",
+    |      extension_folder_out=".labels",
+    |      skip_existing_files = False )
+
+:param format: format
+:param folder_in: input folder
+:param folder_out: results folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in: File extension of files in folder for folder_in
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "convert laz point formats" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def segment_objects(client,
+     in_points_file='laz_files_test',
+     in_labels_file='laz_files_test',
+     out_directory='segmented_object',
+     out_prefix='object',
+     label_col='classification',
+     object_class=68,
+     max_distance=2,
+     min_points=100,
+     instance_type='P2'):
+      '''
+    | 
+    | segment_objects( client,
+    |      in_points_file='laz_files_test',
+    |      in_labels_file='laz_files_test',
+    |      out_directory='segmented_object',
+    |      out_prefix='object',
+    |      label_col='classification',
+    |      object_class=68,
+    |      max_distance=2,
+    |      min_points=100,
+    |      instance_type='P2' )
+
+:param in_points_file: input file points
+:param in_labels_file: input file labels
+:param out_directory: output directory
+:param out_prefix: output filename prefix
+:param label_col: label column id
+:param object_class: obejct class
+:param max_distance: maximum distance for segmentation
+:param min_points: minimum number of points
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "segment objects",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def segment_objects_folder(client,
+     in_points_folder='/in_points_folder',
+     in_labels_folder='/in_labels_folder',
+     out_directory='segmented_object',
+     out_prefix='object',
+     label_col='classification',
+     object_class=68,
+     max_distance=2,
+     min_points=100,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_in_points_file=".laz",
+     extension_in_labels_file=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | segment_objects_folder(client,
+    |      in_points_folder='/in_points_folder',
+    |      in_labels_folder='/in_labels_folder',
+    |      out_directory='segmented_object',
+    |      out_prefix='object',
+    |      label_col='classification',
+    |      object_class=68,
+    |      max_distance=2,
+    |      min_points=100,
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_in_points_folder=".laz_files_test",
+    |      extension_in_labels_folder=".laz_files_test",
+    |      skip_existing_files = False )
+
+:param out_directory: output directory
+:param out_prefix: output filename prefix
+:param label_col: label column id
+:param object_class: obejct class
+:param max_distance: maximum distance for segmentation
+:param min_points: minimum number of points
+:param in_points_folder: input folder points
+:param in_labels_folder: input folder labels
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_points_folder: File extension of files in folder for in_points_folder
+:param extension_in_labels_folder: File extension of files in folder for in_labels_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_points_folder']
+      del all_parameters['in_labels_folder']
+      del all_parameters['extension_in_points_file']
+      del all_parameters['extension_in_labels_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_points_file,in_labels_file"
+      folders = in_points_folder + "," + in_labels_folder
+      extensions = extension_in_points_file + "," + extension_in_labels_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "segment objects" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_filter_label_noise(client,
+     file_in_data='file.laz',
+     file_in_labels='file.labels',
+     file_out='result.laz',
+     k_nearest_neighbours=5,
+     sigma=10.,
+     dim=3,
+     invalid_label=0,
+     instance_type='P2'):
+      '''
+    | 
+    | point_cloud_filter_label_noise( client,
+    |      file_in_data='file.laz',
+    |      file_in_labels='file.labels',
+    |      file_out='result.laz',
+    |      k_nearest_neighbours=5,
+    |      sigma=10.,
+    |      dim=3,
+    |      invalid_label=0,
+    |      instance_type='P2' )
+
+:param file_in_data: input file data
+:param file_in_labels: input file labels
+:param file_out: output file
+:param k_nearest_neighbours: k nearest neighbours
+:param sigma: sigma
+:param dim: dim
+:param invalid_label: invalid class label
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "point cloud filter label noise",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_filter_label_noise_folder(client,
+     folder_in_data='/folder_in_data',
+     folder_in_labels='/folder_in_labels',
+     folder_out='/folder_out',
+     k_nearest_neighbours=5,
+     sigma=10.,
+     dim=3,
+     invalid_label=0,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_file_in_data=".laz",
+     extension_file_in_labels=".labels",
+     extension_file_out=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | point_cloud_filter_label_noise_folder(client,
+    |      folder_in_data='/folder_in_data',
+    |      folder_in_labels='/folder_in_labels',
+    |      folder_out='/folder_out',
+    |      k_nearest_neighbours=5,
+    |      sigma=10.,
+    |      dim=3,
+    |      invalid_label=0,
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_folder_in_data=".laz",
+    |      extension_folder_in_labels=".labels",
+    |      extension_folder_out=".laz",
+    |      skip_existing_files = False )
+
+:param k_nearest_neighbours: k nearest neighbours
+:param sigma: sigma
+:param dim: dim
+:param invalid_label: invalid class label
+:param folder_in_data: input folder data
+:param folder_in_labels: input folder labels
+:param folder_out: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in_data: File extension of files in folder for folder_in_data
+:param extension_folder_in_labels: File extension of files in folder for folder_in_labels
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in_data']
+      del all_parameters['folder_in_labels']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in_data']
+      del all_parameters['extension_file_in_labels']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in_data,file_in_labels,file_out"
+      folders = folder_in_data + "," + folder_in_labels + "," + folder_out
+      extensions = extension_file_in_data + "," + extension_file_in_labels + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "point cloud filter label noise" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def tower_displacement(client,
+     laz_in_file_new='new.laz',
+     laz_in_file_old='old.laz',
+     laz_in_file_ref='ref.laz',
+     tower_name='',
+     year_new='2022',
+     year_old='2020',
+     year_ref='2018',
+     results_out_file='result.txt',
+     plots_out_path='plots/',
+     instance_type='P2'):
+      '''
+    | 
+    | tower_displacement( client,
+    |      laz_in_file_new='new.laz',
+    |      laz_in_file_old='old.laz',
+    |      laz_in_file_ref='ref.laz',
+    |      tower_name='',
+    |      year_new='2022',
+    |      year_old='2020',
+    |      year_ref='2018',
+    |      results_out_file='result.txt',
+    |      plots_out_path='plots/',
+    |      instance_type='P2' )
+
+:param laz_in_file_new: laz input folder new data
+:param laz_in_file_old: laz input folder last data
+:param laz_in_file_ref: laz input folder first data
+:param tower_name: tower name
+:param year_new: year of new data
+:param year_old: year of old data
+:param year_ref: year of reference data
+:param results_out_file: result folder path
+:param plots_out_path:  result folder path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "tower displacement",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def tower_displacement_folder(client,
+     laz_in_folder_new='/laz_in_folder_new',
+     laz_in_folder_old='/laz_in_folder_old',
+     laz_in_folder_ref='/laz_in_folder_ref',
+     tower_name='',
+     year_new='2022',
+     year_old='2020',
+     year_ref='2018',
+     results_out_folder='/results_out_folder',
+     plots_out_path='plots/',
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_laz_in_file_new=".laz",
+     extension_laz_in_file_old=".laz",
+     extension_laz_in_file_ref=".laz",
+     extension_results_out_file=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | tower_displacement_folder(client,
+    |      laz_in_folder_new='/laz_in_folder_new',
+    |      laz_in_folder_old='/laz_in_folder_old',
+    |      laz_in_folder_ref='/laz_in_folder_ref',
+    |      tower_name='',
+    |      year_new='2022',
+    |      year_old='2020',
+    |      year_ref='2018',
+    |      results_out_folder='/results_out_folder',
+    |      plots_out_path='plots/',
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_laz_in_folder_new=".laz",
+    |      extension_laz_in_folder_old=".laz",
+    |      extension_laz_in_folder_ref=".laz",
+    |      extension_results_out_folder=".txt",
+    |      skip_existing_files = False )
+
+:param tower_name: tower name
+:param year_new: year of new data
+:param year_old: year of old data
+:param year_ref: year of reference data
+:param plots_out_path:  result folder path
+:param laz_in_folder_new: laz input folder new data
+:param laz_in_folder_old: laz input folder last data
+:param laz_in_folder_ref: laz input folder first data
+:param results_out_folder: result folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_laz_in_folder_new: File extension of files in folder for laz_in_folder_new
+:param extension_laz_in_folder_old: File extension of files in folder for laz_in_folder_old
+:param extension_laz_in_folder_ref: File extension of files in folder for laz_in_folder_ref
+:param extension_results_out_folder: File extension of files in folder for results_out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['laz_in_folder_new']
+      del all_parameters['laz_in_folder_old']
+      del all_parameters['laz_in_folder_ref']
+      del all_parameters['results_out_folder']
+      del all_parameters['extension_laz_in_file_new']
+      del all_parameters['extension_laz_in_file_old']
+      del all_parameters['extension_laz_in_file_ref']
+      del all_parameters['extension_results_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "laz_in_file_new,laz_in_file_old,laz_in_file_ref,results_out_file"
+      folders = laz_in_folder_new + "," + laz_in_folder_old + "," + laz_in_folder_ref + "," + results_out_folder
+      extensions = extension_laz_in_file_new + "," + extension_laz_in_file_old + "," + extension_laz_in_file_ref + "," + extension_results_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "tower displacement" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def merge_and_split_results_csv(client,
+     new_tower_path='new_paths.txt',
+     last_tower_path='last_paths.txt',
+     reference_tower_path='reference_paths.txt',
+     results_path_csv='results.csv',
+     results_plots_path='results_plots',
+     merged_results_path_csv='results/Reports_2023',
+     resturctured_plots_path='results/10-Plots-Tragwerke',
+     input_file_structure_path='input_file_structure.txt',
+     year='2023',
+     instance_type='P2'):
+      '''[atr] Merge results csv
+    | 
+    | merge_and_split_results_csv( client,
+    |      new_tower_path='new_paths.txt',
+    |      last_tower_path='last_paths.txt',
+    |      reference_tower_path='reference_paths.txt',
+    |      results_path_csv='results.csv',
+    |      results_plots_path='results_plots',
+    |      merged_results_path_csv='results/Reports_2023',
+    |      resturctured_plots_path='results/10-Plots-Tragwerke',
+    |      input_file_structure_path='input_file_structure.txt',
+    |      year='2023',
+    |      instance_type='P2' )
+
+:param new_tower_path:  input new path data
+:param last_tower_path:  input last path 
+:param reference_tower_path:  input reference path 
+:param results_path_csv:  input results.csv path 
+:param results_plots_path:  input results_plots path 
+:param merged_results_path_csv:  output path 
+:param resturctured_plots_path:  output path 
+:param input_file_structure_path:  input file structure path 
+:param year: year 
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "merge and split results csv",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def merge_and_split_results_csv_folder(client,
+     new_tower_path='new_paths.txt',
+     last_tower_path='last_paths.txt',
+     reference_tower_path='reference_paths.txt',
+     results_path_csv='results.csv',
+     results_plots_path='results_plots',
+     merged_results_path_csv='results/Reports_2023',
+     resturctured_plots_path='results/10-Plots-Tragwerke',
+     input_file_structure_path='input_file_structure.txt',
+     year='2023',
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     skip_existing_files = False):
+      '''[atr] Merge results csv
+    | 
+    | merge_and_split_results_csv_folder(client,
+    |      new_tower_path='new_paths.txt',
+    |      last_tower_path='last_paths.txt',
+    |      reference_tower_path='reference_paths.txt',
+    |      results_path_csv='results.csv',
+    |      results_plots_path='results_plots',
+    |      merged_results_path_csv='results/Reports_2023',
+    |      resturctured_plots_path='results/10-Plots-Tragwerke',
+    |      input_file_structure_path='input_file_structure.txt',
+    |      year='2023',
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      skip_existing_files = False )
+
+:param new_tower_path:  input new path data
+:param last_tower_path:  input last path 
+:param reference_tower_path:  input reference path 
+:param results_path_csv:  input results.csv path 
+:param results_plots_path:  input results_plots path 
+:param merged_results_path_csv:  output path 
+:param resturctured_plots_path:  output path 
+:param input_file_structure_path:  input file structure path 
+:param year: year 
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = ""
+      folders = ""
+      extensions = ""
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "merge and split results csv" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
 class ops3d:
    def union_point_clouds(client,
      in_files='file1.laz,file2.laz',
@@ -1925,6 +5774,7 @@ class ops3d:
      file_labels_in='labels.npy',
      file_source_out='aligned_points.laz',
      dtype='classification',
+     all_type='',
      instance_type='x2large'):
       '''
     | 
@@ -1933,12 +5783,14 @@ class ops3d:
     |      file_labels_in='labels.npy',
     |      file_source_out='aligned_points.laz',
     |      dtype='classification',
+    |      all_type='',
     |      instance_type='x2large' )
 
 :param file_source_in: input folder data
 :param file_labels_in: input folder labels
 :param file_source_out: output folder
 :param dtype: value
+:param all_type: values to load
 :param instance_type: type of cloud instance used for processing
 '''
 
@@ -1958,6 +5810,7 @@ class ops3d:
      folder_labels_in='/folder_labels_in',
      folder_source_out='/folder_source_out',
      dtype='classification',
+     all_type='',
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_file_source_in=".laz",
@@ -1971,6 +5824,7 @@ class ops3d:
     |      folder_labels_in='/folder_labels_in',
     |      folder_source_out='/folder_source_out',
     |      dtype='classification',
+    |      all_type='',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_folder_source_in=".laz",
@@ -1979,6 +5833,7 @@ class ops3d:
     |      skip_existing_files = False )
 
 :param dtype: value
+:param all_type: values to load
 :param folder_source_in: input folder data
 :param folder_labels_in: input folder labels
 :param folder_source_out: output folder
@@ -2708,1952 +6563,6 @@ class ops3d:
 
 
 
-class shp:
-   def intersecting_polygons(client,
-     input_file='polygon.pickle',
-     comparison_folder='polygons',
-     output_file='list.txt',
-     instance_type='x2large'):
-      '''
-    | 
-    | intersecting_polygons( client,
-    |      input_file='polygon.pickle',
-    |      comparison_folder='polygons',
-    |      output_file='list.txt',
-    |      instance_type='x2large' )
-
-:param input_file: Input file for the polygon
-:param comparison_folder:  Input folder containing polygons for comparison
-:param output_file: Output file for the list of intersecting polygon filenames
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "intersecting polygons",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def intersecting_polygons_folder(client,
-     input_folder='/input_folder',
-     comparison_folder='polygons',
-     output_folder='/output_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".pickle",
-     extension_output_file=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | intersecting_polygons_folder(client,
-    |      input_folder='/input_folder',
-    |      comparison_folder='polygons',
-    |      output_folder='/output_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".pickle",
-    |      extension_output_folder=".txt",
-    |      skip_existing_files = False )
-
-:param comparison_folder:  Input folder containing polygons for comparison
-:param input_folder: Input folder for the polygon
-:param output_folder: Output folder for the list of intersecting polygon foldernames
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,output_file"
-      folders = input_folder + "," + output_folder
-      extensions = extension_input_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "intersecting polygons" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def extract_multipolygons_from_shp(client,
-     shp_file='',
-     out_polygon_folder='polygons/',
-     out_attributes_folder='attributes/',
-     shape_id=-1,
-     name_id=0,
-     instance_type='x2large'):
-      '''
-    | 
-    | extract_multipolygons_from_shp( client,
-    |      shp_file='',
-    |      out_polygon_folder='polygons/',
-    |      out_attributes_folder='attributes/',
-    |      shape_id=-1,
-    |      name_id=0,
-    |      instance_type='x2large' )
-
-:param shp_file: input shp file
-:param out_polygon_folder: folder with polygons from shape file
-:param out_attributes_folder: folder with records from shape file
-:param shape_id: id of polygon: [-1 parses all polygons]
-:param name_id: id of polygon: [-1 ignores name]
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "extract multipolygons from shp",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def extract_multipolygons_from_shp_folder(client,
-     shp_folder='/shp_folder',
-     folder_out_polygon_folder='/folder_out_polygon_folder',
-     folder_out_attributes_folder='/folder_out_attributes_folder',
-     shape_id=-1,
-     name_id=0,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_shp_file=".laz",
-     extension_out_polygon_folder=".laz",
-     extension_out_attributes_folder=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | extract_multipolygons_from_shp_folder(client,
-    |      shp_folder='/shp_folder',
-    |      out_polygon_folder='/out_polygon_folder',
-    |      out_attributes_folder='/out_attributes_folder',
-    |      shape_id=-1,
-    |      name_id=0,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_shp_folder=".",
-    |      extension_out_polygon_folder=".polygons/",
-    |      extension_out_attributes_folder=".attributes/",
-    |      skip_existing_files = False )
-
-:param shape_id: id of polygon: [-1 parses all polygons]
-:param name_id: id of polygon: [-1 ignores name]
-:param shp_folder: input shp folder
-:param folder_out_polygon_folder: folder with polygons from shape folder
-:param folder_out_attributes_folder: folder with records from shape folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_shp_folder: File extension of files in folder for shp_folder
-:param extension_out_polygon_folder: File extension of files in folder for folder_out_polygon_folder
-:param extension_out_attributes_folder: File extension of files in folder for folder_out_attributes_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['shp_folder']
-      del all_parameters['folder_out_polygon_folder']
-      del all_parameters['folder_out_attributes_folder']
-      del all_parameters['extension_shp_file']
-      del all_parameters['extension_out_polygon_folder']
-      del all_parameters['extension_out_attributes_folder']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "shp_file,out_polygon_folder,out_attributes_folder"
-      folders = shp_folder + "," + folder_out_polygon_folder + "," + folder_out_attributes_folder
-      extensions = extension_shp_file + "," + extension_out_polygon_folder + "," + extension_out_attributes_folder
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "extract multipolygons from shp" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def wireframe_to_dxf(client,
-     input_file='vertices.laz',
-     edges_file='edges.npy',
-     output_file='polygon.dxf',
-     instance_type='x2large'):
-      '''
-    | 
-    | wireframe_to_dxf( client,
-    |      input_file='vertices.laz',
-    |      edges_file='edges.npy',
-    |      output_file='polygon.dxf',
-    |      instance_type='x2large' )
-
-:param input_file: Input file for the vertices
-:param edges_file: Input file for the edges
-:param output_file: Output file for the dxf model
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "wireframe to dxf",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def wireframe_to_dxf_folder(client,
-     input_folder='/input_folder',
-     edges_folder='/edges_folder',
-     output_folder='/output_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".laz",
-     extension_edges_file=".npy",
-     extension_output_file=".dxf",
-     skip_existing_files = False):
-      '''
-    | 
-    | wireframe_to_dxf_folder(client,
-    |      input_folder='/input_folder',
-    |      edges_folder='/edges_folder',
-    |      output_folder='/output_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".laz",
-    |      extension_edges_folder=".npy",
-    |      extension_output_folder=".dxf",
-    |      skip_existing_files = False )
-
-:param input_folder: Input folder for the vertices
-:param edges_folder: Input folder for the edges
-:param output_folder: Output folder for the dxf model
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_edges_folder: File extension of files in folder for edges_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['edges_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_edges_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,edges_file,output_file"
-      folders = input_folder + "," + edges_folder + "," + output_folder
-      extensions = extension_input_file + "," + extension_edges_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "wireframe to dxf" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def make_polygon_from_json(client,
-     input_file='in.json',
-     output_file='out.pickle',
-     point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
-     instance_type='x2large'):
-      '''
-    | 
-    | make_polygon_from_json( client,
-    |      input_file='in.json',
-    |      output_file='out.pickle',
-    |      point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
-    |      instance_type='x2large' )
-
-:param input_file: Input file for the json file
-:param output_file: Output file for the polygon file
-:param point_identifiers: Point identifiers for the polygon
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "make polygon from json",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def make_polygon_from_json_folder(client,
-     input_folder='/input_folder',
-     output_folder='/output_folder',
-     point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".json",
-     extension_output_file=".pickle",
-     skip_existing_files = False):
-      '''
-    | 
-    | make_polygon_from_json_folder(client,
-    |      input_folder='/input_folder',
-    |      output_folder='/output_folder',
-    |      point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".json",
-    |      extension_output_folder=".pickle",
-    |      skip_existing_files = False )
-
-:param point_identifiers: Point identifiers for the polygon
-:param input_folder: Input folder for the json folder
-:param output_folder: Output folder for the polygon folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,output_file"
-      folders = input_folder + "," + output_folder
-      extensions = extension_input_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "make polygon from json" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-
-
-
-class ml3d:
-   def semantic_training_rfcr(client,
-     data_in_path='/data/files/',
-     out_model_parameters_path='trained_model/model_1',
-     class_names='1,2,3,4,5,6,7,8',
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     label_name='classification',
-     max_epochs=500,
-     learning_rate=0.01,
-     batch_size=10,
-     learning_rate_decay=0.1,
-     learning_momentum=0.98,
-     learning_gradient_clip_norm=100,
-     instance_type='x2large'):
-      '''
-    | 
-    | semantic_training_rfcr( client,
-    |      data_in_path='/data/files/',
-    |      out_model_parameters_path='trained_model/model_1',
-    |      class_names='1,2,3,4,5,6,7,8',
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      label_name='classification',
-    |      max_epochs=500,
-    |      learning_rate=0.01,
-    |      batch_size=10,
-    |      learning_rate_decay=0.1,
-    |      learning_momentum=0.98,
-    |      learning_gradient_clip_norm=100,
-    |      instance_type='x2large' )
-
-:param data_in_path:  path to folder that contains the training data
-:param out_model_parameters_path:  path to model
-:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param label_name: label name for (las/laz)
-:param max_epochs: maximum number of epochs
-:param learning_rate: learning rate
-:param batch_size: batch size
-:param learning_rate_decay: learning rate decay
-:param learning_momentum: learning momentum
-:param learning_gradient_clip_norm: learning gradient clip threshold
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "semantic training rfcr",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_training_rfcr_folder(client,
-     data_in_folder='/data_in_folder',
-     out_model_parameters_path='trained_model/model_1',
-     class_names='1,2,3,4,5,6,7,8',
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     label_name='classification',
-     max_epochs=500,
-     learning_rate=0.01,
-     batch_size=10,
-     learning_rate_decay=0.1,
-     learning_momentum=0.98,
-     learning_gradient_clip_norm=100,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_data_in_path=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | semantic_training_rfcr_folder(client,
-    |      data_in_folder='/data_in_folder',
-    |      out_model_parameters_path='trained_model/model_1',
-    |      class_names='1,2,3,4,5,6,7,8',
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      label_name='classification',
-    |      max_epochs=500,
-    |      learning_rate=0.01,
-    |      batch_size=10,
-    |      learning_rate_decay=0.1,
-    |      learning_momentum=0.98,
-    |      learning_gradient_clip_norm=100,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_data_in_folder="./data/files/",
-    |      skip_existing_files = False )
-
-:param out_model_parameters_path:  path to model
-:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param label_name: label name for (las/laz)
-:param max_epochs: maximum number of epochs
-:param learning_rate: learning rate
-:param batch_size: batch size
-:param learning_rate_decay: learning rate decay
-:param learning_momentum: learning momentum
-:param learning_gradient_clip_norm: learning gradient clip threshold
-:param data_in_folder:  folder to folder that contains the training data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_data_in_folder: File extension of files in folder for data_in_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['data_in_folder']
-      del all_parameters['extension_data_in_path']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "data_in_path"
-      folders = data_in_folder
-      extensions = extension_data_in_path
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "semantic training rfcr" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_inference_rfcr(client,
-     data_in_path='data.laz',
-     results_labels_path='result_labels.labels',
-     results_probabilities_path='result_probabilities.npy',
-     in_model_parameters_path='results/Log_2022-11-10_11-42-05',
-     number_of_votes=5,
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     instance_type='x2large'):
-      '''
-    | 
-    | semantic_inference_rfcr( client,
-    |      data_in_path='data.laz',
-    |      results_labels_path='result_labels.labels',
-    |      results_probabilities_path='result_probabilities.npy',
-    |      in_model_parameters_path='results/Log_2022-11-10_11-42-05',
-    |      number_of_votes=5,
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      instance_type='x2large' )
-
-:param data_in_path:  path to data
-:param results_labels_path:  path to labels
-:param results_probabilities_path:  path to probabilities
-:param in_model_parameters_path:  path to model
-:param number_of_votes: number of votes to vote for a class
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "semantic inference rfcr",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_inference_rfcr_folder(client,
-     data_in_folder='/data_in_folder',
-     results_labels_folder='/results_labels_folder',
-     results_probabilities_folder='/results_probabilities_folder',
-     in_model_parameters_path='results/Log_2022-11-10_11-42-05',
-     number_of_votes=5,
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_data_in_path=".laz",
-     extension_results_labels_path=".labels",
-     extension_results_probabilities_path=".npy",
-     skip_existing_files = False):
-      '''
-    | 
-    | semantic_inference_rfcr_folder(client,
-    |      data_in_folder='/data_in_folder',
-    |      results_labels_folder='/results_labels_folder',
-    |      results_probabilities_folder='/results_probabilities_folder',
-    |      in_model_parameters_path='results/Log_2022-11-10_11-42-05',
-    |      number_of_votes=5,
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_data_in_folder=".laz",
-    |      extension_results_labels_folder=".labels",
-    |      extension_results_probabilities_folder=".npy",
-    |      skip_existing_files = False )
-
-:param in_model_parameters_path:  path to model
-:param number_of_votes: number of votes to vote for a class
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param data_in_folder:  folder to data
-:param results_labels_folder:  folder to labels
-:param results_probabilities_folder:  folder to probabilities
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_data_in_folder: File extension of files in folder for data_in_folder
-:param extension_results_labels_folder: File extension of files in folder for results_labels_folder
-:param extension_results_probabilities_folder: File extension of files in folder for results_probabilities_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['data_in_folder']
-      del all_parameters['results_labels_folder']
-      del all_parameters['results_probabilities_folder']
-      del all_parameters['extension_data_in_path']
-      del all_parameters['extension_results_labels_path']
-      del all_parameters['extension_results_probabilities_path']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "data_in_path,results_labels_path,results_probabilities_path"
-      folders = data_in_folder + "," + results_labels_folder + "," + results_probabilities_folder
-      extensions = extension_data_in_path + "," + extension_results_labels_path + "," + extension_results_probabilities_path
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "semantic inference rfcr" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_training_scf(client,
-     data_in_path='/data/files/',
-     out_model_parameters_path='trained_model/model_1',
-     class_names='1,2,3,4,5,6,7,8',
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     label_name='classification',
-     max_epochs=500,
-     learning_rate=0.01,
-     learning_rate_decay=0.1,
-     feature_dimensions='12,48,96,192,384',
-     batch_size=2,
-     instance_type='x2large'):
-      '''
-    | 
-    | semantic_training_scf( client,
-    |      data_in_path='/data/files/',
-    |      out_model_parameters_path='trained_model/model_1',
-    |      class_names='1,2,3,4,5,6,7,8',
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      label_name='classification',
-    |      max_epochs=500,
-    |      learning_rate=0.01,
-    |      learning_rate_decay=0.1,
-    |      feature_dimensions='12,48,96,192,384',
-    |      batch_size=2,
-    |      instance_type='x2large' )
-
-:param data_in_path:  path to folder that contains the training data
-:param out_model_parameters_path:  path to model
-:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param label_name: label name for (las/laz)
-:param max_epochs: maximum number of epochs
-:param learning_rate: learning rate
-:param learning_rate_decay: learning rate decay
-:param feature_dimensions: feature dimensions
-:param batch_size: batch_size
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "semantic training scf",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_training_scf_folder(client,
-     data_in_folder='/data_in_folder',
-     out_model_parameters_path='trained_model/model_1',
-     class_names='1,2,3,4,5,6,7,8',
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     label_name='classification',
-     max_epochs=500,
-     learning_rate=0.01,
-     learning_rate_decay=0.1,
-     feature_dimensions='12,48,96,192,384',
-     batch_size=2,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_data_in_path=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | semantic_training_scf_folder(client,
-    |      data_in_folder='/data_in_folder',
-    |      out_model_parameters_path='trained_model/model_1',
-    |      class_names='1,2,3,4,5,6,7,8',
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      label_name='classification',
-    |      max_epochs=500,
-    |      learning_rate=0.01,
-    |      learning_rate_decay=0.1,
-    |      feature_dimensions='12,48,96,192,384',
-    |      batch_size=2,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_data_in_folder="./data/files/",
-    |      skip_existing_files = False )
-
-:param out_model_parameters_path:  path to model
-:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param label_name: label name for (las/laz)
-:param max_epochs: maximum number of epochs
-:param learning_rate: learning rate
-:param learning_rate_decay: learning rate decay
-:param feature_dimensions: feature dimensions
-:param batch_size: batch_size
-:param data_in_folder:  folder to folder that contains the training data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_data_in_folder: File extension of files in folder for data_in_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['data_in_folder']
-      del all_parameters['extension_data_in_path']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "data_in_path"
-      folders = data_in_folder
-      extensions = extension_data_in_path
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "semantic training scf" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_inference_scf(client,
-     data_in_path='file.laz',
-     class_names='1,2,3,4,5,6,7,8',
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     label_name='classification',
-     feature_dimensions='12,48,96,192,384',
-     batch_size=2,
-     results_labels_path='[out] result.labels',
-     in_model_parameters_path='[atr] results/Log_2022-11-10_11-42-05',
-     results_probabilities_path='[out] result_probs.npy',
-     number_of_votes=5,
-     instance_type='x2large'):
-      '''
-    | 
-    | semantic_inference_scf( client,
-    |      data_in_path='file.laz',
-    |      class_names='1,2,3,4,5,6,7,8',
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      label_name='classification',
-    |      feature_dimensions='12,48,96,192,384',
-    |      batch_size=2,
-    |      results_labels_path='[out] result.labels',
-    |      in_model_parameters_path='[atr] results/Log_2022-11-10_11-42-05',
-    |      results_probabilities_path='[out] result_probs.npy',
-    |      number_of_votes=5,
-    |      instance_type='x2large' )
-
-:param data_in_path:  path to file that contains the training data
-:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param label_name: label name for (las/laz)
-:param feature_dimensions: feature dimensions
-:param batch_size: batch_size
-:param results_labels_path: path to labels
-:param in_model_parameters_path: path to model
-:param results_probabilities_path: path to probabilities
-:param number_of_votes: number of votes to vote for a class
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "semantic inference scf",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def semantic_inference_scf_folder(client,
-     data_in_folder='/data_in_folder',
-     class_names='1,2,3,4,5,6,7,8',
-     feature_names='red,green,blue',
-     point_names='x,y,z',
-     label_name='classification',
-     feature_dimensions='12,48,96,192,384',
-     batch_size=2,
-     results_labels_folder='/results_labels_folder',
-     in_model_parameters_folder='/in_model_parameters_folder',
-     results_probabilities_folder='/results_probabilities_folder',
-     number_of_votes=5,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_data_in_path=".laz",
-     extension_results_labels_path=".labels",
-     extension_in_model_parameters_path=".laz",
-     extension_results_probabilities_path=".npy",
-     skip_existing_files = False):
-      '''
-    | 
-    | semantic_inference_scf_folder(client,
-    |      data_in_folder='/data_in_folder',
-    |      class_names='1,2,3,4,5,6,7,8',
-    |      feature_names='red,green,blue',
-    |      point_names='x,y,z',
-    |      label_name='classification',
-    |      feature_dimensions='12,48,96,192,384',
-    |      batch_size=2,
-    |      results_labels_folder='/results_labels_folder',
-    |      in_model_parameters_folder='/in_model_parameters_folder',
-    |      results_probabilities_folder='/results_probabilities_folder',
-    |      number_of_votes=5,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_data_in_folder=".laz",
-    |      extension_results_labels_folder=".labels",
-    |      extension_in_model_parameters_folder=".[atr] results/Log_2022-11-10_11-42-05",
-    |      extension_results_probabilities_folder=".npy",
-    |      skip_existing_files = False )
-
-:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
-:param feature_names: comma separated list of features that are provided
-:param point_names: comma separated list of point identifiers in (las/laz)
-:param label_name: label name for (las/laz)
-:param feature_dimensions: feature dimensions
-:param batch_size: batch_size
-:param number_of_votes: number of votes to vote for a class
-:param data_in_folder:  folder to folder that contains the training data
-:param results_labels_folder: folder to labels
-:param in_model_parameters_folder: folder to model
-:param results_probabilities_folder: folder to probabilities
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_data_in_folder: File extension of files in folder for data_in_folder
-:param extension_results_labels_folder: File extension of files in folder for results_labels_folder
-:param extension_in_model_parameters_folder: File extension of files in folder for in_model_parameters_folder
-:param extension_results_probabilities_folder: File extension of files in folder for results_probabilities_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['data_in_folder']
-      del all_parameters['results_labels_folder']
-      del all_parameters['in_model_parameters_folder']
-      del all_parameters['results_probabilities_folder']
-      del all_parameters['extension_data_in_path']
-      del all_parameters['extension_results_labels_path']
-      del all_parameters['extension_in_model_parameters_path']
-      del all_parameters['extension_results_probabilities_path']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "data_in_path,results_labels_path,in_model_parameters_path,results_probabilities_path"
-      folders = data_in_folder + "," + results_labels_folder + "," + in_model_parameters_folder + "," + results_probabilities_folder
-      extensions = extension_data_in_path + "," + extension_results_labels_path + "," + extension_in_model_parameters_path + "," + extension_results_probabilities_path
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "semantic inference scf" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def wireframe_estimation_inference(client,
-     in_files='data_eval',
-     out_result_files='result_wireframes',
-     in_model_path='parameters_wireframe',
-     batch_size=1,
-     instance_type='x2large'):
-      '''
-    | 
-    | wireframe_estimation_inference( client,
-    |      in_files='data_eval',
-    |      out_result_files='result_wireframes',
-    |      in_model_path='parameters_wireframe',
-    |      batch_size=1,
-    |      instance_type='x2large' )
-
-:param in_files: input files or directory with training data
-:param out_result_files: output files containing the wireframes
-:param in_model_path:  model path
-:param batch_size: batch size for training
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "wireframe estimation inference",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def wireframe_estimation_inference_folder(client,
-     in_folders='/in_folders',
-     out_result_folders='/out_result_folders',
-     in_model_path='parameters_wireframe',
-     batch_size=1,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_files=".laz",
-     extension_out_result_files=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | wireframe_estimation_inference_folder(client,
-    |      in_folders='/in_folders',
-    |      out_result_folders='/out_result_folders',
-    |      in_model_path='parameters_wireframe',
-    |      batch_size=1,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folders=".data_eval",
-    |      extension_out_result_folders=".result_wireframes",
-    |      skip_existing_files = False )
-
-:param in_model_path:  model path
-:param batch_size: batch size for training
-:param in_folders: input folders or directory with training data
-:param out_result_folders: output folders containing the wireframes
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folders: File extension of files in folder for in_folders
-:param extension_out_result_folders: File extension of files in folder for out_result_folders
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['in_folders']
-      del all_parameters['out_result_folders']
-      del all_parameters['extension_in_files']
-      del all_parameters['extension_out_result_files']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_files,out_result_files"
-      folders = in_folders + "," + out_result_folders
-      extensions = extension_in_files + "," + extension_out_result_files
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "wireframe estimation inference" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def vertices_estimation_inference(client,
-     in_files='data_eval',
-     out_files='result_vertices',
-     in_model_path='parameters_model',
-     batch_size=1,
-     instance_type='x2large'):
-      '''
-    | 
-    | vertices_estimation_inference( client,
-    |      in_files='data_eval',
-    |      out_files='result_vertices',
-    |      in_model_path='parameters_model',
-    |      batch_size=1,
-    |      instance_type='x2large' )
-
-:param in_files: input files or directory with training data
-:param out_files: output files containing the vertices
-:param in_model_path:  model path
-:param batch_size: batch size for training
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "vertices estimation inference",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def vertices_estimation_inference_folder(client,
-     in_folders='/in_folders',
-     out_folders='/out_folders',
-     in_model_path='parameters_model',
-     batch_size=1,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_files=".laz",
-     extension_out_files=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | vertices_estimation_inference_folder(client,
-    |      in_folders='/in_folders',
-    |      out_folders='/out_folders',
-    |      in_model_path='parameters_model',
-    |      batch_size=1,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folders=".data_eval",
-    |      extension_out_folders=".result_vertices",
-    |      skip_existing_files = False )
-
-:param in_model_path:  model path
-:param batch_size: batch size for training
-:param in_folders: input folders or directory with training data
-:param out_folders: output folders containing the vertices
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folders: File extension of files in folder for in_folders
-:param extension_out_folders: File extension of files in folder for out_folders
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['in_folders']
-      del all_parameters['out_folders']
-      del all_parameters['extension_in_files']
-      del all_parameters['extension_out_files']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_files,out_files"
-      folders = in_folders + "," + out_folders
-      extensions = extension_in_files + "," + extension_out_files
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "vertices estimation inference" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def wireframe_estimation_training(client,
-     in_folder='data_train',
-     in_wireframe_folder='data_train_wireframe',
-     out_model_path='parameters_wireframe',
-     voxel_size=0.02,
-     zero_centering='True',
-     point_names='X,Y,Z',
-     feature_names='',
-     label_names='classification',
-     num_classes=1,
-     label_scales='0.01',
-     learning_rate=1e-5,
-     learning_decay=0.999,
-     num_epochs=2000000,
-     regularization_decay=1e-9,
-     batch_size=5 ,
-     save_after_epochs=100,
-     backbone_type='MinkUNet14A',
-     head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
-     hidden_layers=8,
-     max_interpolation_distance=0.75,
-     instance_type='x2large'):
-      '''
-    | 
-    | wireframe_estimation_training( client,
-    |      in_folder='data_train',
-    |      in_wireframe_folder='data_train_wireframe',
-    |      out_model_path='parameters_wireframe',
-    |      voxel_size=0.02,
-    |      zero_centering='True',
-    |      point_names='X,Y,Z',
-    |      feature_names='',
-    |      label_names='classification',
-    |      num_classes=1,
-    |      label_scales='0.01',
-    |      learning_rate=1e-5,
-    |      learning_decay=0.999,
-    |      num_epochs=2000000,
-    |      regularization_decay=1e-9,
-    |      batch_size=5 ,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet14A',
-    |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
-    |      hidden_layers=8,
-    |      max_interpolation_distance=0.75,
-    |      instance_type='x2large' )
-
-:param in_folder: input directory with training data
-:param in_wireframe_folder: input directory with corresponding wireframe data
-:param out_model_path:  model path
-:param voxel_size: voxel size
-:param zero_centering: zero centering
-:param point_names: point names
-:param feature_names: feature names
-:param label_names: label names
-:param num_classes: number of classes
-:param label_scales: label scales
-:param learning_rate: learning rate
-:param learning_decay: learning rate decay
-:param num_epochs: number of epochs
-:param regularization_decay: regularization decay
-:param batch_size: batch size for training
-:param save_after_epochs: save after epochs
-:param backbone_type: model type of backbone network
-:param head_type_prob: model type of head network
-:param criterion_type_prob: model type of criterion
-:param hidden_layers: number of hidden layers
-:param max_interpolation_distance: maximum distance to interpolate occluded points
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "wireframe estimation training",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def wireframe_estimation_training_folder(client,
-     folder_in_folder='/folder_in_folder',
-     folder_in_wireframe_folder='/folder_in_wireframe_folder',
-     out_model_path='parameters_wireframe',
-     voxel_size=0.02,
-     zero_centering='True',
-     point_names='X,Y,Z',
-     feature_names='',
-     label_names='classification',
-     num_classes=1,
-     label_scales='0.01',
-     learning_rate=1e-5,
-     learning_decay=0.999,
-     num_epochs=2000000,
-     regularization_decay=1e-9,
-     batch_size=5 ,
-     save_after_epochs=100,
-     backbone_type='MinkUNet14A',
-     head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
-     hidden_layers=8,
-     max_interpolation_distance=0.75,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_folder=".laz",
-     extension_in_wireframe_folder=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | wireframe_estimation_training_folder(client,
-    |      in_folder='/in_folder',
-    |      in_wireframe_folder='/in_wireframe_folder',
-    |      out_model_path='parameters_wireframe',
-    |      voxel_size=0.02,
-    |      zero_centering='True',
-    |      point_names='X,Y,Z',
-    |      feature_names='',
-    |      label_names='classification',
-    |      num_classes=1,
-    |      label_scales='0.01',
-    |      learning_rate=1e-5,
-    |      learning_decay=0.999,
-    |      num_epochs=2000000,
-    |      regularization_decay=1e-9,
-    |      batch_size=5 ,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet14A',
-    |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
-    |      hidden_layers=8,
-    |      max_interpolation_distance=0.75,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folder=".data_train",
-    |      extension_in_wireframe_folder=".data_train_wireframe",
-    |      skip_existing_files = False )
-
-:param out_model_path:  model path
-:param voxel_size: voxel size
-:param zero_centering: zero centering
-:param point_names: point names
-:param feature_names: feature names
-:param label_names: label names
-:param num_classes: number of classes
-:param label_scales: label scales
-:param learning_rate: learning rate
-:param learning_decay: learning rate decay
-:param num_epochs: number of epochs
-:param regularization_decay: regularization decay
-:param batch_size: batch size for training
-:param save_after_epochs: save after epochs
-:param backbone_type: model type of backbone network
-:param head_type_prob: model type of head network
-:param criterion_type_prob: model type of criterion
-:param hidden_layers: number of hidden layers
-:param max_interpolation_distance: maximum distance to interpolate occluded points
-:param folder_in_folder: input directory with training data
-:param folder_in_wireframe_folder: input directory with corresponding wireframe data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folder: File extension of files in folder for folder_in_folder
-:param extension_in_wireframe_folder: File extension of files in folder for folder_in_wireframe_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_in_folder']
-      del all_parameters['folder_in_wireframe_folder']
-      del all_parameters['extension_in_folder']
-      del all_parameters['extension_in_wireframe_folder']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_folder,in_wireframe_folder"
-      folders = folder_in_folder + "," + folder_in_wireframe_folder
-      extensions = extension_in_folder + "," + extension_in_wireframe_folder
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "wireframe estimation training" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def universal_training(client,
-     in_folder='data_train',
-     out_model_path='parameters_model',
-     voxel_size=0.02,
-     zero_centering='True',
-     point_names='X,Y,Z',
-     feature_names='',
-     label_names='classification',
-     num_classes=1,
-     label_scales='0.01',
-     learning_rate=3e-6,
-     learning_decay=0.9999,
-     num_epochs=200000,
-     regularization_decay=1e-9,
-     batch_size=2,
-     save_after_epochs=100,
-     backbone_type='MinkUNet14A',
-     head_type='HeadPointwise',
-     criterion_type='L1Sum',
-     probabilistic='True',
-     hidden_layers=8,
-     instance_type='x2large'):
-      '''
-    | 
-    | universal_training( client,
-    |      in_folder='data_train',
-    |      out_model_path='parameters_model',
-    |      voxel_size=0.02,
-    |      zero_centering='True',
-    |      point_names='X,Y,Z',
-    |      feature_names='',
-    |      label_names='classification',
-    |      num_classes=1,
-    |      label_scales='0.01',
-    |      learning_rate=3e-6,
-    |      learning_decay=0.9999,
-    |      num_epochs=200000,
-    |      regularization_decay=1e-9,
-    |      batch_size=2,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet14A',
-    |      head_type='HeadPointwise',
-    |      criterion_type='L1Sum',
-    |      probabilistic='True',
-    |      hidden_layers=8,
-    |      instance_type='x2large' )
-
-:param in_folder: input directory with training data
-:param out_model_path:  model path
-:param voxel_size: voxel size
-:param zero_centering: zero centering
-:param point_names: point names
-:param feature_names: feature names
-:param label_names: label names
-:param num_classes: number of classes
-:param label_scales: label scales
-:param learning_rate: learning rate
-:param learning_decay: learning rate decay
-:param num_epochs: number of epochs
-:param regularization_decay: regularization decay
-:param batch_size: batch size for training
-:param save_after_epochs: save after epochs
-:param backbone_type: model type of backbone network
-:param head_type: model type of head network
-:param criterion_type: model type of criterion
-:param probabilistic: estimate probabilities: labels in [0,1]
-:param hidden_layers: number of hidden layers
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "universal training",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def universal_training_folder(client,
-     folder_in_folder='/folder_in_folder',
-     out_model_path='parameters_model',
-     voxel_size=0.02,
-     zero_centering='True',
-     point_names='X,Y,Z',
-     feature_names='',
-     label_names='classification',
-     num_classes=1,
-     label_scales='0.01',
-     learning_rate=3e-6,
-     learning_decay=0.9999,
-     num_epochs=200000,
-     regularization_decay=1e-9,
-     batch_size=2,
-     save_after_epochs=100,
-     backbone_type='MinkUNet14A',
-     head_type='HeadPointwise',
-     criterion_type='L1Sum',
-     probabilistic='True',
-     hidden_layers=8,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_folder=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | universal_training_folder(client,
-    |      in_folder='/in_folder',
-    |      out_model_path='parameters_model',
-    |      voxel_size=0.02,
-    |      zero_centering='True',
-    |      point_names='X,Y,Z',
-    |      feature_names='',
-    |      label_names='classification',
-    |      num_classes=1,
-    |      label_scales='0.01',
-    |      learning_rate=3e-6,
-    |      learning_decay=0.9999,
-    |      num_epochs=200000,
-    |      regularization_decay=1e-9,
-    |      batch_size=2,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet14A',
-    |      head_type='HeadPointwise',
-    |      criterion_type='L1Sum',
-    |      probabilistic='True',
-    |      hidden_layers=8,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folder=".data_train",
-    |      skip_existing_files = False )
-
-:param out_model_path:  model path
-:param voxel_size: voxel size
-:param zero_centering: zero centering
-:param point_names: point names
-:param feature_names: feature names
-:param label_names: label names
-:param num_classes: number of classes
-:param label_scales: label scales
-:param learning_rate: learning rate
-:param learning_decay: learning rate decay
-:param num_epochs: number of epochs
-:param regularization_decay: regularization decay
-:param batch_size: batch size for training
-:param save_after_epochs: save after epochs
-:param backbone_type: model type of backbone network
-:param head_type: model type of head network
-:param criterion_type: model type of criterion
-:param probabilistic: estimate probabilities: labels in [0,1]
-:param hidden_layers: number of hidden layers
-:param folder_in_folder: input directory with training data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folder: File extension of files in folder for folder_in_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_in_folder']
-      del all_parameters['extension_in_folder']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_folder"
-      folders = folder_in_folder
-      extensions = extension_in_folder
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "universal training" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def vertices_estimation_training(client,
-     in_folder='data_train',
-     in_vertices_folder='data_train_vertices',
-     out_model_path='parameters_model',
-     voxel_size=0.02,
-     zero_centering='True',
-     point_names='X,Y,Z',
-     feature_names='',
-     label_names='classification',
-     num_classes=1,
-     label_scales='0.01',
-     learning_rate=1e-5,
-     learning_decay=0.999,
-     num_epochs=2000000,
-     regularization_decay=1e-9,
-     batch_size=5 ,
-     save_after_epochs=100,
-     backbone_type='MinkUNet14A',
-     head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
-     hidden_layers=8,
-     max_interpolation_distance=2.5,
-     dist_threshold=2.5,
-     instance_type='x2large'):
-      '''
-    | 
-    | vertices_estimation_training( client,
-    |      in_folder='data_train',
-    |      in_vertices_folder='data_train_vertices',
-    |      out_model_path='parameters_model',
-    |      voxel_size=0.02,
-    |      zero_centering='True',
-    |      point_names='X,Y,Z',
-    |      feature_names='',
-    |      label_names='classification',
-    |      num_classes=1,
-    |      label_scales='0.01',
-    |      learning_rate=1e-5,
-    |      learning_decay=0.999,
-    |      num_epochs=2000000,
-    |      regularization_decay=1e-9,
-    |      batch_size=5 ,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet14A',
-    |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
-    |      hidden_layers=8,
-    |      max_interpolation_distance=2.5,
-    |      dist_threshold=2.5,
-    |      instance_type='x2large' )
-
-:param in_folder: input directory with training data
-:param in_vertices_folder: input directory with corresponding vertex data
-:param out_model_path:  model path
-:param voxel_size: voxel size
-:param zero_centering: zero centering
-:param point_names: point names
-:param feature_names: feature names
-:param label_names: label names
-:param num_classes: number of classes
-:param label_scales: label scales
-:param learning_rate: learning rate
-:param learning_decay: learning rate decay
-:param num_epochs: number of epochs
-:param regularization_decay: regularization decay
-:param batch_size: batch size for training
-:param save_after_epochs: save after epochs
-:param backbone_type: model type of backbone network
-:param head_type_prob: model type of head network
-:param criterion_type_prob: model type of criterion
-:param hidden_layers: number of hidden layers
-:param max_interpolation_distance: maximum distance to interpolate occluded points
-:param dist_threshold: distance threshold for non-maximum suppression
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "vertices estimation training",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def vertices_estimation_training_folder(client,
-     folder_in_folder='/folder_in_folder',
-     folder_in_vertices_folder='/folder_in_vertices_folder',
-     out_model_path='parameters_model',
-     voxel_size=0.02,
-     zero_centering='True',
-     point_names='X,Y,Z',
-     feature_names='',
-     label_names='classification',
-     num_classes=1,
-     label_scales='0.01',
-     learning_rate=1e-5,
-     learning_decay=0.999,
-     num_epochs=2000000,
-     regularization_decay=1e-9,
-     batch_size=5 ,
-     save_after_epochs=100,
-     backbone_type='MinkUNet14A',
-     head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
-     hidden_layers=8,
-     max_interpolation_distance=2.5,
-     dist_threshold=2.5,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_folder=".laz",
-     extension_in_vertices_folder=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | vertices_estimation_training_folder(client,
-    |      in_folder='/in_folder',
-    |      in_vertices_folder='/in_vertices_folder',
-    |      out_model_path='parameters_model',
-    |      voxel_size=0.02,
-    |      zero_centering='True',
-    |      point_names='X,Y,Z',
-    |      feature_names='',
-    |      label_names='classification',
-    |      num_classes=1,
-    |      label_scales='0.01',
-    |      learning_rate=1e-5,
-    |      learning_decay=0.999,
-    |      num_epochs=2000000,
-    |      regularization_decay=1e-9,
-    |      batch_size=5 ,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet14A',
-    |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
-    |      hidden_layers=8,
-    |      max_interpolation_distance=2.5,
-    |      dist_threshold=2.5,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folder=".data_train",
-    |      extension_in_vertices_folder=".data_train_vertices",
-    |      skip_existing_files = False )
-
-:param out_model_path:  model path
-:param voxel_size: voxel size
-:param zero_centering: zero centering
-:param point_names: point names
-:param feature_names: feature names
-:param label_names: label names
-:param num_classes: number of classes
-:param label_scales: label scales
-:param learning_rate: learning rate
-:param learning_decay: learning rate decay
-:param num_epochs: number of epochs
-:param regularization_decay: regularization decay
-:param batch_size: batch size for training
-:param save_after_epochs: save after epochs
-:param backbone_type: model type of backbone network
-:param head_type_prob: model type of head network
-:param criterion_type_prob: model type of criterion
-:param hidden_layers: number of hidden layers
-:param max_interpolation_distance: maximum distance to interpolate occluded points
-:param dist_threshold: distance threshold for non-maximum suppression
-:param folder_in_folder: input directory with training data
-:param folder_in_vertices_folder: input directory with corresponding vertex data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folder: File extension of files in folder for folder_in_folder
-:param extension_in_vertices_folder: File extension of files in folder for folder_in_vertices_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_in_folder']
-      del all_parameters['folder_in_vertices_folder']
-      del all_parameters['extension_in_folder']
-      del all_parameters['extension_in_vertices_folder']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_folder,in_vertices_folder"
-      folders = folder_in_folder + "," + folder_in_vertices_folder
-      extensions = extension_in_folder + "," + extension_in_vertices_folder
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "vertices estimation training" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def universal_inference(client,
-     in_files='data_eval',
-     out_files='results',
-     in_model_path='parameters_model',
-     batch_size=1,
-     instance_type='x2large'):
-      '''
-    | 
-    | universal_inference( client,
-    |      in_files='data_eval',
-    |      out_files='results',
-    |      in_model_path='parameters_model',
-    |      batch_size=1,
-    |      instance_type='x2large' )
-
-:param in_files: input files with training data
-:param out_files: output files with training data
-:param in_model_path:  model path
-:param batch_size: batch size
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "universal inference",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def universal_inference_folder(client,
-     in_folders='/in_folders',
-     out_folders='/out_folders',
-     in_model_path='parameters_model',
-     batch_size=1,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_files=".laz",
-     extension_out_files=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | universal_inference_folder(client,
-    |      in_folders='/in_folders',
-    |      out_folders='/out_folders',
-    |      in_model_path='parameters_model',
-    |      batch_size=1,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folders=".data_eval",
-    |      extension_out_folders=".results",
-    |      skip_existing_files = False )
-
-:param in_model_path:  model path
-:param batch_size: batch size
-:param in_folders: input folders with training data
-:param out_folders: output folders with training data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folders: File extension of files in folder for in_folders
-:param extension_out_folders: File extension of files in folder for out_folders
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['in_folders']
-      del all_parameters['out_folders']
-      del all_parameters['extension_in_files']
-      del all_parameters['extension_out_files']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_files,out_files"
-      folders = in_folders + "," + out_folders
-      extensions = extension_in_files + "," + extension_out_files
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "universal inference" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-
-
-
 class qc:
    def report_qc_classification(client,
      in_file='in.laz',
@@ -5130,1431 +7039,6 @@ class qc:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "report lidar completeness" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-
-
-
-class tdp:
-   def point_cloud_classification_inference(client,
-     file_in='file.laz',
-     file_out='file.labels',
-     model_path='network_parameters',
-     cols_data='X,Y,Z',
-     cols_labels='classification',
-     instance_type='P2'):
-      '''
-    | 
-    | point_cloud_classification_inference( client,
-    |      file_in='file.laz',
-    |      file_out='file.labels',
-    |      model_path='network_parameters',
-    |      cols_data='X,Y,Z',
-    |      cols_labels='classification',
-    |      instance_type='P2' )
-
-:param file_in: input file
-:param file_out: results file
-:param model_path:  path to model
-:param cols_data: attributes used
-:param cols_labels: label name
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "point cloud classification inference",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def point_cloud_classification_inference_folder(client,
-     folder_in='/folder_in',
-     folder_out='/folder_out',
-     model_path='network_parameters',
-     cols_data='X,Y,Z',
-     cols_labels='classification',
-     worker_instance_type='P2',
-     manager_instance_type="small",
-     extension_file_in=".laz",
-     extension_file_out=".labels",
-     skip_existing_files = False):
-      '''
-    | 
-    | point_cloud_classification_inference_folder(client,
-    |      folder_in='/folder_in',
-    |      folder_out='/folder_out',
-    |      model_path='network_parameters',
-    |      cols_data='X,Y,Z',
-    |      cols_labels='classification',
-    |      worker_instance_type='P2',
-    |      manager_instance_type="small",
-    |      extension_folder_in=".laz",
-    |      extension_folder_out=".labels",
-    |      skip_existing_files = False )
-
-:param model_path:  path to model
-:param cols_data: attributes used
-:param cols_labels: label name
-:param folder_in: input folder
-:param folder_out: results folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_folder_in: File extension of files in folder for folder_in
-:param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_in']
-      del all_parameters['folder_out']
-      del all_parameters['extension_file_in']
-      del all_parameters['extension_file_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "file_in,file_out"
-      folders = folder_in + "," + folder_out
-      extensions = extension_file_in + "," + extension_file_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "point cloud classification inference" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def convert_laz_point_formats(client,
-     file_in='file.laz',
-     file_out='file.labels',
-     format=7,
-     instance_type='P2'):
-      '''
-    | 
-    | convert_laz_point_formats( client,
-    |      file_in='file.laz',
-    |      file_out='file.labels',
-    |      format=7,
-    |      instance_type='P2' )
-
-:param file_in: input file
-:param file_out: results file
-:param format: format
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "convert laz point formats",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def convert_laz_point_formats_folder(client,
-     folder_in='/folder_in',
-     folder_out='/folder_out',
-     format=7,
-     worker_instance_type='P2',
-     manager_instance_type="small",
-     extension_file_in=".laz",
-     extension_file_out=".labels",
-     skip_existing_files = False):
-      '''
-    | 
-    | convert_laz_point_formats_folder(client,
-    |      folder_in='/folder_in',
-    |      folder_out='/folder_out',
-    |      format=7,
-    |      worker_instance_type='P2',
-    |      manager_instance_type="small",
-    |      extension_folder_in=".laz",
-    |      extension_folder_out=".labels",
-    |      skip_existing_files = False )
-
-:param format: format
-:param folder_in: input folder
-:param folder_out: results folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_folder_in: File extension of files in folder for folder_in
-:param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_in']
-      del all_parameters['folder_out']
-      del all_parameters['extension_file_in']
-      del all_parameters['extension_file_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "file_in,file_out"
-      folders = folder_in + "," + folder_out
-      extensions = extension_file_in + "," + extension_file_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "convert laz point formats" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def segment_objects(client,
-     in_points_file='laz_files_test',
-     in_labels_file='laz_files_test',
-     out_directory='segmented_object',
-     out_prefix='object',
-     label_col='classification',
-     object_class=68,
-     max_distance=2,
-     min_points=100,
-     instance_type='P2'):
-      '''
-    | 
-    | segment_objects( client,
-    |      in_points_file='laz_files_test',
-    |      in_labels_file='laz_files_test',
-    |      out_directory='segmented_object',
-    |      out_prefix='object',
-    |      label_col='classification',
-    |      object_class=68,
-    |      max_distance=2,
-    |      min_points=100,
-    |      instance_type='P2' )
-
-:param in_points_file: input file points
-:param in_labels_file: input file labels
-:param out_directory: output directory
-:param out_prefix: output filename prefix
-:param label_col: label column id
-:param object_class: obejct class
-:param max_distance: maximum distance for segmentation
-:param min_points: minimum number of points
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "segment objects",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def segment_objects_folder(client,
-     in_points_folder='/in_points_folder',
-     in_labels_folder='/in_labels_folder',
-     out_directory='segmented_object',
-     out_prefix='object',
-     label_col='classification',
-     object_class=68,
-     max_distance=2,
-     min_points=100,
-     worker_instance_type='P2',
-     manager_instance_type="small",
-     extension_in_points_file=".laz",
-     extension_in_labels_file=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | segment_objects_folder(client,
-    |      in_points_folder='/in_points_folder',
-    |      in_labels_folder='/in_labels_folder',
-    |      out_directory='segmented_object',
-    |      out_prefix='object',
-    |      label_col='classification',
-    |      object_class=68,
-    |      max_distance=2,
-    |      min_points=100,
-    |      worker_instance_type='P2',
-    |      manager_instance_type="small",
-    |      extension_in_points_folder=".laz_files_test",
-    |      extension_in_labels_folder=".laz_files_test",
-    |      skip_existing_files = False )
-
-:param out_directory: output directory
-:param out_prefix: output filename prefix
-:param label_col: label column id
-:param object_class: obejct class
-:param max_distance: maximum distance for segmentation
-:param min_points: minimum number of points
-:param in_points_folder: input folder points
-:param in_labels_folder: input folder labels
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_points_folder: File extension of files in folder for in_points_folder
-:param extension_in_labels_folder: File extension of files in folder for in_labels_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['in_points_folder']
-      del all_parameters['in_labels_folder']
-      del all_parameters['extension_in_points_file']
-      del all_parameters['extension_in_labels_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_points_file,in_labels_file"
-      folders = in_points_folder + "," + in_labels_folder
-      extensions = extension_in_points_file + "," + extension_in_labels_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "segment objects" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def point_cloud_filter_label_noise(client,
-     file_in_data='file.laz',
-     file_in_labels='file.labels',
-     file_out='result.laz',
-     k_nearest_neighbours=5,
-     sigma=10.,
-     dim=3,
-     invalid_label=0,
-     instance_type='P2'):
-      '''
-    | 
-    | point_cloud_filter_label_noise( client,
-    |      file_in_data='file.laz',
-    |      file_in_labels='file.labels',
-    |      file_out='result.laz',
-    |      k_nearest_neighbours=5,
-    |      sigma=10.,
-    |      dim=3,
-    |      invalid_label=0,
-    |      instance_type='P2' )
-
-:param file_in_data: input file data
-:param file_in_labels: input file labels
-:param file_out: output file
-:param k_nearest_neighbours: k nearest neighbours
-:param sigma: sigma
-:param dim: dim
-:param invalid_label: invalid class label
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "point cloud filter label noise",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def point_cloud_filter_label_noise_folder(client,
-     folder_in_data='/folder_in_data',
-     folder_in_labels='/folder_in_labels',
-     folder_out='/folder_out',
-     k_nearest_neighbours=5,
-     sigma=10.,
-     dim=3,
-     invalid_label=0,
-     worker_instance_type='P2',
-     manager_instance_type="small",
-     extension_file_in_data=".laz",
-     extension_file_in_labels=".labels",
-     extension_file_out=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | point_cloud_filter_label_noise_folder(client,
-    |      folder_in_data='/folder_in_data',
-    |      folder_in_labels='/folder_in_labels',
-    |      folder_out='/folder_out',
-    |      k_nearest_neighbours=5,
-    |      sigma=10.,
-    |      dim=3,
-    |      invalid_label=0,
-    |      worker_instance_type='P2',
-    |      manager_instance_type="small",
-    |      extension_folder_in_data=".laz",
-    |      extension_folder_in_labels=".labels",
-    |      extension_folder_out=".laz",
-    |      skip_existing_files = False )
-
-:param k_nearest_neighbours: k nearest neighbours
-:param sigma: sigma
-:param dim: dim
-:param invalid_label: invalid class label
-:param folder_in_data: input folder data
-:param folder_in_labels: input folder labels
-:param folder_out: output folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_folder_in_data: File extension of files in folder for folder_in_data
-:param extension_folder_in_labels: File extension of files in folder for folder_in_labels
-:param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_in_data']
-      del all_parameters['folder_in_labels']
-      del all_parameters['folder_out']
-      del all_parameters['extension_file_in_data']
-      del all_parameters['extension_file_in_labels']
-      del all_parameters['extension_file_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "file_in_data,file_in_labels,file_out"
-      folders = folder_in_data + "," + folder_in_labels + "," + folder_out
-      extensions = extension_file_in_data + "," + extension_file_in_labels + "," + extension_file_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "point cloud filter label noise" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def tower_displacement(client,
-     laz_in_file_new='new.laz',
-     laz_in_file_old='old.laz',
-     laz_in_file_ref='ref.laz',
-     tower_name='',
-     year_new='2022',
-     year_old='2020',
-     year_ref='2018',
-     results_out_file='result.txt',
-     plots_out_folder='plots/',
-     instance_type='P2'):
-      '''
-    | 
-    | tower_displacement( client,
-    |      laz_in_file_new='new.laz',
-    |      laz_in_file_old='old.laz',
-    |      laz_in_file_ref='ref.laz',
-    |      tower_name='',
-    |      year_new='2022',
-    |      year_old='2020',
-    |      year_ref='2018',
-    |      results_out_file='result.txt',
-    |      plots_out_folder='plots/',
-    |      instance_type='P2' )
-
-:param laz_in_file_new: laz input folder new data
-:param laz_in_file_old: laz input folder last data
-:param laz_in_file_ref: laz input folder first data
-:param tower_name: tower name
-:param year_new: year of new data
-:param year_old: year of old data
-:param year_ref: year of reference data
-:param results_out_file: result folder path
-:param plots_out_folder: result folder path
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "tower displacement",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def tower_displacement_folder(client,
-     laz_in_folder_new='/laz_in_folder_new',
-     laz_in_folder_old='/laz_in_folder_old',
-     laz_in_folder_ref='/laz_in_folder_ref',
-     tower_name='',
-     year_new='2022',
-     year_old='2020',
-     year_ref='2018',
-     results_out_folder='/results_out_folder',
-     folder_plots_out_folder='/folder_plots_out_folder',
-     worker_instance_type='P2',
-     manager_instance_type="small",
-     extension_laz_in_file_new=".laz",
-     extension_laz_in_file_old=".laz",
-     extension_laz_in_file_ref=".laz",
-     extension_results_out_file=".txt",
-     extension_plots_out_folder=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | tower_displacement_folder(client,
-    |      laz_in_folder_new='/laz_in_folder_new',
-    |      laz_in_folder_old='/laz_in_folder_old',
-    |      laz_in_folder_ref='/laz_in_folder_ref',
-    |      tower_name='',
-    |      year_new='2022',
-    |      year_old='2020',
-    |      year_ref='2018',
-    |      results_out_folder='/results_out_folder',
-    |      plots_out_folder='/plots_out_folder',
-    |      worker_instance_type='P2',
-    |      manager_instance_type="small",
-    |      extension_laz_in_folder_new=".laz",
-    |      extension_laz_in_folder_old=".laz",
-    |      extension_laz_in_folder_ref=".laz",
-    |      extension_results_out_folder=".txt",
-    |      extension_plots_out_folder=".plots/",
-    |      skip_existing_files = False )
-
-:param tower_name: tower name
-:param year_new: year of new data
-:param year_old: year of old data
-:param year_ref: year of reference data
-:param laz_in_folder_new: laz input folder new data
-:param laz_in_folder_old: laz input folder last data
-:param laz_in_folder_ref: laz input folder first data
-:param results_out_folder: result folder folder
-:param folder_plots_out_folder: result folder folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_laz_in_folder_new: File extension of files in folder for laz_in_folder_new
-:param extension_laz_in_folder_old: File extension of files in folder for laz_in_folder_old
-:param extension_laz_in_folder_ref: File extension of files in folder for laz_in_folder_ref
-:param extension_results_out_folder: File extension of files in folder for results_out_folder
-:param extension_plots_out_folder: File extension of files in folder for folder_plots_out_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['laz_in_folder_new']
-      del all_parameters['laz_in_folder_old']
-      del all_parameters['laz_in_folder_ref']
-      del all_parameters['results_out_folder']
-      del all_parameters['folder_plots_out_folder']
-      del all_parameters['extension_laz_in_file_new']
-      del all_parameters['extension_laz_in_file_old']
-      del all_parameters['extension_laz_in_file_ref']
-      del all_parameters['extension_results_out_file']
-      del all_parameters['extension_plots_out_folder']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "laz_in_file_new,laz_in_file_old,laz_in_file_ref,results_out_file,plots_out_folder"
-      folders = laz_in_folder_new + "," + laz_in_folder_old + "," + laz_in_folder_ref + "," + results_out_folder + "," + folder_plots_out_folder
-      extensions = extension_laz_in_file_new + "," + extension_laz_in_file_old + "," + extension_laz_in_file_ref + "," + extension_results_out_file + "," + extension_plots_out_folder
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "tower displacement" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-
-
-
-class fvo:
-   def estimate_vobject_coordinates(client,
-     file_source_in='points.laz',
-     file_trafo_out='trafo.txt',
-     file_source_out='points.laz',
-     instance_type='x2large'):
-      '''
-    | 
-    | estimate_vobject_coordinates( client,
-    |      file_source_in='points.laz',
-    |      file_trafo_out='trafo.txt',
-    |      file_source_out='points.laz',
-    |      instance_type='x2large' )
-
-:param file_source_in: input file data
-:param file_trafo_out: output trafo
-:param file_source_out: output file data
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "estimate vobject coordinates",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def estimate_vobject_coordinates_folder(client,
-     folder_source_in='/folder_source_in',
-     folder_trafo_out='/folder_trafo_out',
-     folder_source_out='/folder_source_out',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_file_source_in=".laz",
-     extension_file_trafo_out=".txt",
-     extension_file_source_out=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | estimate_vobject_coordinates_folder(client,
-    |      folder_source_in='/folder_source_in',
-    |      folder_trafo_out='/folder_trafo_out',
-    |      folder_source_out='/folder_source_out',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_folder_source_in=".laz",
-    |      extension_folder_trafo_out=".txt",
-    |      extension_folder_source_out=".laz",
-    |      skip_existing_files = False )
-
-:param folder_source_in: input folder data
-:param folder_trafo_out: output trafo
-:param folder_source_out: output folder data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_folder_source_in: File extension of files in folder for folder_source_in
-:param extension_folder_trafo_out: File extension of files in folder for folder_trafo_out
-:param extension_folder_source_out: File extension of files in folder for folder_source_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_source_in']
-      del all_parameters['folder_trafo_out']
-      del all_parameters['folder_source_out']
-      del all_parameters['extension_file_source_in']
-      del all_parameters['extension_file_trafo_out']
-      del all_parameters['extension_file_source_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "file_source_in,file_trafo_out,file_source_out"
-      folders = folder_source_in + "," + folder_trafo_out + "," + folder_source_out
-      extensions = extension_file_source_in + "," + extension_file_trafo_out + "," + extension_file_source_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "estimate vobject coordinates" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def filter_valid_vertices(client,
-     input_file='in.laz',
-     input_file2='ref.laz',
-     input_file_features='edges.npy',
-     output_file='out.laz',
-     output_file_features='edges.npy',
-     min_distance=0.0,
-     max_distance=100,
-     instance_type='x2large'):
-      '''Filter valid vertices from a DXF file.
-    | 
-    | filter_valid_vertices( client,
-    |      input_file='in.laz',
-    |      input_file2='ref.laz',
-    |      input_file_features='edges.npy',
-    |      output_file='out.laz',
-    |      output_file_features='edges.npy',
-    |      min_distance=0.0,
-    |      max_distance=100,
-    |      instance_type='x2large' )
-
-:param input_file: Input laz or txt file to filter.
-:param input_file2: Input laz or txt file as reference.
-:param input_file_features: Input features file.
-:param output_file: Output laz or txt file.
-:param output_file_features: Output features file.
-:param min_distance: Minimum distance.
-:param max_distance: Maximum distance.
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "filter valid vertices",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def filter_valid_vertices_folder(client,
-     input_folder='/input_folder',
-     input_folder2='/input_folder2',
-     input_folder_features='/input_folder_features',
-     output_folder='/output_folder',
-     output_folder_features='/output_folder_features',
-     min_distance=0.0,
-     max_distance=100,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".laz",
-     extension_input_file2=".laz",
-     extension_input_file_features=".npy",
-     extension_output_file=".laz",
-     extension_output_file_features=".npy",
-     skip_existing_files = False):
-      '''Filter valid vertices from a DXF file.
-    | 
-    | filter_valid_vertices_folder(client,
-    |      input_folder='/input_folder',
-    |      input_folder2='/input_folder2',
-    |      input_folder_features='/input_folder_features',
-    |      output_folder='/output_folder',
-    |      output_folder_features='/output_folder_features',
-    |      min_distance=0.0,
-    |      max_distance=100,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".laz",
-    |      extension_input_folder2=".laz",
-    |      extension_input_folder_features=".npy",
-    |      extension_output_folder=".laz",
-    |      extension_output_folder_features=".npy",
-    |      skip_existing_files = False )
-
-:param min_distance: Minimum distance.
-:param max_distance: Maximum distance.
-:param input_folder: Input laz or txt folder to filter.
-:param input_folder2: Input laz or txt folder as reference.
-:param input_folder_features: Input features folder.
-:param output_folder: Output laz or txt folder.
-:param output_folder_features: Output features folder.
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_input_folder2: File extension of files in folder for input_folder2
-:param extension_input_folder_features: File extension of files in folder for input_folder_features
-:param extension_output_folder: File extension of files in folder for output_folder
-:param extension_output_folder_features: File extension of files in folder for output_folder_features
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['input_folder2']
-      del all_parameters['input_folder_features']
-      del all_parameters['output_folder']
-      del all_parameters['output_folder_features']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_input_file2']
-      del all_parameters['extension_input_file_features']
-      del all_parameters['extension_output_file']
-      del all_parameters['extension_output_file_features']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,input_file2,input_file_features,output_file,output_file_features"
-      folders = input_folder + "," + input_folder2 + "," + input_folder_features + "," + output_folder + "," + output_folder_features
-      extensions = extension_input_file + "," + extension_input_file2 + "," + extension_input_file_features + "," + extension_output_file + "," + extension_output_file_features
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "filter valid vertices" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def align_top(client,
-     input_file='in.laz',
-     target_file='in.laz',
-     output_file='out.laz',
-     instance_type='x2large'):
-      '''Zero centering of XYZ points in a LAZ file
-    | 
-    | align_top( client,
-    |      input_file='in.laz',
-    |      target_file='in.laz',
-    |      output_file='out.laz',
-    |      instance_type='x2large' )
-
-:param input_file: input LAZ file path
-:param target_file: input LAZ file path
-:param output_file: output LAZ file path
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "align top",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def align_top_folder(client,
-     input_folder='/input_folder',
-     target_folder='/target_folder',
-     output_folder='/output_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".laz",
-     extension_target_file=".laz",
-     extension_output_file=".laz",
-     skip_existing_files = False):
-      '''Zero centering of XYZ points in a LAZ file
-    | 
-    | align_top_folder(client,
-    |      input_folder='/input_folder',
-    |      target_folder='/target_folder',
-    |      output_folder='/output_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".laz",
-    |      extension_target_folder=".laz",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
-
-:param input_folder: input LAZ folder folder
-:param target_folder: input LAZ folder folder
-:param output_folder: output LAZ folder folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_target_folder: File extension of files in folder for target_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['target_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_target_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,target_file,output_file"
-      folders = input_folder + "," + target_folder + "," + output_folder
-      extensions = extension_input_file + "," + extension_target_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "align top" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def zero_centering(client,
-     input_file='in.laz',
-     output_file='out.laz',
-     instance_type='x2large'):
-      '''Zero centering of XYZ points in a LAZ file
-    | 
-    | zero_centering( client,
-    |      input_file='in.laz',
-    |      output_file='out.laz',
-    |      instance_type='x2large' )
-
-:param input_file: input LAZ file path
-:param output_file: output LAZ file path
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "zero centering",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def zero_centering_folder(client,
-     input_folder='/input_folder',
-     output_folder='/output_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".laz",
-     extension_output_file=".laz",
-     skip_existing_files = False):
-      '''Zero centering of XYZ points in a LAZ file
-    | 
-    | zero_centering_folder(client,
-    |      input_folder='/input_folder',
-    |      output_folder='/output_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".laz",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
-
-:param input_folder: input LAZ folder folder
-:param output_folder: output LAZ folder folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,output_file"
-      folders = input_folder + "," + output_folder
-      extensions = extension_input_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "zero centering" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def connect_neighbouring_vertices(client,
-     input_cloud_file='in.laz',
-     input_vertices_file='vertices.laz',
-     output_graph_file='graph.dxf',
-     max_distance=4,
-     min_num_inliers=6,
-     line_distance=0.25,
-     line_knn=7,
-     instance_type='x2large'):
-      '''Connect neighbouring vertices
-    | 
-    | connect_neighbouring_vertices( client,
-    |      input_cloud_file='in.laz',
-    |      input_vertices_file='vertices.laz',
-    |      output_graph_file='graph.dxf',
-    |      max_distance=4,
-    |      min_num_inliers=6,
-    |      line_distance=0.25,
-    |      line_knn=7,
-    |      instance_type='x2large' )
-
-:param input_cloud_file: input LAZ file path
-:param input_vertices_file: input LAZ file path
-:param output_graph_file: output graph file path
-:param max_distance: max distance between vertices
-:param min_num_inliers: min number of inliers to fit line
-:param line_distance: max distance from points to line
-:param line_knn: number of neighbours to interpolate line
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "connect neighbouring vertices",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def connect_neighbouring_vertices_folder(client,
-     input_cloud_folder='/input_cloud_folder',
-     input_vertices_folder='/input_vertices_folder',
-     output_graph_folder='/output_graph_folder',
-     max_distance=4,
-     min_num_inliers=6,
-     line_distance=0.25,
-     line_knn=7,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_cloud_file=".laz",
-     extension_input_vertices_file=".laz",
-     extension_output_graph_file=".dxf",
-     skip_existing_files = False):
-      '''Connect neighbouring vertices
-    | 
-    | connect_neighbouring_vertices_folder(client,
-    |      input_cloud_folder='/input_cloud_folder',
-    |      input_vertices_folder='/input_vertices_folder',
-    |      output_graph_folder='/output_graph_folder',
-    |      max_distance=4,
-    |      min_num_inliers=6,
-    |      line_distance=0.25,
-    |      line_knn=7,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_cloud_folder=".laz",
-    |      extension_input_vertices_folder=".laz",
-    |      extension_output_graph_folder=".dxf",
-    |      skip_existing_files = False )
-
-:param max_distance: max distance between vertices
-:param min_num_inliers: min number of inliers to fit line
-:param line_distance: max distance from points to line
-:param line_knn: number of neighbours to interpolate line
-:param input_cloud_folder: input LAZ folder folder
-:param input_vertices_folder: input LAZ folder folder
-:param output_graph_folder: output graph folder folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_cloud_folder: File extension of files in folder for input_cloud_folder
-:param extension_input_vertices_folder: File extension of files in folder for input_vertices_folder
-:param extension_output_graph_folder: File extension of files in folder for output_graph_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_cloud_folder']
-      del all_parameters['input_vertices_folder']
-      del all_parameters['output_graph_folder']
-      del all_parameters['extension_input_cloud_file']
-      del all_parameters['extension_input_vertices_file']
-      del all_parameters['extension_output_graph_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_cloud_file,input_vertices_file,output_graph_file"
-      folders = input_cloud_folder + "," + input_vertices_folder + "," + output_graph_folder
-      extensions = extension_input_cloud_file + "," + extension_input_vertices_file + "," + extension_output_graph_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "connect neighbouring vertices" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def import_vertices(client,
-     in_file='in.dxf',
-     layer='1',
-     out_file='out.laz',
-     instance_type='x2large'):
-      '''Extract visible face3d vertices from a DXF file.
-    | 
-    | import_vertices( client,
-    |      in_file='in.dxf',
-    |      layer='1',
-    |      out_file='out.laz',
-    |      instance_type='x2large' )
-
-:param in_file: Input DXF file path
-:param layer: Layer names as comma-separated list
-:param out_file: Output file path
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "import vertices",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def import_vertices_folder(client,
-     in_folder='/in_folder',
-     layer='1',
-     out_folder='/out_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_file=".dxf",
-     extension_out_file=".laz",
-     skip_existing_files = False):
-      '''Extract visible face3d vertices from a DXF file.
-    | 
-    | import_vertices_folder(client,
-    |      in_folder='/in_folder',
-    |      layer='1',
-    |      out_folder='/out_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folder=".dxf",
-    |      extension_out_folder=".laz",
-    |      skip_existing_files = False )
-
-:param layer: Layer names as comma-separated list
-:param in_folder: Input DXF folder folder
-:param out_folder: Output folder folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folder: File extension of files in folder for in_folder
-:param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['in_folder']
-      del all_parameters['out_folder']
-      del all_parameters['extension_in_file']
-      del all_parameters['extension_out_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_file,out_file"
-      folders = in_folder + "," + out_folder
-      extensions = extension_in_file + "," + extension_out_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "import vertices" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def likelihood(client,
-     input_file='in.laz',
-     points_file='points.laz',
-     output_file='out.laz',
-     max_distance=0.5,
-     missing_distance=1.5,
-     missing_knn=2,
-     instance_type='x2large'):
-      '''Compute class conditional probability distribution
-    | 
-    | likelihood( client,
-    |      input_file='in.laz',
-    |      points_file='points.laz',
-    |      output_file='out.laz',
-    |      max_distance=0.5,
-    |      missing_distance=1.5,
-    |      missing_knn=2,
-    |      instance_type='x2large' )
-
-:param input_file: input LAZ file path
-:param points_file: input LAZ file path
-:param output_file: output LAZ file path
-:param max_distance: probability max distance
-:param missing_distance: interpolate missing points distance
-:param missing_knn: interpolate number missing neighbours
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "likelihood",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def likelihood_folder(client,
-     input_folder='/input_folder',
-     points_folder='/points_folder',
-     output_folder='/output_folder',
-     max_distance=0.5,
-     missing_distance=1.5,
-     missing_knn=2,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_file=".laz",
-     extension_points_file=".laz",
-     extension_output_file=".laz",
-     skip_existing_files = False):
-      '''Compute class conditional probability distribution
-    | 
-    | likelihood_folder(client,
-    |      input_folder='/input_folder',
-    |      points_folder='/points_folder',
-    |      output_folder='/output_folder',
-    |      max_distance=0.5,
-    |      missing_distance=1.5,
-    |      missing_knn=2,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folder=".laz",
-    |      extension_points_folder=".laz",
-    |      extension_output_folder=".laz",
-    |      skip_existing_files = False )
-
-:param max_distance: probability max distance
-:param missing_distance: interpolate missing points distance
-:param missing_knn: interpolate number missing neighbours
-:param input_folder: input LAZ folder folder
-:param points_folder: input LAZ folder folder
-:param output_folder: output LAZ folder folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folder: File extension of files in folder for input_folder
-:param extension_points_folder: File extension of files in folder for points_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folder']
-      del all_parameters['points_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_input_file']
-      del all_parameters['extension_points_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_file,points_file,output_file"
-      folders = input_folder + "," + points_folder + "," + output_folder
-      extensions = extension_input_file + "," + extension_points_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "likelihood" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -9777,6 +10261,112 @@ class val:
          client.get_verify_ssl())
 
 
+   def replace_in_string_array(client,
+     file_in='in.txt',
+     file_out='out.txt',
+     tokens_to_replace='',
+     replacement_tokens='',
+     instance_type='x2large'):
+      '''Replace tokens in a string array
+    | 
+    | replace_in_string_array( client,
+    |      file_in='in.txt',
+    |      file_out='out.txt',
+    |      tokens_to_replace='',
+    |      replacement_tokens='',
+    |      instance_type='x2large' )
+
+:param file_in: Input filename
+:param file_out: Output filename
+:param tokens_to_replace: Tokens to replace, comma separated
+:param replacement_tokens: Replacement tokens, comma separated
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "replace in string array",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def replace_in_string_array_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     tokens_to_replace='',
+     replacement_tokens='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_in=".txt",
+     extension_file_out=".txt",
+     skip_existing_files = False):
+      '''Replace tokens in a string array
+    | 
+    | replace_in_string_array_folder(client,
+    |      folder_in='/folder_in',
+    |      folder_out='/folder_out',
+    |      tokens_to_replace='',
+    |      replacement_tokens='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_in=".txt",
+    |      extension_folder_out=".txt",
+    |      skip_existing_files = False )
+
+:param tokens_to_replace: Tokens to replace, comma separated
+:param replacement_tokens: Replacement tokens, comma separated
+:param folder_in: Input foldername
+:param folder_out: Output foldername
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in: File extension of files in folder for folder_in
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "replace in string array" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def hstack(client,
      file_values_in='file1.npy',
      file_values_out='values.npy',
@@ -10079,6 +10669,106 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "values multiply" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def slice_string_array(client,
+     file_in='in.txt',
+     file_out='out.txt',
+     slices='',
+     instance_type='x2large'):
+      '''Slice a string array
+    | 
+    | slice_string_array( client,
+    |      file_in='in.txt',
+    |      file_out='out.txt',
+    |      slices='',
+    |      instance_type='x2large' )
+
+:param file_in: Input filename
+:param file_out: Output filename
+:param slices: Slices to take
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "slice string array",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def slice_string_array_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     slices='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_in=".txt",
+     extension_file_out=".txt",
+     skip_existing_files = False):
+      '''Slice a string array
+    | 
+    | slice_string_array_folder(client,
+    |      folder_in='/folder_in',
+    |      folder_out='/folder_out',
+    |      slices='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_in=".txt",
+    |      extension_folder_out=".txt",
+    |      skip_existing_files = False )
+
+:param slices: Slices to take
+:param folder_in: Input foldername
+:param folder_out: Output foldername
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in: File extension of files in folder for folder_in
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "slice string array" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -10643,6 +11333,1732 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "values subtract" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class fvo:
+   def model_swap_axis(client,
+     input_file='in.dxf',
+     output_file='out.dxf',
+     instance_type='x2large'):
+      '''
+    | 
+    | model_swap_axis( client,
+    |      input_file='in.dxf',
+    |      output_file='out.dxf',
+    |      instance_type='x2large' )
+
+:param input_file: input dxf file path
+:param output_file: output dxf file path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "model swap axis",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def model_swap_axis_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".dxf",
+     extension_output_file=".dxf",
+     skip_existing_files = False):
+      '''
+    | 
+    | model_swap_axis_folder(client,
+    |      input_folder='/input_folder',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".dxf",
+    |      extension_output_folder=".dxf",
+    |      skip_existing_files = False )
+
+:param input_folder: input dxf folder folder
+:param output_folder: output dxf folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "model swap axis" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def estimate_vobject_coordinates(client,
+     file_source_in='points.laz',
+     file_trafo_out='trafo.txt',
+     file_source_out='points.laz',
+     instance_type='x2large'):
+      '''
+    | 
+    | estimate_vobject_coordinates( client,
+    |      file_source_in='points.laz',
+    |      file_trafo_out='trafo.txt',
+    |      file_source_out='points.laz',
+    |      instance_type='x2large' )
+
+:param file_source_in: input file data
+:param file_trafo_out: output trafo
+:param file_source_out: output file data
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "estimate vobject coordinates",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def estimate_vobject_coordinates_folder(client,
+     folder_source_in='/folder_source_in',
+     folder_trafo_out='/folder_trafo_out',
+     folder_source_out='/folder_source_out',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_source_in=".laz",
+     extension_file_trafo_out=".txt",
+     extension_file_source_out=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | estimate_vobject_coordinates_folder(client,
+    |      folder_source_in='/folder_source_in',
+    |      folder_trafo_out='/folder_trafo_out',
+    |      folder_source_out='/folder_source_out',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_source_in=".laz",
+    |      extension_folder_trafo_out=".txt",
+    |      extension_folder_source_out=".laz",
+    |      skip_existing_files = False )
+
+:param folder_source_in: input folder data
+:param folder_trafo_out: output trafo
+:param folder_source_out: output folder data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_source_in: File extension of files in folder for folder_source_in
+:param extension_folder_trafo_out: File extension of files in folder for folder_trafo_out
+:param extension_folder_source_out: File extension of files in folder for folder_source_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_source_in']
+      del all_parameters['folder_trafo_out']
+      del all_parameters['folder_source_out']
+      del all_parameters['extension_file_source_in']
+      del all_parameters['extension_file_trafo_out']
+      del all_parameters['extension_file_source_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_source_in,file_trafo_out,file_source_out"
+      folders = folder_source_in + "," + folder_trafo_out + "," + folder_source_out
+      extensions = extension_file_source_in + "," + extension_file_trafo_out + "," + extension_file_source_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "estimate vobject coordinates" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def filter_valid_vertices(client,
+     input_file='in.laz',
+     input_file2='ref.laz',
+     input_file_features='edges.npy',
+     output_file='out.laz',
+     output_file_features='edges.npy',
+     min_distance=0.0,
+     max_distance=100,
+     instance_type='x2large'):
+      '''Filter valid vertices from a DXF file.
+    | 
+    | filter_valid_vertices( client,
+    |      input_file='in.laz',
+    |      input_file2='ref.laz',
+    |      input_file_features='edges.npy',
+    |      output_file='out.laz',
+    |      output_file_features='edges.npy',
+    |      min_distance=0.0,
+    |      max_distance=100,
+    |      instance_type='x2large' )
+
+:param input_file: Input laz or txt file to filter.
+:param input_file2: Input laz or txt file as reference.
+:param input_file_features: Input features file.
+:param output_file: Output laz or txt file.
+:param output_file_features: Output features file.
+:param min_distance: Minimum distance.
+:param max_distance: Maximum distance.
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "filter valid vertices",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def filter_valid_vertices_folder(client,
+     input_folder='/input_folder',
+     input_folder2='/input_folder2',
+     input_folder_features='/input_folder_features',
+     output_folder='/output_folder',
+     output_folder_features='/output_folder_features',
+     min_distance=0.0,
+     max_distance=100,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_input_file2=".laz",
+     extension_input_file_features=".npy",
+     extension_output_file=".laz",
+     extension_output_file_features=".npy",
+     skip_existing_files = False):
+      '''Filter valid vertices from a DXF file.
+    | 
+    | filter_valid_vertices_folder(client,
+    |      input_folder='/input_folder',
+    |      input_folder2='/input_folder2',
+    |      input_folder_features='/input_folder_features',
+    |      output_folder='/output_folder',
+    |      output_folder_features='/output_folder_features',
+    |      min_distance=0.0,
+    |      max_distance=100,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_input_folder2=".laz",
+    |      extension_input_folder_features=".npy",
+    |      extension_output_folder=".laz",
+    |      extension_output_folder_features=".npy",
+    |      skip_existing_files = False )
+
+:param min_distance: Minimum distance.
+:param max_distance: Maximum distance.
+:param input_folder: Input laz or txt folder to filter.
+:param input_folder2: Input laz or txt folder as reference.
+:param input_folder_features: Input features folder.
+:param output_folder: Output laz or txt folder.
+:param output_folder_features: Output features folder.
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_input_folder2: File extension of files in folder for input_folder2
+:param extension_input_folder_features: File extension of files in folder for input_folder_features
+:param extension_output_folder: File extension of files in folder for output_folder
+:param extension_output_folder_features: File extension of files in folder for output_folder_features
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['input_folder2']
+      del all_parameters['input_folder_features']
+      del all_parameters['output_folder']
+      del all_parameters['output_folder_features']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_input_file2']
+      del all_parameters['extension_input_file_features']
+      del all_parameters['extension_output_file']
+      del all_parameters['extension_output_file_features']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,input_file2,input_file_features,output_file,output_file_features"
+      folders = input_folder + "," + input_folder2 + "," + input_folder_features + "," + output_folder + "," + output_folder_features
+      extensions = extension_input_file + "," + extension_input_file2 + "," + extension_input_file_features + "," + extension_output_file + "," + extension_output_file_features
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "filter valid vertices" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def align_top(client,
+     input_file='in.laz',
+     target_file='in.laz',
+     output_file='out.laz',
+     instance_type='x2large'):
+      '''Zero centering of XYZ points in a LAZ file
+    | 
+    | align_top( client,
+    |      input_file='in.laz',
+    |      target_file='in.laz',
+    |      output_file='out.laz',
+    |      instance_type='x2large' )
+
+:param input_file: input LAZ file path
+:param target_file: input LAZ file path
+:param output_file: output LAZ file path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "align top",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def align_top_folder(client,
+     input_folder='/input_folder',
+     target_folder='/target_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_target_file=".laz",
+     extension_output_file=".laz",
+     skip_existing_files = False):
+      '''Zero centering of XYZ points in a LAZ file
+    | 
+    | align_top_folder(client,
+    |      input_folder='/input_folder',
+    |      target_folder='/target_folder',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_target_folder=".laz",
+    |      extension_output_folder=".laz",
+    |      skip_existing_files = False )
+
+:param input_folder: input LAZ folder folder
+:param target_folder: input LAZ folder folder
+:param output_folder: output LAZ folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_target_folder: File extension of files in folder for target_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['target_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_target_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,target_file,output_file"
+      folders = input_folder + "," + target_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_target_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "align top" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def optimize_model_graph(client,
+     in_dxf_file='in.dxf',
+     in_point_cloud_file='in.laz',
+     out_dxf_file='out.dxf',
+     max_distance=0.35,
+     num_iterations=4,
+     instance_type='x2large'):
+      '''Optimize the graph of a 3D model.
+    | 
+    | optimize_model_graph( client,
+    |      in_dxf_file='in.dxf',
+    |      in_point_cloud_file='in.laz',
+    |      out_dxf_file='out.dxf',
+    |      max_distance=0.35,
+    |      num_iterations=4,
+    |      instance_type='x2large' )
+
+:param in_dxf_file: input file
+:param in_point_cloud_file: input file
+:param out_dxf_file: output file
+:param max_distance: Maximum distance between a point and a graph node for the point to be considered a candidate for merging with the graph node.
+:param num_iterations: Number of iterations to run the optimization.
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "optimize model graph",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def optimize_model_graph_folder(client,
+     in_dxf_folder='/in_dxf_folder',
+     in_point_cloud_folder='/in_point_cloud_folder',
+     out_dxf_folder='/out_dxf_folder',
+     max_distance=0.35,
+     num_iterations=4,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_dxf_file=".dxf",
+     extension_in_point_cloud_file=".laz",
+     extension_out_dxf_file=".dxf",
+     skip_existing_files = False):
+      '''Optimize the graph of a 3D model.
+    | 
+    | optimize_model_graph_folder(client,
+    |      in_dxf_folder='/in_dxf_folder',
+    |      in_point_cloud_folder='/in_point_cloud_folder',
+    |      out_dxf_folder='/out_dxf_folder',
+    |      max_distance=0.35,
+    |      num_iterations=4,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_dxf_folder=".dxf",
+    |      extension_in_point_cloud_folder=".laz",
+    |      extension_out_dxf_folder=".dxf",
+    |      skip_existing_files = False )
+
+:param max_distance: Maximum distance between a point and a graph node for the point to be considered a candidate for merging with the graph node.
+:param num_iterations: Number of iterations to run the optimization.
+:param in_dxf_folder: input folder
+:param in_point_cloud_folder: input folder
+:param out_dxf_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_dxf_folder: File extension of files in folder for in_dxf_folder
+:param extension_in_point_cloud_folder: File extension of files in folder for in_point_cloud_folder
+:param extension_out_dxf_folder: File extension of files in folder for out_dxf_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_dxf_folder']
+      del all_parameters['in_point_cloud_folder']
+      del all_parameters['out_dxf_folder']
+      del all_parameters['extension_in_dxf_file']
+      del all_parameters['extension_in_point_cloud_file']
+      del all_parameters['extension_out_dxf_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_dxf_file,in_point_cloud_file,out_dxf_file"
+      folders = in_dxf_folder + "," + in_point_cloud_folder + "," + out_dxf_folder
+      extensions = extension_in_dxf_file + "," + extension_in_point_cloud_file + "," + extension_out_dxf_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "optimize model graph" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def simplify_model(client,
+     in_file='in.dxf',
+     out_file='out.dxf',
+     layers='1',
+     distance=0.25,
+     instance_type='x2large'):
+      '''Simplify a 3D model
+    | 
+    | simplify_model( client,
+    |      in_file='in.dxf',
+    |      out_file='out.dxf',
+    |      layers='1',
+    |      distance=0.25,
+    |      instance_type='x2large' )
+
+:param in_file: input file
+:param out_file: output file
+:param layers: layers to be processed
+:param distance: Distance threshold for corner point suppression.
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "simplify model",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def simplify_model_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     layers='1',
+     distance=0.25,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".dxf",
+     extension_out_file=".dxf",
+     skip_existing_files = False):
+      '''Simplify a 3D model
+    | 
+    | simplify_model_folder(client,
+    |      in_folder='/in_folder',
+    |      out_folder='/out_folder',
+    |      layers='1',
+    |      distance=0.25,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".dxf",
+    |      extension_out_folder=".dxf",
+    |      skip_existing_files = False )
+
+:param layers: layers to be processed
+:param distance: Distance threshold for corner point suppression.
+:param in_folder: input folder
+:param out_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder: File extension of files in folder for out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "simplify model" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def connect_neighbouring_vertices_unassigned(client,
+     input_file='points.laz',
+     input_vertices='vertices.laz',
+     output_file='output.dxf',
+     max_line_distance=0.5,
+     max_line_distance_corner=0.23,
+     min_samples=3,
+     instance_type='x2large'):
+      '''Connect neighbouring vertices in a point cloud
+    | 
+    | connect_neighbouring_vertices_unassigned( client,
+    |      input_file='points.laz',
+    |      input_vertices='vertices.laz',
+    |      output_file='output.dxf',
+    |      max_line_distance=0.5,
+    |      max_line_distance_corner=0.23,
+    |      min_samples=3,
+    |      instance_type='x2large' )
+
+:param input_file: Input file with all 3D points
+:param input_vertices: Input vertices
+:param output_file: Output model
+:param max_line_distance: Maximum distance between line and points to be considered as inlier
+:param max_line_distance_corner: Maximum distance between vertices and points to be considered as inlier
+:param min_samples: Minimum number of points to fit a line
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "connect neighbouring vertices unassigned",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def connect_neighbouring_vertices_unassigned_folder(client,
+     input_folder='/input_folder',
+     input_vertices='vertices.laz',
+     output_folder='/output_folder',
+     max_line_distance=0.5,
+     max_line_distance_corner=0.23,
+     min_samples=3,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_output_file=".dxf",
+     skip_existing_files = False):
+      '''Connect neighbouring vertices in a point cloud
+    | 
+    | connect_neighbouring_vertices_unassigned_folder(client,
+    |      input_folder='/input_folder',
+    |      input_vertices='vertices.laz',
+    |      output_folder='/output_folder',
+    |      max_line_distance=0.5,
+    |      max_line_distance_corner=0.23,
+    |      min_samples=3,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_output_folder=".dxf",
+    |      skip_existing_files = False )
+
+:param input_vertices: Input vertices
+:param max_line_distance: Maximum distance between line and points to be considered as inlier
+:param max_line_distance_corner: Maximum distance between vertices and points to be considered as inlier
+:param min_samples: Minimum number of points to fit a line
+:param input_folder: Input folder with all 3D points
+:param output_folder: Output model
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "connect neighbouring vertices unassigned" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def export_vertices(client,
+     in_file='in.laz',
+     out_file='out.dxf',
+     instance_type='x2large'):
+      '''Export a 3D model from a point cloud
+    | 
+    | export_vertices( client,
+    |      in_file='in.laz',
+    |      out_file='out.dxf',
+    |      instance_type='x2large' )
+
+:param in_file: input file with edges encoded in the intensity field.
+:param out_file: output file
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "export vertices",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def export_vertices_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".laz",
+     extension_out_file=".dxf",
+     skip_existing_files = False):
+      '''Export a 3D model from a point cloud
+    | 
+    | export_vertices_folder(client,
+    |      in_folder='/in_folder',
+    |      out_folder='/out_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".laz",
+    |      extension_out_folder=".dxf",
+    |      skip_existing_files = False )
+
+:param in_folder: input folder with edges encoded in the intensity field.
+:param out_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder: File extension of files in folder for out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "export vertices" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def zero_centering(client,
+     input_file='in.laz',
+     output_file='out.laz',
+     instance_type='x2large'):
+      '''Zero centering of XYZ points in a LAZ file
+    | 
+    | zero_centering( client,
+    |      input_file='in.laz',
+    |      output_file='out.laz',
+    |      instance_type='x2large' )
+
+:param input_file: input LAZ file path
+:param output_file: output LAZ file path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "zero centering",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def zero_centering_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_output_file=".laz",
+     skip_existing_files = False):
+      '''Zero centering of XYZ points in a LAZ file
+    | 
+    | zero_centering_folder(client,
+    |      input_folder='/input_folder',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_output_folder=".laz",
+    |      skip_existing_files = False )
+
+:param input_folder: input LAZ folder folder
+:param output_folder: output LAZ folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "zero centering" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def evaluate_model(client,
+     data_is='is.laz',
+     model_is='is.dxf',
+     model_target='target.dxf',
+     vertex_target_distance=0.5,
+     instance_type='x2large'):
+      '''Compare two 3D models
+    | 
+    | evaluate_model( client,
+    |      data_is='is.laz',
+    |      model_is='is.dxf',
+    |      model_target='target.dxf',
+    |      vertex_target_distance=0.5,
+    |      instance_type='x2large' )
+
+:param data_is: input file
+:param model_is: input file
+:param model_target: output file
+:param vertex_target_distance: Distance threshold for corner point suppression.
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "evaluate model",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def evaluate_model_folder(client,
+     data_is='is.laz',
+     model_is='is.dxf',
+     folder_model_target='/folder_model_target',
+     vertex_target_distance=0.5,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_model_target=".dxf",
+     skip_existing_files = False):
+      '''Compare two 3D models
+    | 
+    | evaluate_model_folder(client,
+    |      data_is='is.laz',
+    |      model_is='is.dxf',
+    |      model_target='/model_target',
+    |      vertex_target_distance=0.5,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_model_target=".dxf",
+    |      skip_existing_files = False )
+
+:param data_is: input file
+:param model_is: input file
+:param vertex_target_distance: Distance threshold for corner point suppression.
+:param folder_model_target: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_model_target: File extension of files in folder for folder_model_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_model_target']
+      del all_parameters['extension_model_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "model_target"
+      folders = folder_model_target
+      extensions = extension_model_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "evaluate model" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def import_vertices(client,
+     in_file='in.dxf',
+     layer='-1',
+     out_file='out.laz',
+     instance_type='x2large'):
+      '''Extract visible face3d vertices from a DXF file.
+    | 
+    | import_vertices( client,
+    |      in_file='in.dxf',
+    |      layer='-1',
+    |      out_file='out.laz',
+    |      instance_type='x2large' )
+
+:param in_file: Input DXF file path
+:param layer: Layer names as comma-separated list
+:param out_file: Output file path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "import vertices",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def import_vertices_folder(client,
+     in_folder='/in_folder',
+     layer='-1',
+     out_folder='/out_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".dxf",
+     extension_out_file=".laz",
+     skip_existing_files = False):
+      '''Extract visible face3d vertices from a DXF file.
+    | 
+    | import_vertices_folder(client,
+    |      in_folder='/in_folder',
+    |      layer='-1',
+    |      out_folder='/out_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".dxf",
+    |      extension_out_folder=".laz",
+    |      skip_existing_files = False )
+
+:param layer: Layer names as comma-separated list
+:param in_folder: Input DXF folder folder
+:param out_folder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder: File extension of files in folder for out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "import vertices" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def likelihood(client,
+     input_file='in.laz',
+     points_file='points.laz',
+     output_file='out.laz',
+     max_distance=0.5,
+     missing_distance=1.5,
+     missing_knn=2,
+     instance_type='x2large'):
+      '''Compute class conditional probability distribution
+    | 
+    | likelihood( client,
+    |      input_file='in.laz',
+    |      points_file='points.laz',
+    |      output_file='out.laz',
+    |      max_distance=0.5,
+    |      missing_distance=1.5,
+    |      missing_knn=2,
+    |      instance_type='x2large' )
+
+:param input_file: input LAZ file path
+:param points_file: input LAZ file path
+:param output_file: output LAZ file path
+:param max_distance: probability max distance
+:param missing_distance: interpolate missing points distance
+:param missing_knn: interpolate number missing neighbours
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "likelihood",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def likelihood_folder(client,
+     input_folder='/input_folder',
+     points_folder='/points_folder',
+     output_folder='/output_folder',
+     max_distance=0.5,
+     missing_distance=1.5,
+     missing_knn=2,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_points_file=".laz",
+     extension_output_file=".laz",
+     skip_existing_files = False):
+      '''Compute class conditional probability distribution
+    | 
+    | likelihood_folder(client,
+    |      input_folder='/input_folder',
+    |      points_folder='/points_folder',
+    |      output_folder='/output_folder',
+    |      max_distance=0.5,
+    |      missing_distance=1.5,
+    |      missing_knn=2,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_points_folder=".laz",
+    |      extension_output_folder=".laz",
+    |      skip_existing_files = False )
+
+:param max_distance: probability max distance
+:param missing_distance: interpolate missing points distance
+:param missing_knn: interpolate number missing neighbours
+:param input_folder: input LAZ folder folder
+:param points_folder: input LAZ folder folder
+:param output_folder: output LAZ folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_points_folder: File extension of files in folder for points_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['points_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_points_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,points_file,output_file"
+      folders = input_folder + "," + points_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_points_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "likelihood" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class shp:
+   def intersecting_polygons(client,
+     input_file='polygon.pickle',
+     comparison_folder='polygons',
+     output_file='list.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | intersecting_polygons( client,
+    |      input_file='polygon.pickle',
+    |      comparison_folder='polygons',
+    |      output_file='list.txt',
+    |      instance_type='x2large' )
+
+:param input_file: Input file for the polygon
+:param comparison_folder:  Input folder containing polygons for comparison
+:param output_file: Output file for the list of intersecting polygon filenames
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "intersecting polygons",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def intersecting_polygons_folder(client,
+     input_folder='/input_folder',
+     comparison_folder='polygons',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".pickle",
+     extension_output_file=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | intersecting_polygons_folder(client,
+    |      input_folder='/input_folder',
+    |      comparison_folder='polygons',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".pickle",
+    |      extension_output_folder=".txt",
+    |      skip_existing_files = False )
+
+:param comparison_folder:  Input folder containing polygons for comparison
+:param input_folder: Input folder for the polygon
+:param output_folder: Output folder for the list of intersecting polygon foldernames
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "intersecting polygons" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def extract_multipolygons_from_shp(client,
+     shp_file='',
+     out_polygon_folder='polygons/',
+     out_attributes_folder='attributes/',
+     shape_id=-1,
+     name_id=0,
+     instance_type='x2large'):
+      '''
+    | 
+    | extract_multipolygons_from_shp( client,
+    |      shp_file='',
+    |      out_polygon_folder='polygons/',
+    |      out_attributes_folder='attributes/',
+    |      shape_id=-1,
+    |      name_id=0,
+    |      instance_type='x2large' )
+
+:param shp_file: input shp file
+:param out_polygon_folder: folder with polygons from shape file
+:param out_attributes_folder: folder with records from shape file
+:param shape_id: id of polygon: [-1 parses all polygons]
+:param name_id: id of polygon: [-1 ignores name]
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "extract multipolygons from shp",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def extract_multipolygons_from_shp_folder(client,
+     shp_folder='/shp_folder',
+     folder_out_polygon_folder='/folder_out_polygon_folder',
+     folder_out_attributes_folder='/folder_out_attributes_folder',
+     shape_id=-1,
+     name_id=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_shp_file=".laz",
+     extension_out_polygon_folder=".laz",
+     extension_out_attributes_folder=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | extract_multipolygons_from_shp_folder(client,
+    |      shp_folder='/shp_folder',
+    |      out_polygon_folder='/out_polygon_folder',
+    |      out_attributes_folder='/out_attributes_folder',
+    |      shape_id=-1,
+    |      name_id=0,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_shp_folder=".",
+    |      extension_out_polygon_folder=".polygons/",
+    |      extension_out_attributes_folder=".attributes/",
+    |      skip_existing_files = False )
+
+:param shape_id: id of polygon: [-1 parses all polygons]
+:param name_id: id of polygon: [-1 ignores name]
+:param shp_folder: input shp folder
+:param folder_out_polygon_folder: folder with polygons from shape folder
+:param folder_out_attributes_folder: folder with records from shape folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_shp_folder: File extension of files in folder for shp_folder
+:param extension_out_polygon_folder: File extension of files in folder for folder_out_polygon_folder
+:param extension_out_attributes_folder: File extension of files in folder for folder_out_attributes_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['shp_folder']
+      del all_parameters['folder_out_polygon_folder']
+      del all_parameters['folder_out_attributes_folder']
+      del all_parameters['extension_shp_file']
+      del all_parameters['extension_out_polygon_folder']
+      del all_parameters['extension_out_attributes_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "shp_file,out_polygon_folder,out_attributes_folder"
+      folders = shp_folder + "," + folder_out_polygon_folder + "," + folder_out_attributes_folder
+      extensions = extension_shp_file + "," + extension_out_polygon_folder + "," + extension_out_attributes_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "extract multipolygons from shp" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def wireframe_to_dxf(client,
+     input_file='vertices.laz',
+     edges_file='edges.npy',
+     output_file='polygon.dxf',
+     instance_type='x2large'):
+      '''
+    | 
+    | wireframe_to_dxf( client,
+    |      input_file='vertices.laz',
+    |      edges_file='edges.npy',
+    |      output_file='polygon.dxf',
+    |      instance_type='x2large' )
+
+:param input_file: Input file for the vertices
+:param edges_file: Input file for the edges
+:param output_file: Output file for the dxf model
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "wireframe to dxf",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def wireframe_to_dxf_folder(client,
+     input_folder='/input_folder',
+     edges_folder='/edges_folder',
+     output_folder='/output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_edges_file=".npy",
+     extension_output_file=".dxf",
+     skip_existing_files = False):
+      '''
+    | 
+    | wireframe_to_dxf_folder(client,
+    |      input_folder='/input_folder',
+    |      edges_folder='/edges_folder',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_edges_folder=".npy",
+    |      extension_output_folder=".dxf",
+    |      skip_existing_files = False )
+
+:param input_folder: Input folder for the vertices
+:param edges_folder: Input folder for the edges
+:param output_folder: Output folder for the dxf model
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_edges_folder: File extension of files in folder for edges_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['edges_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_edges_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,edges_file,output_file"
+      folders = input_folder + "," + edges_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_edges_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "wireframe to dxf" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def make_polygon_from_json(client,
+     input_file='in.json',
+     output_file='out.pickle',
+     point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
+     instance_type='x2large'):
+      '''
+    | 
+    | make_polygon_from_json( client,
+    |      input_file='in.json',
+    |      output_file='out.pickle',
+    |      point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
+    |      instance_type='x2large' )
+
+:param input_file: Input file for the json file
+:param output_file: Output file for the polygon file
+:param point_identifiers: Point identifiers for the polygon
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "make polygon from json",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def make_polygon_from_json_folder(client,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
+     point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".json",
+     extension_output_file=".pickle",
+     skip_existing_files = False):
+      '''
+    | 
+    | make_polygon_from_json_folder(client,
+    |      input_folder='/input_folder',
+    |      output_folder='/output_folder',
+    |      point_identifiers='min_x,min_y;min_x,max_y;max_x,max_y;max_x,min_y',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".json",
+    |      extension_output_folder=".pickle",
+    |      skip_existing_files = False )
+
+:param point_identifiers: Point identifiers for the polygon
+:param input_folder: Input folder for the json folder
+:param output_folder: Output folder for the polygon folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "make polygon from json" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -11442,1004 +13858,6 @@ class pipe:
          client.get_token(),
          "execute each file in folder",
          all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-
-
-
-class sys:
-   def create_directory_in_cloud(client,
-     destination='data',
-     instance_type='x2large'):
-      '''
-    | 
-    | create_directory_in_cloud( client,
-    |      destination='data',
-    |      instance_type='x2large' )
-
-:param destination: Destionation location on host. default folder: ./data
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "create directory in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def create_directory_in_cloud_folder(client,
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | create_directory_in_cloud_folder(client,
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_destination=".data",
-    |      skip_existing_files = False )
-
-:param folder_destination: Destionation location on host. default folder: ./data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_destination']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "destination"
-      folders = folder_destination
-      extensions = extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "create directory in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_data_from_cloud(client,
-     url='',
-     target='data',
-     protocol='',
-     username='',
-     password='',
-     port=21,
-     instance_type='x2large'):
-      '''
-    | 
-    | upload_data_from_cloud( client,
-    |      url='',
-    |      target='data',
-    |      protocol='',
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      instance_type='x2large' )
-
-:param url: destination URL
-:param target: Target location on host for upload. default folder: ./data
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param username: Username
-:param password: Password
-:param port: port
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "upload data from cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_data_from_cloud_folder(client,
-     url='',
-     folder_target='/folder_target',
-     protocol='',
-     username='',
-     password='',
-     port=21,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | upload_data_from_cloud_folder(client,
-    |      url='',
-    |      target='/target',
-    |      protocol='',
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".data",
-    |      skip_existing_files = False )
-
-:param url: destination URL
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param username: Username
-:param password: Password
-:param port: port
-:param folder_target: Target location on host for upload. default folder: ./data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "upload data from cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def remove_files_from_cloud(client,
-     target='',
-     instance_type='x2large'):
-      '''
-    | 
-    | remove_files_from_cloud( client,
-    |      target='',
-    |      instance_type='x2large' )
-
-:param target: Target to be deleted
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "remove files from cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def remove_files_from_cloud_folder(client,
-     folder_target='/folder_target',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | remove_files_from_cloud_folder(client,
-    |      target='/target',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be deleted
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "remove files from cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def find_file_paths(client,
-     input_files='files.txt',
-     output_files='paths.txt',
-     search_folder='/search_folder',
-     replace_in='',
-     replace_out='',
-     substrings='',
-     instance_type='x2large'):
-      '''
-    | 
-    | find_file_paths( client,
-    |      input_files='files.txt',
-    |      output_files='paths.txt',
-    |      search_folder='/search_folder',
-    |      replace_in='',
-    |      replace_out='',
-    |      substrings='',
-    |      instance_type='x2large' )
-
-:param input_files: File containing the list of filenames
-:param output_files: Path to save the modified filelist
-:param search_folder:  Folder to traverse for finding files
-:param replace_in: The part to replace in the filenames
-:param replace_out: The new part to replace with
-:param substrings:  a list of substrings that need to occure in the file paths to be vallid
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "find file paths",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def find_file_paths_folder(client,
-     input_folders='/input_folders',
-     output_folders='/output_folders',
-     search_folder='/search_folder',
-     replace_in='',
-     replace_out='',
-     substrings='',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_files=".txt",
-     extension_output_files=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | find_file_paths_folder(client,
-    |      input_folders='/input_folders',
-    |      output_folders='/output_folders',
-    |      search_folder='/search_folder',
-    |      replace_in='',
-    |      replace_out='',
-    |      substrings='',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folders=".txt",
-    |      extension_output_folders=".txt",
-    |      skip_existing_files = False )
-
-:param search_folder:  Folder to traverse for finding files
-:param replace_in: The part to replace in the filenames
-:param replace_out: The new part to replace with
-:param substrings:  a list of substrings that need to occure in the file paths to be vallid
-:param input_folders: File containing the list of foldernames
-:param output_folders: Path to save the modified folderlist
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folders: File extension of files in folder for input_folders
-:param extension_output_folders: File extension of files in folder for output_folders
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folders']
-      del all_parameters['output_folders']
-      del all_parameters['extension_input_files']
-      del all_parameters['extension_output_files']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_files,output_files"
-      folders = input_folders + "," + output_folders
-      extensions = extension_input_files + "," + extension_output_files
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "find file paths" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def move_file_in_cloud(client,
-     target='',
-     destination='',
-     instance_type='x2large'):
-      '''
-    | 
-    | move_file_in_cloud( client,
-    |      target='',
-    |      destination='',
-    |      instance_type='x2large' )
-
-:param target: Target to be moved
-:param destination: Destination
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "move file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def move_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | move_file_in_cloud_folder(client,
-    |      target='/target',
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      extension_destination=".",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be moved
-:param folder_destination: Destination
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_destination']
-      del all_parameters['extension_target']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "move file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def copy_file_in_cloud(client,
-     target='',
-     destination='',
-     instance_type='x2large'):
-      '''
-    | 
-    | copy_file_in_cloud( client,
-    |      target='',
-    |      destination='',
-    |      instance_type='x2large' )
-
-:param target: Target to be moved
-:param destination: Destination
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "copy file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def copy_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | copy_file_in_cloud_folder(client,
-    |      target='/target',
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      extension_destination=".",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be moved
-:param folder_destination: Destination
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_destination']
-      del all_parameters['extension_target']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "copy file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def touch_file_in_cloud(client,
-     target='file.txt',
-     instance_type='x2large'):
-      '''
-    | 
-    | touch_file_in_cloud( client,
-    |      target='file.txt',
-    |      instance_type='x2large' )
-
-:param target: File to be touched
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "touch file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def touch_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | touch_file_in_cloud_folder(client,
-    |      target='/target',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".txt",
-    |      skip_existing_files = False )
-
-:param folder_target: File to be touched
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "touch file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def rename_file_in_cloud(client,
-     target='',
-     prefix='',
-     suffix='',
-     replace_from='',
-     replace_to='',
-     replace_count=0,
-     instance_type='x2large'):
-      '''
-    | 
-    | rename_file_in_cloud( client,
-    |      target='',
-    |      prefix='',
-    |      suffix='',
-    |      replace_from='',
-    |      replace_to='',
-    |      replace_count=0,
-    |      instance_type='x2large' )
-
-:param target: Target to be renamed
-:param prefix: add prefix
-:param suffix: add suffix
-:param replace_from: replace string in filename
-:param replace_to: replace string in filename
-:param replace_count: replace string in filename
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "rename file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def rename_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     prefix='',
-     suffix='',
-     replace_from='',
-     replace_to='',
-     replace_count=0,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | rename_file_in_cloud_folder(client,
-    |      target='/target',
-    |      prefix='',
-    |      suffix='',
-    |      replace_from='',
-    |      replace_to='',
-    |      replace_count=0,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      skip_existing_files = False )
-
-:param prefix: add prefix
-:param suffix: add suffix
-:param replace_from: replace string in filename
-:param replace_to: replace string in filename
-:param replace_count: replace string in filename
-:param folder_target: Target to be renamed
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "rename file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def list_files_in_cloud(client,
-     target='folder/',
-     file_out='files.txt',
-     instance_type='x2large'):
-      '''
-    | 
-    | list_files_in_cloud( client,
-    |      target='folder/',
-    |      file_out='files.txt',
-    |      instance_type='x2large' )
-
-:param target: Target to be listet
-:param file_out: output_file
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "list files in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def list_files_in_cloud_folder(client,
-     folder_target='/folder_target',
-     folder_out='/folder_out',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_file_out=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | list_files_in_cloud_folder(client,
-    |      target='/target',
-    |      folder_out='/folder_out',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".folder/",
-    |      extension_folder_out=".txt",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be listet
-:param folder_out: output_folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_out']
-      del all_parameters['extension_target']
-      del all_parameters['extension_file_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,file_out"
-      folders = folder_target + "," + folder_out
-      extensions = extension_target + "," + extension_file_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "list files in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_data_to_cloud(client,
-     url='',
-     destination='data',
-     protocol='',
-     download_type=0,
-     username='',
-     password='',
-     port=21,
-     instance_type='x2large'):
-      '''
-    | 
-    | download_data_to_cloud( client,
-    |      url='',
-    |      destination='data',
-    |      protocol='',
-    |      download_type=0,
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      instance_type='x2large' )
-
-:param url: URL to data
-:param destination: Destionation location on host. default folder: ./data
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param download_type: download type: 0: all files from folder, 1: individual file
-:param username: Username
-:param password: Password
-:param port: port
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "download data to cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_data_to_cloud_folder(client,
-     url='',
-     folder_destination='/folder_destination',
-     protocol='',
-     download_type=0,
-     username='',
-     password='',
-     port=21,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | download_data_to_cloud_folder(client,
-    |      url='',
-    |      destination='/destination',
-    |      protocol='',
-    |      download_type=0,
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_destination=".data",
-    |      skip_existing_files = False )
-
-:param url: URL to data
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param download_type: download type: 0: all files from folder, 1: individual file
-:param username: Username
-:param password: Password
-:param port: port
-:param folder_destination: Destionation location on host. default folder: ./data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_destination']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "destination"
-      folders = folder_destination
-      extensions = extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "download data to cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
          client.get_server_address(),
          client.get_verify_ssl())
 
