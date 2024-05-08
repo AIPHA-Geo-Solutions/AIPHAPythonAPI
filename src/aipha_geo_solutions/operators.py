@@ -13201,8 +13201,8 @@ class image:
 
 
    def canny_edge_detection(client,
-     input_file=in.tif,
-     output_file=out.tif,
+     input_file='in.tif',
+     output_file='out.tif',
      sigma=1.0,
      low_threshold=0.1,
      high_threshold=0.2,
@@ -13211,8 +13211,8 @@ class image:
       '''Perform Canny edge detection on a georeferenced image and save the detected edges as a raster.
     | 
     | canny_edge_detection( client,
-    |      input_file=in.tif,
-    |      output_file=out.tif,
+    |      input_file='in.tif',
+    |      output_file='out.tif',
     |      sigma=1.0,
     |      low_threshold=0.1,
     |      high_threshold=0.2,
@@ -13240,36 +13240,42 @@ class image:
 
 
    def canny_edge_detection_folder(client,
-     input_file=in.tif,
-     output_file=out.tif,
+     input_folder='/input_folder',
+     output_folder='/output_folder',
      sigma=1.0,
      low_threshold=0.1,
      high_threshold=0.2,
      values_subset='',
      worker_instance_type='x2large',
      manager_instance_type="small",
+     extension_input_file=".tif",
+     extension_output_file=".tif",
      skip_existing_files = False):
       '''Perform Canny edge detection on a georeferenced image and save the detected edges as a raster.
     | 
     | canny_edge_detection_folder(client,
-    |      input_file=in.tif,
-    |      output_file=out.tif,
+    |      input_folder='/input_folder',
+    |      output_folder='/output_folder',
     |      sigma=1.0,
     |      low_threshold=0.1,
     |      high_threshold=0.2,
     |      values_subset='',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
+    |      extension_input_folder=".tif",
+    |      extension_output_folder=".tif",
     |      skip_existing_files = False )
 
-:param input_file: Input image file
-:param output_file: Output edge raster file
 :param sigma: Standard deviation of the Gaussian filter
 :param low_threshold: Low threshold for hysteresis
 :param high_threshold: High threshold for hysteresis
 :param values_subset: Subset of values to extract contours from, all values by default
+:param input_folder: Input image folder
+:param output_folder: Output edge raster folder
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
 :param skip_existing_files: skip files that already exist in the output folder
 '''
 
@@ -13279,11 +13285,15 @@ class image:
       del all_parameters['manager_instance_type']
       del all_parameters['skip_existing_files']
 
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
 
       cmd_str = json.dumps(all_parameters)
-      parameters = ""
-      folders = ""
-      extensions = ""
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
@@ -13509,17 +13519,17 @@ class image:
 
 
    def extract_contours(client,
-     input_file='in.tif',
+     input_file='file.tif',
      value=0.5,
-     output_file='out.shp',
+     output_file='file.shp',
      values_subset='',
      instance_type='x2large'):
       '''Extract contours from a georeferenced image and save them as a shapefile.
     | 
     | extract_contours( client,
-    |      input_file='in.tif',
+    |      input_file='file.tif',
     |      value=0.5,
-    |      output_file='out.shp',
+    |      output_file='file.shp',
     |      values_subset='',
     |      instance_type='x2large' )
 

@@ -12150,19 +12150,20 @@ class AIPHAProcessing:
 
 
 		 def canny_edge_detection(self,
-			input_path=in.tif, 
-			output_path=out.tif, 
+			input_path='__auto__', 
+			output_path='__auto__', 
 			sigma=1.0, 
 			low_threshold=0.1, 
 			high_threshold=0.2, 
 			values_subset='',
-
+			extension_input_file = '.tif',
+			extension_output_file = '.tif',
 			folder_parallel_processing = '__auto__'):
 			 '''
 				Perform Canny edge detection on a georeferenced image and save the detected edges as a raster.
 				
-				:param input_path: Input image file
-				:param output_path: Output edge raster file
+				:param input_path: Input image folder
+				:param output_path: Output edge raster folder
 				:param sigma: Standard deviation of the Gaussian filter
 				:param low_threshold: Low threshold for hysteresis
 				:param high_threshold: High threshold for hysteresis
@@ -12172,20 +12173,20 @@ class AIPHAProcessing:
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
 			 print(params_dict)
-			 extension_names = []
-			 iterable_names = []
+			 extension_names = ['extension_input_file', 'extension_output_file']
+			 iterable_names = ['input_path','output_path']
 			 print(iterable_names, params_dict)
 			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'input_path': 'input_path', 'output_path': 'output_path', 'sigma': 'sigma', 'low_threshold': 'low_threshold', 'high_threshold': 'high_threshold', 'values_subset': 'values_subset'}
+				 params_folder_mapping = {'input_path': 'input_folder', 'output_path': 'output_folder', 'sigma': 'sigma', 'low_threshold': 'low_threshold', 'high_threshold': 'high_threshold', 'values_subset': 'values_subset'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
-				 itertable_params = ['']
-				 itertable_iotypes = ['']
-				 iterable_file_types = ['']
+				 itertable_params = ['input_folder', 'output_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['tif', 'tif']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -12220,9 +12221,9 @@ class AIPHAProcessing:
 				 for ext in extension_names:
 					 params_dict.pop(ext)
 
-				 itertable_params = ['']
-				 itertable_iotypes = ['']
-				 iterable_file_types = ['']
+				 itertable_params = ['input_file', 'output_file']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['tif', 'tif']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
