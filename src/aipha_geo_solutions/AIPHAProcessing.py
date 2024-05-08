@@ -12149,6 +12149,110 @@ class AIPHAProcessing:
 
 
 
+		 def canny_edge_detection(self,
+			input_path=in.tif, 
+			output_path=out.tif, 
+			sigma=1.0, 
+			low_threshold=0.1, 
+			high_threshold=0.2, 
+			values_subset='',
+
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Perform Canny edge detection on a georeferenced image and save the detected edges as a raster.
+				
+				:param input_path: Input image file
+				:param output_path: Output edge raster file
+				:param sigma: Standard deviation of the Gaussian filter
+				:param low_threshold: Low threshold for hysteresis
+				:param high_threshold: High threshold for hysteresis
+				:param values_subset: Subset of values to extract contours from, all values by default
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = []
+			 iterable_names = []
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'input_path': 'input_path', 'output_path': 'output_path', 'sigma': 'sigma', 'low_threshold': 'low_threshold', 'high_threshold': 'high_threshold', 'values_subset': 'values_subset'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['']
+				 itertable_iotypes = ['']
+				 iterable_file_types = ['']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'canny_edge_detection_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.image.canny_edge_detection_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'image',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'input_path': 'input_file', 'output_path': 'output_file', 'sigma': 'sigma', 'low_threshold': 'low_threshold', 'high_threshold': 'high_threshold', 'values_subset': 'values_subset'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['']
+				 itertable_iotypes = ['']
+				 iterable_file_types = ['']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'canny_edge_detection',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.image.canny_edge_detection(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'image',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def image_metadata(self,
 			input_path='__auto__', 
 			output_path='__auto__',
@@ -12333,6 +12437,107 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.image.resize_image(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'image',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def extract_contours(self,
+			input_path='__auto__', 
+			value=0.5, 
+			output_path='__auto__', 
+			values_subset='',
+			extension_input_file = '.tif',
+			extension_output_file = '.shp',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Extract contours from a georeferenced image and save them as a shapefile.
+				
+				:param input_path: Input georeferenced image folder
+				:param value: Contour value
+				:param output_path: Output shapefolder
+				:param values_subset: Subset of contour values, default is all values
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_input_file', 'extension_output_file']
+			 iterable_names = ['input_path','output_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'input_path': 'input_folder', 'value': 'value', 'output_path': 'output_folder', 'values_subset': 'values_subset'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['input_folder', 'output_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['tif', 'shp']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'extract_contours_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.image.extract_contours_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'image',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'input_path': 'input_file', 'value': 'value', 'output_path': 'output_file', 'values_subset': 'values_subset'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['input_file', 'output_file']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['tif', 'shp']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'extract_contours',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.image.extract_contours(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 

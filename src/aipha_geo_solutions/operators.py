@@ -13200,6 +13200,114 @@ class image:
          client.get_verify_ssl())
 
 
+   def canny_edge_detection(client,
+     input_file=in.tif,
+     output_file=out.tif,
+     sigma=1.0,
+     low_threshold=0.1,
+     high_threshold=0.2,
+     values_subset='',
+     instance_type='x2large'):
+      '''Perform Canny edge detection on a georeferenced image and save the detected edges as a raster.
+    | 
+    | canny_edge_detection( client,
+    |      input_file=in.tif,
+    |      output_file=out.tif,
+    |      sigma=1.0,
+    |      low_threshold=0.1,
+    |      high_threshold=0.2,
+    |      values_subset='',
+    |      instance_type='x2large' )
+
+:param input_file: Input image file
+:param output_file: Output edge raster file
+:param sigma: Standard deviation of the Gaussian filter
+:param low_threshold: Low threshold for hysteresis
+:param high_threshold: High threshold for hysteresis
+:param values_subset: Subset of values to extract contours from, all values by default
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "canny edge detection",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def canny_edge_detection_folder(client,
+     input_file=in.tif,
+     output_file=out.tif,
+     sigma=1.0,
+     low_threshold=0.1,
+     high_threshold=0.2,
+     values_subset='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     skip_existing_files = False):
+      '''Perform Canny edge detection on a georeferenced image and save the detected edges as a raster.
+    | 
+    | canny_edge_detection_folder(client,
+    |      input_file=in.tif,
+    |      output_file=out.tif,
+    |      sigma=1.0,
+    |      low_threshold=0.1,
+    |      high_threshold=0.2,
+    |      values_subset='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      skip_existing_files = False )
+
+:param input_file: Input image file
+:param output_file: Output edge raster file
+:param sigma: Standard deviation of the Gaussian filter
+:param low_threshold: Low threshold for hysteresis
+:param high_threshold: High threshold for hysteresis
+:param values_subset: Subset of values to extract contours from, all values by default
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = ""
+      folders = ""
+      extensions = ""
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "canny edge detection" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def image_metadata(client,
      input_file='in.tif',
      output_file='out.json',
@@ -13380,6 +13488,112 @@ class image:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "resize image" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def extract_contours(client,
+     input_file='in.tif',
+     value=0.5,
+     output_file='out.shp',
+     values_subset='',
+     instance_type='x2large'):
+      '''Extract contours from a georeferenced image and save them as a shapefile.
+    | 
+    | extract_contours( client,
+    |      input_file='in.tif',
+    |      value=0.5,
+    |      output_file='out.shp',
+    |      values_subset='',
+    |      instance_type='x2large' )
+
+:param input_file: Input georeferenced image file
+:param value: Contour value
+:param output_file: Output shapefile
+:param values_subset: Subset of contour values, default is all values
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "extract contours",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def extract_contours_folder(client,
+     input_folder='/input_folder',
+     value=0.5,
+     output_folder='/output_folder',
+     values_subset='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".tif",
+     extension_output_file=".shp",
+     skip_existing_files = False):
+      '''Extract contours from a georeferenced image and save them as a shapefile.
+    | 
+    | extract_contours_folder(client,
+    |      input_folder='/input_folder',
+    |      value=0.5,
+    |      output_folder='/output_folder',
+    |      values_subset='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".tif",
+    |      extension_output_folder=".shp",
+    |      skip_existing_files = False )
+
+:param value: Contour value
+:param values_subset: Subset of contour values, default is all values
+:param input_folder: Input georeferenced image folder
+:param output_folder: Output shapefolder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "extract contours" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
