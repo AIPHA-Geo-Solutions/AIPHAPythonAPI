@@ -1868,9 +1868,9 @@ class AIPHAProcessing:
 			point_names='x,y,z', 
 			label_name='classification', 
 			max_epochs=500, 
-			learning_rate=0.01, 
-			learning_rate_decay=0.1, 
-			feature_dimensions='12,48,96,192,384', 
+			learning_rate=1e-2, 
+			learning_rate_decay=0.95, 
+			feature_dimensions='16,64,128,256,512', 
 			batch_size=2,
 			extension_data_in_path = '',
 			folder_parallel_processing = '__auto__'):
@@ -2090,6 +2090,119 @@ class AIPHAProcessing:
 
 
 
+		 def knn_classification(self,
+			in_path_to_points='__auto__', 
+			in_path_from_points='__auto__', 
+			out_path_labels='__auto__', 
+			out_path_probs='__auto__', 
+			k=3, 
+			max_distance=1.0, 
+			to_points_names='X,Y,Z', 
+			from_point_names='X,Y,Z', 
+			from_class_name='classification',
+			extension_in_path_to_points = '.laz',
+			extension_in_path_from_points = '.laz',
+			extension_out_path_labels = '.labels',
+			extension_out_path_probs = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				knn classification
+				
+				:param in_path_to_points: input point cloud to be labeled
+				:param in_path_from_points: input reference point cloud
+				:param out_path_labels: out class labels
+				:param out_path_probs: out class probabilities
+				:param k: number of neighbors
+				:param max_distance: maximum distance
+				:param to_points_names: names of points to be labeled
+				:param from_point_names: names of reference points
+				:param from_class_name: name of reference classification
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_path_to_points', 'extension_in_path_from_points', 'extension_out_path_labels', 'extension_out_path_probs']
+			 iterable_names = ['in_path_to_points','in_path_from_points','out_path_labels','out_path_probs']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_path_to_points': 'in_folder_to_points', 'in_path_from_points': 'in_folder_from_points', 'out_path_labels': 'out_folder_labels', 'out_path_probs': 'out_folder_probs', 'k': 'k', 'max_distance': 'max_distance', 'to_points_names': 'to_points_names', 'from_point_names': 'from_point_names', 'from_class_name': 'from_class_name'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folder_to_points', 'in_folder_from_points', 'out_folder_labels', 'out_folder_probs']
+				 itertable_iotypes = ['in', 'in', 'out', 'out']
+				 iterable_file_types = ['laz', 'laz', 'labels', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'knn_classification_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ml3d.knn_classification_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_path_to_points': 'in_path_to_points', 'in_path_from_points': 'in_path_from_points', 'out_path_labels': 'out_path_labels', 'out_path_probs': 'out_path_probs', 'k': 'k', 'max_distance': 'max_distance', 'to_points_names': 'to_points_names', 'from_point_names': 'from_point_names', 'from_class_name': 'from_class_name'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_path_to_points', 'in_path_from_points', 'out_path_labels', 'out_path_probs']
+				 itertable_iotypes = ['in', 'in', 'out', 'out']
+				 iterable_file_types = ['laz', 'laz', 'labels', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'knn_classification',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ml3d.knn_classification(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def semantic_training_rfcr(self,
 			data_in_path='__auto__', 
 			out_model_parameters_path='trained_model/model_1', 
@@ -2123,7 +2236,7 @@ class AIPHAProcessing:
 				:param learning_rate_decay: learning rate decay
 				:param learning_momentum: learning momentum
 				:param learning_gradient_clip_norm: learning gradient clip threshold
-				:param first_features_dim: dimension of the first feature maps
+				:param first_features_dim: first features dimension
 				
 			 '''
 			 params_dict = locals().copy()
@@ -2318,11 +2431,254 @@ class AIPHAProcessing:
 
 
 
+		 def semantic_inference_spunet(self,
+			data_in_path='__auto__', 
+			in_model_parameters_path='trained_model/model_1', 
+			out_label_path='__auto__', 
+			out_probability_path='__auto__', 
+			class_names='1,2,3,4,5,6,7,8', 
+			feature_names='red,green,blue', 
+			point_names='X,Y,Z', 
+			label_name='classification', 
+			resolution=0.05, 
+			channels='32,64,128,256,256,128,96,96', 
+			layers='2,3,4,6,2,2,2,2', 
+			number_of_votes=5,
+			extension_data_in_path = '.laz',
+			extension_out_label_path = '.labels',
+			extension_out_probability_path = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Spunet Training
+				
+				:param data_in_path:  folder that contains the test data
+				:param in_model_parameters_path:  path to model
+				:param out_label_path:  folder that contains the results
+				:param out_probability_path:  folder that contains the results
+				:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+				:param feature_names: comma separated list of features that are provided
+				:param point_names: comma separated list of point identifiers in (las/laz)
+				:param label_name: label name for (las/laz)
+				:param resolution: resolution of the subsampled point cloud
+				:param channels: comma separated list of channels
+				:param layers: comma separated list of layers
+				:param number_of_votes: number of votes
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_data_in_path', 'extension_out_label_path', 'extension_out_probability_path']
+			 iterable_names = ['data_in_path','out_label_path','out_probability_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'data_in_path': 'data_in_folder', 'in_model_parameters_path': 'in_model_parameters_path', 'out_label_path': 'out_label_folder', 'out_probability_path': 'out_probability_folder', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'channels': 'channels', 'layers': 'layers', 'number_of_votes': 'number_of_votes'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['data_in_folder', 'out_label_folder', 'out_probability_folder']
+				 itertable_iotypes = ['in', 'out', 'out']
+				 iterable_file_types = ['laz', 'labels', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_inference_spunet_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ml3d.semantic_inference_spunet_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'data_in_path': 'data_in_path', 'in_model_parameters_path': 'in_model_parameters_path', 'out_label_path': 'out_label_path', 'out_probability_path': 'out_probability_path', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'channels': 'channels', 'layers': 'layers', 'number_of_votes': 'number_of_votes'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['data_in_path', 'out_label_path', 'out_probability_path']
+				 itertable_iotypes = ['in', 'out', 'out']
+				 iterable_file_types = ['laz', 'labels', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_inference_spunet',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ml3d.semantic_inference_spunet(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def semantic_training_spunet(self,
+			data_in_path='__auto__', 
+			out_model_parameters_path='trained_model/model_1', 
+			class_names='1,2,3,4,5,6,7,8', 
+			feature_names='red,green,blue', 
+			point_names='X,Y,Z', 
+			label_name='classification', 
+			resolution=0.05, 
+			max_epochs=500, 
+			learning_rate=0.01, 
+			batch_size=10, 
+			final_div_factor=100, 
+			div_factor=10, 
+			weight_decay=0.005, 
+			channels='32,64,128,256,256,128,96,96', 
+			layers='2,3,4,6,2,2,2,2',
+			extension_data_in_path = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Spunet Training
+				
+				:param data_in_path:  folder to folder that contains the training data
+				:param out_model_parameters_path:  path to model
+				:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+				:param feature_names: comma separated list of features that are provided
+				:param point_names: comma separated list of point identifiers in (las/laz)
+				:param label_name: label name for (las/laz)
+				:param resolution: resolution of the subsampled point cloud
+				:param max_epochs: maximum number of epochs
+				:param learning_rate: learning rate
+				:param batch_size: batch size
+				:param final_div_factor: final div factor for learning rate
+				:param div_factor: div factor for learning rate
+				:param weight_decay: weight decay
+				:param channels: comma separated list of channels
+				:param layers: comma separated list of layers
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_data_in_path']
+			 iterable_names = ['data_in_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'data_in_path': 'data_in_folder', 'out_model_parameters_path': 'out_model_parameters_path', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'max_epochs': 'max_epochs', 'learning_rate': 'learning_rate', 'batch_size': 'batch_size', 'final_div_factor': 'final_div_factor', 'div_factor': 'div_factor', 'weight_decay': 'weight_decay', 'channels': 'channels', 'layers': 'layers'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['data_in_folder']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_training_spunet_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ml3d.semantic_training_spunet_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'data_in_path': 'data_in_path', 'out_model_parameters_path': 'out_model_parameters_path', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'max_epochs': 'max_epochs', 'learning_rate': 'learning_rate', 'batch_size': 'batch_size', 'final_div_factor': 'final_div_factor', 'div_factor': 'div_factor', 'weight_decay': 'weight_decay', 'channels': 'channels', 'layers': 'layers'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['data_in_path']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_training_spunet',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ml3d.semantic_training_spunet(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def wireframe_estimation_inference(self,
 			in_paths='__auto__', 
 			out_result_paths='__auto__', 
 			in_model_path='parameters_wireframe', 
-			batch_size=1,
+			knn_line=15, 
+			mode_wireframe_estimation='knn unassigned', 
+			num_votes=10, 
+			rotation_axis='z',
 			extension_in_files = '',
 			extension_out_result_files = '',
 			folder_parallel_processing = '__auto__'):
@@ -2332,7 +2688,10 @@ class AIPHAProcessing:
 				:param in_paths: input folders or directory with training data
 				:param out_result_paths: output folders containing the wireframes
 				:param in_model_path:  model path
-				:param batch_size: batch size for training
+				:param knn_line: knn line
+				:param mode_wireframe_estimation: mode for wireframe estimation
+				:param num_votes: number of votes for wireframe estimation
+				:param rotation_axis: rotation axis
 				
 			 '''
 			 params_dict = locals().copy()
@@ -2346,7 +2705,7 @@ class AIPHAProcessing:
 			 print(folder_parallel_processing, iterable_subset_dict, False)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'in_paths': 'in_folders', 'out_result_paths': 'out_result_folders', 'in_model_path': 'in_model_path', 'batch_size': 'batch_size'}
+				 params_folder_mapping = {'in_paths': 'in_folders', 'out_result_paths': 'out_result_folders', 'in_model_path': 'in_model_path', 'knn_line': 'knn_line', 'mode_wireframe_estimation': 'mode_wireframe_estimation', 'num_votes': 'num_votes', 'rotation_axis': 'rotation_axis'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
 				 itertable_params = ['in_folders', 'out_result_folders']
@@ -2381,7 +2740,7 @@ class AIPHAProcessing:
 
     
 			 else:
-				 params_file_mapping = {'in_paths': 'in_files', 'out_result_paths': 'out_result_files', 'in_model_path': 'in_model_path', 'batch_size': 'batch_size'}
+				 params_file_mapping = {'in_paths': 'in_files', 'out_result_paths': 'out_result_files', 'in_model_path': 'in_model_path', 'knn_line': 'knn_line', 'mode_wireframe_estimation': 'mode_wireframe_estimation', 'num_votes': 'num_votes', 'rotation_axis': 'rotation_axis'}
 				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
 				 for ext in extension_names:
 					 params_dict.pop(ext)
@@ -2523,7 +2882,7 @@ class AIPHAProcessing:
 		 def wireframe_estimation_training(self,
 			in_path='data_train', 
 			in_wireframe_path='data_train_wireframe', 
-			out_model_path='parameters_wireframe', 
+			out_model_path='parameters_wireframe_14A_bce_interpolation', 
 			voxel_size=0.02, 
 			zero_centering='True', 
 			point_names='X,Y,Z', 
@@ -2534,31 +2893,35 @@ class AIPHAProcessing:
 			learning_rate=5e-6, 
 			learning_decay=0.999, 
 			num_epochs=2000000, 
-			regularization_decay=1e-9, 
+			regularization_decay=1e-10, 
 			batch_size=5 , 
-			save_after_epochs=100, 
-			backbone_type='MinkUNet18B', 
+			save_after_epochs=1, 
+			backbone_type='MinkUNet14A', 
 			head_type_prob='HeadPointwise', 
-			criterion_type_prob='L1Sum', 
+			criterion_type_prob='BCEMean', 
 			hidden_layers=8, 
 			max_interpolation_distance=0.75, 
 			dist_threshold=0.35, 
-			score_threshold=0.4, 
+			score_threshold=0.5, 
 			point_estimation_layers=3, 
-			point_estimation_channels=8, 
-			criterion_type_point='L1Sum', 
-			wireframe_criterion_type='BCESum', 
+			point_estimation_channels=32, 
+			criterion_type_point='L1Mean', 
+			wireframe_criterion_type='BCEMean', 
 			wireframe_estimation_layers=3, 
-			wireframe_estimation_channels=8, 
-			weight_pred=1, 
-			weight_prob=1, 
+			wireframe_estimation_channels=32, 
+			weight_pred=2, 
+			weight_prob=6.5, 
 			weight_reconstruction=4.5, 
-			weight_wireframe=10, 
+			weight_wireframe=9, 
 			knn_line=10, 
-			distance_line=0.4, 
+			distance_line=0.3, 
 			probabilistic='True', 
 			store_in_memory='True', 
-			mode_wireframe_estimation='knn',
+			mode_wireframe_estimation='knn', 
+			maximum_wireframe_samples=2500, 
+			wireframe_subsampling=5, 
+			wireframe_extrapolation_sampling=2, 
+			only_train_wireframe='False',
 
 			folder_parallel_processing = '__auto__'):
 			 '''
@@ -2602,6 +2965,10 @@ class AIPHAProcessing:
 				:param probabilistic: probabilistic
 				:param store_in_memory: store in memory
 				:param mode_wireframe_estimation: wireframe mode
+				:param maximum_wireframe_samples: maximum number of wireframe samples
+				:param wireframe_subsampling: wireframe subsampling factor
+				:param wireframe_extrapolation_sampling: wireframe extrapolation sampling factor
+				:param only_train_wireframe: only train wireframe
 				
 			 '''
 			 params_dict = locals().copy()
@@ -2615,7 +2982,7 @@ class AIPHAProcessing:
 			 print(folder_parallel_processing, iterable_subset_dict, False)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'in_path': 'in_path', 'in_wireframe_path': 'in_wireframe_path', 'out_model_path': 'out_model_path', 'voxel_size': 'voxel_size', 'zero_centering': 'zero_centering', 'point_names': 'point_names', 'feature_names': 'feature_names', 'label_names': 'label_names', 'num_classes': 'num_classes', 'label_scales': 'label_scales', 'learning_rate': 'learning_rate', 'learning_decay': 'learning_decay', 'num_epochs': 'num_epochs', 'regularization_decay': 'regularization_decay', 'batch_size': 'batch_size', 'save_after_epochs': 'save_after_epochs', 'backbone_type': 'backbone_type', 'head_type_prob': 'head_type_prob', 'criterion_type_prob': 'criterion_type_prob', 'hidden_layers': 'hidden_layers', 'max_interpolation_distance': 'max_interpolation_distance', 'dist_threshold': 'dist_threshold', 'score_threshold': 'score_threshold', 'point_estimation_layers': 'point_estimation_layers', 'point_estimation_channels': 'point_estimation_channels', 'criterion_type_point': 'criterion_type_point', 'wireframe_criterion_type': 'wireframe_criterion_type', 'wireframe_estimation_layers': 'wireframe_estimation_layers', 'wireframe_estimation_channels': 'wireframe_estimation_channels', 'weight_pred': 'weight_pred', 'weight_prob': 'weight_prob', 'weight_reconstruction': 'weight_reconstruction', 'weight_wireframe': 'weight_wireframe', 'knn_line': 'knn_line', 'distance_line': 'distance_line', 'probabilistic': 'probabilistic', 'store_in_memory': 'store_in_memory', 'mode_wireframe_estimation': 'mode_wireframe_estimation'}
+				 params_folder_mapping = {'in_path': 'in_path', 'in_wireframe_path': 'in_wireframe_path', 'out_model_path': 'out_model_path', 'voxel_size': 'voxel_size', 'zero_centering': 'zero_centering', 'point_names': 'point_names', 'feature_names': 'feature_names', 'label_names': 'label_names', 'num_classes': 'num_classes', 'label_scales': 'label_scales', 'learning_rate': 'learning_rate', 'learning_decay': 'learning_decay', 'num_epochs': 'num_epochs', 'regularization_decay': 'regularization_decay', 'batch_size': 'batch_size', 'save_after_epochs': 'save_after_epochs', 'backbone_type': 'backbone_type', 'head_type_prob': 'head_type_prob', 'criterion_type_prob': 'criterion_type_prob', 'hidden_layers': 'hidden_layers', 'max_interpolation_distance': 'max_interpolation_distance', 'dist_threshold': 'dist_threshold', 'score_threshold': 'score_threshold', 'point_estimation_layers': 'point_estimation_layers', 'point_estimation_channels': 'point_estimation_channels', 'criterion_type_point': 'criterion_type_point', 'wireframe_criterion_type': 'wireframe_criterion_type', 'wireframe_estimation_layers': 'wireframe_estimation_layers', 'wireframe_estimation_channels': 'wireframe_estimation_channels', 'weight_pred': 'weight_pred', 'weight_prob': 'weight_prob', 'weight_reconstruction': 'weight_reconstruction', 'weight_wireframe': 'weight_wireframe', 'knn_line': 'knn_line', 'distance_line': 'distance_line', 'probabilistic': 'probabilistic', 'store_in_memory': 'store_in_memory', 'mode_wireframe_estimation': 'mode_wireframe_estimation', 'maximum_wireframe_samples': 'maximum_wireframe_samples', 'wireframe_subsampling': 'wireframe_subsampling', 'wireframe_extrapolation_sampling': 'wireframe_extrapolation_sampling', 'only_train_wireframe': 'only_train_wireframe'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
 				 itertable_params = ['']
@@ -2650,7 +3017,7 @@ class AIPHAProcessing:
 
     
 			 else:
-				 params_file_mapping = {'in_path': 'in_folder', 'in_wireframe_path': 'in_wireframe_folder', 'out_model_path': 'out_model_path', 'voxel_size': 'voxel_size', 'zero_centering': 'zero_centering', 'point_names': 'point_names', 'feature_names': 'feature_names', 'label_names': 'label_names', 'num_classes': 'num_classes', 'label_scales': 'label_scales', 'learning_rate': 'learning_rate', 'learning_decay': 'learning_decay', 'num_epochs': 'num_epochs', 'regularization_decay': 'regularization_decay', 'batch_size': 'batch_size', 'save_after_epochs': 'save_after_epochs', 'backbone_type': 'backbone_type', 'head_type_prob': 'head_type_prob', 'criterion_type_prob': 'criterion_type_prob', 'hidden_layers': 'hidden_layers', 'max_interpolation_distance': 'max_interpolation_distance', 'dist_threshold': 'dist_threshold', 'score_threshold': 'score_threshold', 'point_estimation_layers': 'point_estimation_layers', 'point_estimation_channels': 'point_estimation_channels', 'criterion_type_point': 'criterion_type_point', 'wireframe_criterion_type': 'wireframe_criterion_type', 'wireframe_estimation_layers': 'wireframe_estimation_layers', 'wireframe_estimation_channels': 'wireframe_estimation_channels', 'weight_pred': 'weight_pred', 'weight_prob': 'weight_prob', 'weight_reconstruction': 'weight_reconstruction', 'weight_wireframe': 'weight_wireframe', 'knn_line': 'knn_line', 'distance_line': 'distance_line', 'probabilistic': 'probabilistic', 'store_in_memory': 'store_in_memory', 'mode_wireframe_estimation': 'mode_wireframe_estimation'}
+				 params_file_mapping = {'in_path': 'in_folder', 'in_wireframe_path': 'in_wireframe_folder', 'out_model_path': 'out_model_path', 'voxel_size': 'voxel_size', 'zero_centering': 'zero_centering', 'point_names': 'point_names', 'feature_names': 'feature_names', 'label_names': 'label_names', 'num_classes': 'num_classes', 'label_scales': 'label_scales', 'learning_rate': 'learning_rate', 'learning_decay': 'learning_decay', 'num_epochs': 'num_epochs', 'regularization_decay': 'regularization_decay', 'batch_size': 'batch_size', 'save_after_epochs': 'save_after_epochs', 'backbone_type': 'backbone_type', 'head_type_prob': 'head_type_prob', 'criterion_type_prob': 'criterion_type_prob', 'hidden_layers': 'hidden_layers', 'max_interpolation_distance': 'max_interpolation_distance', 'dist_threshold': 'dist_threshold', 'score_threshold': 'score_threshold', 'point_estimation_layers': 'point_estimation_layers', 'point_estimation_channels': 'point_estimation_channels', 'criterion_type_point': 'criterion_type_point', 'wireframe_criterion_type': 'wireframe_criterion_type', 'wireframe_estimation_layers': 'wireframe_estimation_layers', 'wireframe_estimation_channels': 'wireframe_estimation_channels', 'weight_pred': 'weight_pred', 'weight_prob': 'weight_prob', 'weight_reconstruction': 'weight_reconstruction', 'weight_wireframe': 'weight_wireframe', 'knn_line': 'knn_line', 'distance_line': 'distance_line', 'probabilistic': 'probabilistic', 'store_in_memory': 'store_in_memory', 'mode_wireframe_estimation': 'mode_wireframe_estimation', 'maximum_wireframe_samples': 'maximum_wireframe_samples', 'wireframe_subsampling': 'wireframe_subsampling', 'wireframe_extrapolation_sampling': 'wireframe_extrapolation_sampling', 'only_train_wireframe': 'only_train_wireframe'}
 				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
 				 for ext in extension_names:
 					 params_dict.pop(ext)
@@ -2841,16 +3208,16 @@ class AIPHAProcessing:
 			save_after_epochs=100, 
 			backbone_type='MinkUNet14A', 
 			head_type_prob='HeadPointwise', 
-			criterion_type_prob='L1Sum', 
+			criterion_type_prob='BCEMean', 
 			hidden_layers=8, 
 			max_interpolation_distance=0.75, 
 			dist_threshold=0.35, 
 			score_threshold=0.4, 
 			point_estimation_layers=3, 
 			point_estimation_channels=8, 
-			criterion_type_point='L1Sum', 
+			criterion_type_point='L1Mean', 
 			weight_pred=1.0, 
-			weight_prob=1.0, 
+			weight_prob=2.0, 
 			weight_reconstruction=4.0, 
 			probabilistic='True',
 
@@ -3833,6 +4200,107 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ops3d.union_point_clouds(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def uniform_downsampling(self,
+			path_in='__auto__', 
+			path_out='__auto__', 
+			k=3, 
+			dtype='',
+			extension_file_in = '.laz',
+			extension_file_out = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				uniform downsampling
+				
+				:param path_in: input folder data
+				:param path_out: output folder
+				:param k: k
+				:param dtype: values from point cloud, e.g. X,Y,Z
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_in', 'extension_file_out']
+			 iterable_names = ['path_in','path_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_in': 'folder_in', 'path_out': 'folder_out', 'k': 'k', 'dtype': 'dtype'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_in', 'folder_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'uniform_downsampling_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.uniform_downsampling_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_in': 'file_in', 'path_out': 'file_out', 'k': 'k', 'dtype': 'dtype'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_in', 'file_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'uniform_downsampling',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.uniform_downsampling(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -5102,6 +5570,107 @@ class AIPHAProcessing:
 
 
 
+		 def uniform_down_sampling_voxel(self,
+			input_path='__auto__', 
+			cols='', 
+			output_path='__auto__', 
+			voxel_size=0.05,
+			extension_input_file = '.laz',
+			extension_output_file = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Uniform down sampling of point cloud using voxel grids
+				
+				:param input_path: Input point cloud folder
+				:param cols: Columns to read from input file, default is all columns
+				:param output_path: Output point cloud folder
+				:param voxel_size: voxel size
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_input_file', 'extension_output_file']
+			 iterable_names = ['input_path','output_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'input_path': 'input_folder', 'cols': 'cols', 'output_path': 'output_folder', 'voxel_size': 'voxel_size'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['input_folder', 'output_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'uniform_down_sampling_voxel_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.uniform_down_sampling_voxel_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'input_path': 'input_file', 'cols': 'cols', 'output_path': 'output_file', 'voxel_size': 'voxel_size'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['input_file', 'output_file']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'uniform_down_sampling_voxel',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.uniform_down_sampling_voxel(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def filter_label_disagreement_knn(self,
 			path_points_in='__auto__', 
 			path_labels_in='__auto__', 
@@ -5429,111 +5998,6 @@ class AIPHAProcessing:
 
 
 
-		 def point_cloud_to_dsm(self,
-			path_points_in='__auto__', 
-			path_dsm_out='__auto__', 
-			path_dtm_out='__auto__', 
-			path_chm_out='__auto__', 
-			grid_size=0.5,
-			extension_file_points_in = '.laz',
-			extension_file_dsm_out = '.tif',
-			extension_file_dtm_out = '.tif',
-			extension_file_chm_out = '.tif',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				point cloud to dsm
-				
-				:param path_points_in: input points
-				:param path_dsm_out: dsm folder
-				:param path_dtm_out: dtm folder
-				:param path_chm_out: chm folder
-				:param grid_size: grid size
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_file_points_in', 'extension_file_dsm_out', 'extension_file_dtm_out', 'extension_file_chm_out']
-			 iterable_names = ['path_points_in','path_dsm_out','path_dtm_out','path_chm_out']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'path_points_in': 'folder_points_in', 'path_dsm_out': 'folder_dsm_out', 'path_dtm_out': 'folder_dtm_out', 'path_chm_out': 'folder_chm_out', 'grid_size': 'grid_size'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['folder_points_in', 'folder_dsm_out', 'folder_dtm_out', 'folder_chm_out']
-				 itertable_iotypes = ['in', 'in', 'in', 'out']
-				 iterable_file_types = ['laz', 'tif', 'tif', 'tif']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'point_cloud_to_dsm_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.ops3d.point_cloud_to_dsm_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'ops3d',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'path_points_in': 'file_points_in', 'path_dsm_out': 'file_dsm_out', 'path_dtm_out': 'file_dtm_out', 'path_chm_out': 'file_chm_out', 'grid_size': 'grid_size'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['file_points_in', 'file_dsm_out', 'file_dtm_out', 'file_chm_out']
-				 itertable_iotypes = ['in', 'in', 'in', 'out']
-				 iterable_file_types = ['laz', 'tif', 'tif', 'tif']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'point_cloud_to_dsm',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.ops3d.point_cloud_to_dsm(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'ops3d',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
 		 def align_points(self,
 			path_source_in='segmented_object', 
 			path_transformation_in='transformations', 
@@ -5618,6 +6082,208 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ops3d.align_points(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def uniform_down_sampling(self,
+			input_path='__auto__', 
+			cols='', 
+			output_path='__auto__', 
+			every_k_points=2,
+			extension_input_file = '.laz',
+			extension_output_file = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Uniform down sampling of point cloud
+				
+				:param input_path: Input point cloud folder
+				:param cols: Columns to read from input file, default is all columns
+				:param output_path: Output point cloud folder
+				:param every_k_points: Keep every k points
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_input_file', 'extension_output_file']
+			 iterable_names = ['input_path','output_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'input_path': 'input_folder', 'cols': 'cols', 'output_path': 'output_folder', 'every_k_points': 'every_k_points'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['input_folder', 'output_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'uniform_down_sampling_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.uniform_down_sampling_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'input_path': 'input_file', 'cols': 'cols', 'output_path': 'output_file', 'every_k_points': 'every_k_points'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['input_file', 'output_file']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'uniform_down_sampling',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.uniform_down_sampling(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def voxel_downsampling(self,
+			path_in='__auto__', 
+			path_out='__auto__', 
+			voxel_size=0.1, 
+			dtype='',
+			extension_file_in = '.laz',
+			extension_file_out = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				deprecated, please use unfiorm_down_sampling_voxel instead!
+				
+				:param path_in: input folder data
+				:param path_out: output folder
+				:param voxel_size: voxel size
+				:param dtype: values from point cloud, e.g. X,Y,Z
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_in', 'extension_file_out']
+			 iterable_names = ['path_in','path_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_in': 'folder_in', 'path_out': 'folder_out', 'voxel_size': 'voxel_size', 'dtype': 'dtype'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_in', 'folder_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'voxel_downsampling_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.voxel_downsampling_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_in': 'file_in', 'path_out': 'file_out', 'voxel_size': 'voxel_size', 'dtype': 'dtype'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_in', 'file_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'voxel_downsampling',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.voxel_downsampling(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -5921,6 +6587,111 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ops3d.crop_to_equal_value_range(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def point_cloud_to_dsm(self,
+			path_points_in='__auto__', 
+			path_dsm_out='__auto__', 
+			path_dtm_out='__auto__', 
+			path_chm_out='__auto__', 
+			grid_size=0.5,
+			extension_file_points_in = '.laz',
+			extension_file_dsm_out = '.tif',
+			extension_file_dtm_out = '.tif',
+			extension_file_chm_out = '.tif',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				point cloud to dsm
+				
+				:param path_points_in: input points
+				:param path_dsm_out: dsm folder
+				:param path_dtm_out: dtm folder
+				:param path_chm_out: chm folder
+				:param grid_size: grid size
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_file_points_in', 'extension_file_dsm_out', 'extension_file_dtm_out', 'extension_file_chm_out']
+			 iterable_names = ['path_points_in','path_dsm_out','path_dtm_out','path_chm_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'path_points_in': 'folder_points_in', 'path_dsm_out': 'folder_dsm_out', 'path_dtm_out': 'folder_dtm_out', 'path_chm_out': 'folder_chm_out', 'grid_size': 'grid_size'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['folder_points_in', 'folder_dsm_out', 'folder_dtm_out', 'folder_chm_out']
+				 itertable_iotypes = ['in', 'in', 'in', 'out']
+				 iterable_file_types = ['laz', 'tif', 'tif', 'tif']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'point_cloud_to_dsm_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.point_cloud_to_dsm_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'path_points_in': 'file_points_in', 'path_dsm_out': 'file_dsm_out', 'path_dtm_out': 'file_dtm_out', 'path_chm_out': 'file_chm_out', 'grid_size': 'grid_size'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['file_points_in', 'file_dsm_out', 'file_dtm_out', 'file_chm_out']
+				 itertable_iotypes = ['in', 'in', 'in', 'out']
+				 iterable_file_types = ['laz', 'tif', 'tif', 'tif']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'point_cloud_to_dsm',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.point_cloud_to_dsm(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 

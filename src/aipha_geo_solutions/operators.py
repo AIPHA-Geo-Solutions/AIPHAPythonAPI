@@ -1674,9 +1674,9 @@ class ml3d:
      point_names='x,y,z',
      label_name='classification',
      max_epochs=500,
-     learning_rate=0.01,
-     learning_rate_decay=0.1,
-     feature_dimensions='12,48,96,192,384',
+     learning_rate=1e-2,
+     learning_rate_decay=0.95,
+     feature_dimensions='16,64,128,256,512',
      batch_size=2,
      instance_type='x2large'):
       '''
@@ -1689,9 +1689,9 @@ class ml3d:
     |      point_names='x,y,z',
     |      label_name='classification',
     |      max_epochs=500,
-    |      learning_rate=0.01,
-    |      learning_rate_decay=0.1,
-    |      feature_dimensions='12,48,96,192,384',
+    |      learning_rate=1e-2,
+    |      learning_rate_decay=0.95,
+    |      feature_dimensions='16,64,128,256,512',
     |      batch_size=2,
     |      instance_type='x2large' )
 
@@ -1728,9 +1728,9 @@ class ml3d:
      point_names='x,y,z',
      label_name='classification',
      max_epochs=500,
-     learning_rate=0.01,
-     learning_rate_decay=0.1,
-     feature_dimensions='12,48,96,192,384',
+     learning_rate=1e-2,
+     learning_rate_decay=0.95,
+     feature_dimensions='16,64,128,256,512',
      batch_size=2,
      worker_instance_type='x2large',
      manager_instance_type="small",
@@ -1746,9 +1746,9 @@ class ml3d:
     |      point_names='x,y,z',
     |      label_name='classification',
     |      max_epochs=500,
-    |      learning_rate=0.01,
-    |      learning_rate_decay=0.1,
-    |      feature_dimensions='12,48,96,192,384',
+    |      learning_rate=1e-2,
+    |      learning_rate_decay=0.95,
+    |      feature_dimensions='16,64,128,256,512',
     |      batch_size=2,
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
@@ -1962,6 +1962,152 @@ class ml3d:
          client.get_verify_ssl())
 
 
+   def knn_classification(client,
+     in_path_to_points='new.laz',
+     in_path_from_points='old.laz',
+     out_path_labels='out.labels',
+     out_path_probs='out.npy',
+     k=3,
+     max_distance=1.0,
+     to_points_names='X,Y,Z',
+     from_point_names='X,Y,Z',
+     from_class_name='classification',
+     instance_type='x2large'):
+      '''
+    | 
+    | knn_classification( client,
+    |      in_path_to_points='new.laz',
+    |      in_path_from_points='old.laz',
+    |      out_path_labels='out.labels',
+    |      out_path_probs='out.npy',
+    |      k=3,
+    |      max_distance=1.0,
+    |      to_points_names='X,Y,Z',
+    |      from_point_names='X,Y,Z',
+    |      from_class_name='classification',
+    |      instance_type='x2large' )
+
+:param in_path_to_points: input point cloud to be labeled
+:param in_path_from_points: input reference point cloud
+:param out_path_labels: out class labels
+:param out_path_probs: out class probabilities
+:param k: number of neighbors
+:param max_distance: maximum distance
+:param to_points_names: names of points to be labeled
+:param from_point_names: names of reference points
+:param from_class_name: name of reference classification
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "knn classification",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def knn_classification_folder(client,
+     in_folder_to_points='/in_folder_to_points',
+     in_folder_from_points='/in_folder_from_points',
+     out_folder_labels='/out_folder_labels',
+     out_folder_probs='/out_folder_probs',
+     k=3,
+     max_distance=1.0,
+     to_points_names='X,Y,Z',
+     from_point_names='X,Y,Z',
+     from_class_name='classification',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_path_to_points=".laz",
+     extension_in_path_from_points=".laz",
+     extension_out_path_labels=".labels",
+     extension_out_path_probs=".npy",
+     skip_existing_files = False):
+      '''
+    | 
+    | knn_classification_folder(client,
+    |      in_folder_to_points='/in_folder_to_points',
+    |      in_folder_from_points='/in_folder_from_points',
+    |      out_folder_labels='/out_folder_labels',
+    |      out_folder_probs='/out_folder_probs',
+    |      k=3,
+    |      max_distance=1.0,
+    |      to_points_names='X,Y,Z',
+    |      from_point_names='X,Y,Z',
+    |      from_class_name='classification',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder_to_points=".laz",
+    |      extension_in_folder_from_points=".laz",
+    |      extension_out_folder_labels=".labels",
+    |      extension_out_folder_probs=".npy",
+    |      skip_existing_files = False )
+
+:param k: number of neighbors
+:param max_distance: maximum distance
+:param to_points_names: names of points to be labeled
+:param from_point_names: names of reference points
+:param from_class_name: name of reference classification
+:param in_folder_to_points: input point cloud to be labeled
+:param in_folder_from_points: input reference point cloud
+:param out_folder_labels: out class labels
+:param out_folder_probs: out class probabilities
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder_to_points: File extension of files in folder for in_folder_to_points
+:param extension_in_folder_from_points: File extension of files in folder for in_folder_from_points
+:param extension_out_folder_labels: File extension of files in folder for out_folder_labels
+:param extension_out_folder_probs: File extension of files in folder for out_folder_probs
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder_to_points']
+      del all_parameters['in_folder_from_points']
+      del all_parameters['out_folder_labels']
+      del all_parameters['out_folder_probs']
+      del all_parameters['extension_in_path_to_points']
+      del all_parameters['extension_in_path_from_points']
+      del all_parameters['extension_out_path_labels']
+      del all_parameters['extension_out_path_probs']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_path_to_points,in_path_from_points,out_path_labels,out_path_probs"
+      folders = in_folder_to_points + "," + in_folder_from_points + "," + out_folder_labels + "," + out_folder_probs
+      extensions = extension_in_path_to_points + "," + extension_in_path_from_points + "," + extension_out_path_labels + "," + extension_out_path_probs
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "knn classification" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def semantic_training_rfcr(client,
      data_in_path='/data/files/',
      out_model_parameters_path='trained_model/model_1',
@@ -2010,7 +2156,7 @@ class ml3d:
 :param learning_rate_decay: learning rate decay
 :param learning_momentum: learning momentum
 :param learning_gradient_clip_norm: learning gradient clip threshold
-:param first_features_dim: dimension of the first feature maps
+:param first_features_dim: first features dimension
 :param instance_type: type of cloud instance used for processing
 '''
 
@@ -2078,7 +2224,7 @@ class ml3d:
 :param learning_rate_decay: learning rate decay
 :param learning_momentum: learning momentum
 :param learning_gradient_clip_norm: learning gradient clip threshold
-:param first_features_dim: dimension of the first feature maps
+:param first_features_dim: first features dimension
 :param data_in_folder:  folder to folder that contains the training data
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
@@ -2252,11 +2398,340 @@ class ml3d:
          client.get_verify_ssl())
 
 
+   def semantic_inference_spunet(client,
+     data_in_path='in.laz',
+     in_model_parameters_path='trained_model/model_1',
+     out_label_path='out.labels',
+     out_probability_path='out.npy',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     channels='32,64,128,256,256,128,96,96',
+     layers='2,3,4,6,2,2,2,2',
+     number_of_votes=5,
+     instance_type='P2'):
+      '''Spunet Training
+    | 
+    | semantic_inference_spunet( client,
+    |      data_in_path='in.laz',
+    |      in_model_parameters_path='trained_model/model_1',
+    |      out_label_path='out.labels',
+    |      out_probability_path='out.npy',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      channels='32,64,128,256,256,128,96,96',
+    |      layers='2,3,4,6,2,2,2,2',
+    |      number_of_votes=5,
+    |      instance_type='P2' )
+
+:param data_in_path:  path that contains the test data
+:param in_model_parameters_path:  path to model
+:param out_label_path:  path that contains the results
+:param out_probability_path:  path that contains the results
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param channels: comma separated list of channels
+:param layers: comma separated list of layers
+:param number_of_votes: number of votes
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic inference spunet",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_spunet_folder(client,
+     data_in_folder='/data_in_folder',
+     in_model_parameters_path='trained_model/model_1',
+     out_label_folder='/out_label_folder',
+     out_probability_folder='/out_probability_folder',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     channels='32,64,128,256,256,128,96,96',
+     layers='2,3,4,6,2,2,2,2',
+     number_of_votes=5,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     extension_out_label_path=".labels",
+     extension_out_probability_path=".npy",
+     skip_existing_files = False):
+      '''Spunet Training
+    | 
+    | semantic_inference_spunet_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      in_model_parameters_path='trained_model/model_1',
+    |      out_label_folder='/out_label_folder',
+    |      out_probability_folder='/out_probability_folder',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      channels='32,64,128,256,256,128,96,96',
+    |      layers='2,3,4,6,2,2,2,2',
+    |      number_of_votes=5,
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder=".laz",
+    |      extension_out_label_folder=".labels",
+    |      extension_out_probability_folder=".npy",
+    |      skip_existing_files = False )
+
+:param in_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param channels: comma separated list of channels
+:param layers: comma separated list of layers
+:param number_of_votes: number of votes
+:param data_in_folder:  folder that contains the test data
+:param out_label_folder:  folder that contains the results
+:param out_probability_folder:  folder that contains the results
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param extension_out_label_folder: File extension of files in folder for out_label_folder
+:param extension_out_probability_folder: File extension of files in folder for out_probability_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['out_label_folder']
+      del all_parameters['out_probability_folder']
+      del all_parameters['extension_data_in_path']
+      del all_parameters['extension_out_label_path']
+      del all_parameters['extension_out_probability_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path,out_label_path,out_probability_path"
+      folders = data_in_folder + "," + out_label_folder + "," + out_probability_folder
+      extensions = extension_data_in_path + "," + extension_out_label_path + "," + extension_out_probability_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic inference spunet" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_spunet(client,
+     data_in_path='/data/files/',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     final_div_factor=100,
+     div_factor=10,
+     weight_decay=0.005,
+     channels='32,64,128,256,256,128,96,96',
+     layers='2,3,4,6,2,2,2,2',
+     instance_type='P2'):
+      '''Spunet Training
+    | 
+    | semantic_training_spunet( client,
+    |      data_in_path='/data/files/',
+    |      out_model_parameters_path='trained_model/model_1',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      batch_size=10,
+    |      final_div_factor=100,
+    |      div_factor=10,
+    |      weight_decay=0.005,
+    |      channels='32,64,128,256,256,128,96,96',
+    |      layers='2,3,4,6,2,2,2,2',
+    |      instance_type='P2' )
+
+:param data_in_path:  path to folder that contains the training data
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param batch_size: batch size
+:param final_div_factor: final div factor for learning rate
+:param div_factor: div factor for learning rate
+:param weight_decay: weight decay
+:param channels: comma separated list of channels
+:param layers: comma separated list of layers
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic training spunet",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_spunet_folder(client,
+     data_in_folder='/data_in_folder',
+     out_model_parameters_path='trained_model/model_1',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     final_div_factor=100,
+     div_factor=10,
+     weight_decay=0.005,
+     channels='32,64,128,256,256,128,96,96',
+     layers='2,3,4,6,2,2,2,2',
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     skip_existing_files = False):
+      '''Spunet Training
+    | 
+    | semantic_training_spunet_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      out_model_parameters_path='trained_model/model_1',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      batch_size=10,
+    |      final_div_factor=100,
+    |      div_factor=10,
+    |      weight_decay=0.005,
+    |      channels='32,64,128,256,256,128,96,96',
+    |      layers='2,3,4,6,2,2,2,2',
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder="./data/files/",
+    |      skip_existing_files = False )
+
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param batch_size: batch size
+:param final_div_factor: final div factor for learning rate
+:param div_factor: div factor for learning rate
+:param weight_decay: weight decay
+:param channels: comma separated list of channels
+:param layers: comma separated list of layers
+:param data_in_folder:  folder to folder that contains the training data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['extension_data_in_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path"
+      folders = data_in_folder
+      extensions = extension_data_in_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic training spunet" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def wireframe_estimation_inference(client,
      in_files='data_eval',
      out_result_files='result_wireframes',
      in_model_path='parameters_wireframe',
-     batch_size=1,
+     knn_line=15,
+     mode_wireframe_estimation='knn unassigned',
+     num_votes=10,
+     rotation_axis='z',
      instance_type='x2large'):
       '''[hidden] Wireframe estimation inference
     | 
@@ -2264,13 +2739,19 @@ class ml3d:
     |      in_files='data_eval',
     |      out_result_files='result_wireframes',
     |      in_model_path='parameters_wireframe',
-    |      batch_size=1,
+    |      knn_line=15,
+    |      mode_wireframe_estimation='knn unassigned',
+    |      num_votes=10,
+    |      rotation_axis='z',
     |      instance_type='x2large' )
 
 :param in_files: input files or directory with training data
 :param out_result_files: output files containing the wireframes
 :param in_model_path:  model path
-:param batch_size: batch size for training
+:param knn_line: knn line
+:param mode_wireframe_estimation: mode for wireframe estimation
+:param num_votes: number of votes for wireframe estimation
+:param rotation_axis: rotation axis
 :param instance_type: type of cloud instance used for processing
 '''
 
@@ -2289,7 +2770,10 @@ class ml3d:
      in_folders='/in_folders',
      out_result_folders='/out_result_folders',
      in_model_path='parameters_wireframe',
-     batch_size=1,
+     knn_line=15,
+     mode_wireframe_estimation='knn unassigned',
+     num_votes=10,
+     rotation_axis='z',
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_files=".laz",
@@ -2301,7 +2785,10 @@ class ml3d:
     |      in_folders='/in_folders',
     |      out_result_folders='/out_result_folders',
     |      in_model_path='parameters_wireframe',
-    |      batch_size=1,
+    |      knn_line=15,
+    |      mode_wireframe_estimation='knn unassigned',
+    |      num_votes=10,
+    |      rotation_axis='z',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folders=".data_eval",
@@ -2309,7 +2796,10 @@ class ml3d:
     |      skip_existing_files = False )
 
 :param in_model_path:  model path
-:param batch_size: batch size for training
+:param knn_line: knn line
+:param mode_wireframe_estimation: mode for wireframe estimation
+:param num_votes: number of votes for wireframe estimation
+:param rotation_axis: rotation axis
 :param in_folders: input folders or directory with training data
 :param out_result_folders: output folders containing the wireframes
 :param worker_instance_type: cloud instance type of worker nodes
@@ -2467,7 +2957,7 @@ class ml3d:
    def wireframe_estimation_training(client,
      in_folder='data_train',
      in_wireframe_folder='data_train_wireframe',
-     out_model_path='parameters_wireframe',
+     out_model_path='parameters_wireframe_14A_bce_interpolation',
      voxel_size=0.02,
      zero_centering='True',
      point_names='X,Y,Z',
@@ -2478,38 +2968,42 @@ class ml3d:
      learning_rate=5e-6,
      learning_decay=0.999,
      num_epochs=2000000,
-     regularization_decay=1e-9,
+     regularization_decay=1e-10,
      batch_size=5 ,
-     save_after_epochs=100,
-     backbone_type='MinkUNet18B',
+     save_after_epochs=1,
+     backbone_type='MinkUNet14A',
      head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
+     criterion_type_prob='BCEMean',
      hidden_layers=8,
      max_interpolation_distance=0.75,
      dist_threshold=0.35,
-     score_threshold=0.4,
+     score_threshold=0.5,
      point_estimation_layers=3,
-     point_estimation_channels=8,
-     criterion_type_point='L1Sum',
-     wireframe_criterion_type='BCESum',
+     point_estimation_channels=32,
+     criterion_type_point='L1Mean',
+     wireframe_criterion_type='BCEMean',
      wireframe_estimation_layers=3,
-     wireframe_estimation_channels=8,
-     weight_pred=1,
-     weight_prob=1,
+     wireframe_estimation_channels=32,
+     weight_pred=2,
+     weight_prob=6.5,
      weight_reconstruction=4.5,
-     weight_wireframe=10,
+     weight_wireframe=9,
      knn_line=10,
-     distance_line=0.4,
+     distance_line=0.3,
      probabilistic='True',
      store_in_memory='True',
      mode_wireframe_estimation='knn',
+     maximum_wireframe_samples=2500,
+     wireframe_subsampling=5,
+     wireframe_extrapolation_sampling=2,
+     only_train_wireframe='False',
      instance_type='x2large'):
       '''[hidden] wireframe estimation training
     | 
     | wireframe_estimation_training( client,
     |      in_folder='data_train',
     |      in_wireframe_folder='data_train_wireframe',
-    |      out_model_path='parameters_wireframe',
+    |      out_model_path='parameters_wireframe_14A_bce_interpolation',
     |      voxel_size=0.02,
     |      zero_centering='True',
     |      point_names='X,Y,Z',
@@ -2520,31 +3014,35 @@ class ml3d:
     |      learning_rate=5e-6,
     |      learning_decay=0.999,
     |      num_epochs=2000000,
-    |      regularization_decay=1e-9,
+    |      regularization_decay=1e-10,
     |      batch_size=5 ,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet18B',
+    |      save_after_epochs=1,
+    |      backbone_type='MinkUNet14A',
     |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
+    |      criterion_type_prob='BCEMean',
     |      hidden_layers=8,
     |      max_interpolation_distance=0.75,
     |      dist_threshold=0.35,
-    |      score_threshold=0.4,
+    |      score_threshold=0.5,
     |      point_estimation_layers=3,
-    |      point_estimation_channels=8,
-    |      criterion_type_point='L1Sum',
-    |      wireframe_criterion_type='BCESum',
+    |      point_estimation_channels=32,
+    |      criterion_type_point='L1Mean',
+    |      wireframe_criterion_type='BCEMean',
     |      wireframe_estimation_layers=3,
-    |      wireframe_estimation_channels=8,
-    |      weight_pred=1,
-    |      weight_prob=1,
+    |      wireframe_estimation_channels=32,
+    |      weight_pred=2,
+    |      weight_prob=6.5,
     |      weight_reconstruction=4.5,
-    |      weight_wireframe=10,
+    |      weight_wireframe=9,
     |      knn_line=10,
-    |      distance_line=0.4,
+    |      distance_line=0.3,
     |      probabilistic='True',
     |      store_in_memory='True',
     |      mode_wireframe_estimation='knn',
+    |      maximum_wireframe_samples=2500,
+    |      wireframe_subsampling=5,
+    |      wireframe_extrapolation_sampling=2,
+    |      only_train_wireframe='False',
     |      instance_type='x2large' )
 
 :param in_folder: input directory with training data
@@ -2585,6 +3083,10 @@ class ml3d:
 :param probabilistic: probabilistic
 :param store_in_memory: store in memory
 :param mode_wireframe_estimation: wireframe mode
+:param maximum_wireframe_samples: maximum number of wireframe samples
+:param wireframe_subsampling: wireframe subsampling factor
+:param wireframe_extrapolation_sampling: wireframe extrapolation sampling factor
+:param only_train_wireframe: only train wireframe
 :param instance_type: type of cloud instance used for processing
 '''
 
@@ -2602,7 +3104,7 @@ class ml3d:
    def wireframe_estimation_training_folder(client,
      folder_in_folder='/folder_in_folder',
      folder_in_wireframe_folder='/folder_in_wireframe_folder',
-     out_model_path='parameters_wireframe',
+     out_model_path='parameters_wireframe_14A_bce_interpolation',
      voxel_size=0.02,
      zero_centering='True',
      point_names='X,Y,Z',
@@ -2613,31 +3115,35 @@ class ml3d:
      learning_rate=5e-6,
      learning_decay=0.999,
      num_epochs=2000000,
-     regularization_decay=1e-9,
+     regularization_decay=1e-10,
      batch_size=5 ,
-     save_after_epochs=100,
-     backbone_type='MinkUNet18B',
+     save_after_epochs=1,
+     backbone_type='MinkUNet14A',
      head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
+     criterion_type_prob='BCEMean',
      hidden_layers=8,
      max_interpolation_distance=0.75,
      dist_threshold=0.35,
-     score_threshold=0.4,
+     score_threshold=0.5,
      point_estimation_layers=3,
-     point_estimation_channels=8,
-     criterion_type_point='L1Sum',
-     wireframe_criterion_type='BCESum',
+     point_estimation_channels=32,
+     criterion_type_point='L1Mean',
+     wireframe_criterion_type='BCEMean',
      wireframe_estimation_layers=3,
-     wireframe_estimation_channels=8,
-     weight_pred=1,
-     weight_prob=1,
+     wireframe_estimation_channels=32,
+     weight_pred=2,
+     weight_prob=6.5,
      weight_reconstruction=4.5,
-     weight_wireframe=10,
+     weight_wireframe=9,
      knn_line=10,
-     distance_line=0.4,
+     distance_line=0.3,
      probabilistic='True',
      store_in_memory='True',
      mode_wireframe_estimation='knn',
+     maximum_wireframe_samples=2500,
+     wireframe_subsampling=5,
+     wireframe_extrapolation_sampling=2,
+     only_train_wireframe='False',
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_in_folder=".laz",
@@ -2648,7 +3154,7 @@ class ml3d:
     | wireframe_estimation_training_folder(client,
     |      in_folder='/in_folder',
     |      in_wireframe_folder='/in_wireframe_folder',
-    |      out_model_path='parameters_wireframe',
+    |      out_model_path='parameters_wireframe_14A_bce_interpolation',
     |      voxel_size=0.02,
     |      zero_centering='True',
     |      point_names='X,Y,Z',
@@ -2659,31 +3165,35 @@ class ml3d:
     |      learning_rate=5e-6,
     |      learning_decay=0.999,
     |      num_epochs=2000000,
-    |      regularization_decay=1e-9,
+    |      regularization_decay=1e-10,
     |      batch_size=5 ,
-    |      save_after_epochs=100,
-    |      backbone_type='MinkUNet18B',
+    |      save_after_epochs=1,
+    |      backbone_type='MinkUNet14A',
     |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
+    |      criterion_type_prob='BCEMean',
     |      hidden_layers=8,
     |      max_interpolation_distance=0.75,
     |      dist_threshold=0.35,
-    |      score_threshold=0.4,
+    |      score_threshold=0.5,
     |      point_estimation_layers=3,
-    |      point_estimation_channels=8,
-    |      criterion_type_point='L1Sum',
-    |      wireframe_criterion_type='BCESum',
+    |      point_estimation_channels=32,
+    |      criterion_type_point='L1Mean',
+    |      wireframe_criterion_type='BCEMean',
     |      wireframe_estimation_layers=3,
-    |      wireframe_estimation_channels=8,
-    |      weight_pred=1,
-    |      weight_prob=1,
+    |      wireframe_estimation_channels=32,
+    |      weight_pred=2,
+    |      weight_prob=6.5,
     |      weight_reconstruction=4.5,
-    |      weight_wireframe=10,
+    |      weight_wireframe=9,
     |      knn_line=10,
-    |      distance_line=0.4,
+    |      distance_line=0.3,
     |      probabilistic='True',
     |      store_in_memory='True',
     |      mode_wireframe_estimation='knn',
+    |      maximum_wireframe_samples=2500,
+    |      wireframe_subsampling=5,
+    |      wireframe_extrapolation_sampling=2,
+    |      only_train_wireframe='False',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_in_folder=".data_train",
@@ -2726,6 +3236,10 @@ class ml3d:
 :param probabilistic: probabilistic
 :param store_in_memory: store in memory
 :param mode_wireframe_estimation: wireframe mode
+:param maximum_wireframe_samples: maximum number of wireframe samples
+:param wireframe_subsampling: wireframe subsampling factor
+:param wireframe_extrapolation_sampling: wireframe extrapolation sampling factor
+:param only_train_wireframe: only train wireframe
 :param folder_in_folder: input directory with training data
 :param folder_in_wireframe_folder: input directory with corresponding wireframe data
 :param worker_instance_type: cloud instance type of worker nodes
@@ -2996,16 +3510,16 @@ class ml3d:
      save_after_epochs=100,
      backbone_type='MinkUNet14A',
      head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
+     criterion_type_prob='BCEMean',
      hidden_layers=8,
      max_interpolation_distance=0.75,
      dist_threshold=0.35,
      score_threshold=0.4,
      point_estimation_layers=3,
      point_estimation_channels=8,
-     criterion_type_point='L1Sum',
+     criterion_type_point='L1Mean',
      weight_pred=1.0,
-     weight_prob=1.0,
+     weight_prob=2.0,
      weight_reconstruction=4.0,
      probabilistic='True',
      instance_type='x2large'):
@@ -3030,16 +3544,16 @@ class ml3d:
     |      save_after_epochs=100,
     |      backbone_type='MinkUNet14A',
     |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
+    |      criterion_type_prob='BCEMean',
     |      hidden_layers=8,
     |      max_interpolation_distance=0.75,
     |      dist_threshold=0.35,
     |      score_threshold=0.4,
     |      point_estimation_layers=3,
     |      point_estimation_channels=8,
-    |      criterion_type_point='L1Sum',
+    |      criterion_type_point='L1Mean',
     |      weight_pred=1.0,
-    |      weight_prob=1.0,
+    |      weight_prob=2.0,
     |      weight_reconstruction=4.0,
     |      probabilistic='True',
     |      instance_type='x2large' )
@@ -3107,16 +3621,16 @@ class ml3d:
      save_after_epochs=100,
      backbone_type='MinkUNet14A',
      head_type_prob='HeadPointwise',
-     criterion_type_prob='L1Sum',
+     criterion_type_prob='BCEMean',
      hidden_layers=8,
      max_interpolation_distance=0.75,
      dist_threshold=0.35,
      score_threshold=0.4,
      point_estimation_layers=3,
      point_estimation_channels=8,
-     criterion_type_point='L1Sum',
+     criterion_type_point='L1Mean',
      weight_pred=1.0,
-     weight_prob=1.0,
+     weight_prob=2.0,
      weight_reconstruction=4.0,
      probabilistic='True',
      worker_instance_type='x2large',
@@ -3145,16 +3659,16 @@ class ml3d:
     |      save_after_epochs=100,
     |      backbone_type='MinkUNet14A',
     |      head_type_prob='HeadPointwise',
-    |      criterion_type_prob='L1Sum',
+    |      criterion_type_prob='BCEMean',
     |      hidden_layers=8,
     |      max_interpolation_distance=0.75,
     |      dist_threshold=0.35,
     |      score_threshold=0.4,
     |      point_estimation_layers=3,
     |      point_estimation_channels=8,
-    |      criterion_type_point='L1Sum',
+    |      criterion_type_point='L1Mean',
     |      weight_pred=1.0,
-    |      weight_prob=1.0,
+    |      weight_prob=2.0,
     |      weight_reconstruction=4.0,
     |      probabilistic='True',
     |      worker_instance_type='x2large',
@@ -4159,6 +4673,112 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "union point clouds" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def uniform_downsampling(client,
+     file_in='in.laz',
+     file_out='out.laz',
+     k=3,
+     dtype='',
+     instance_type='x2large'):
+      '''
+    | 
+    | uniform_downsampling( client,
+    |      file_in='in.laz',
+    |      file_out='out.laz',
+    |      k=3,
+    |      dtype='',
+    |      instance_type='x2large' )
+
+:param file_in: input folder data
+:param file_out: output folder
+:param k: k
+:param dtype: values from point cloud, e.g. X,Y,Z
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "uniform downsampling",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def uniform_downsampling_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     k=3,
+     dtype='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_in=".laz",
+     extension_file_out=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | uniform_downsampling_folder(client,
+    |      folder_in='/folder_in',
+    |      folder_out='/folder_out',
+    |      k=3,
+    |      dtype='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_in=".laz",
+    |      extension_folder_out=".laz",
+    |      skip_existing_files = False )
+
+:param k: k
+:param dtype: values from point cloud, e.g. X,Y,Z
+:param folder_in: input folder data
+:param folder_out: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in: File extension of files in folder for folder_in
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "uniform downsampling" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -5605,6 +6225,112 @@ class ops3d:
          client.get_verify_ssl())
 
 
+   def uniform_down_sampling_voxel(client,
+     input_file='in.laz',
+     cols='',
+     output_file='out.laz',
+     voxel_size=0.05,
+     instance_type='x2large'):
+      '''Uniform down sampling of point cloud using voxel grids
+    | 
+    | uniform_down_sampling_voxel( client,
+    |      input_file='in.laz',
+    |      cols='',
+    |      output_file='out.laz',
+    |      voxel_size=0.05,
+    |      instance_type='x2large' )
+
+:param input_file: Input point cloud file
+:param cols: Columns to read from input file, default is all columns
+:param output_file: Output point cloud file
+:param voxel_size: voxel size
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "uniform down sampling voxel",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def uniform_down_sampling_voxel_folder(client,
+     input_folder='/input_folder',
+     cols='',
+     output_folder='/output_folder',
+     voxel_size=0.05,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_output_file=".laz",
+     skip_existing_files = False):
+      '''Uniform down sampling of point cloud using voxel grids
+    | 
+    | uniform_down_sampling_voxel_folder(client,
+    |      input_folder='/input_folder',
+    |      cols='',
+    |      output_folder='/output_folder',
+    |      voxel_size=0.05,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_output_folder=".laz",
+    |      skip_existing_files = False )
+
+:param cols: Columns to read from input file, default is all columns
+:param voxel_size: voxel size
+:param input_folder: Input point cloud folder
+:param output_folder: Output point cloud folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "uniform down sampling voxel" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def filter_label_disagreement_knn(client,
      file_points_in='file1.laz',
      file_labels_in='file2.npy',
@@ -6004,128 +6730,6 @@ class ops3d:
          client.get_verify_ssl())
 
 
-   def point_cloud_to_dsm(client,
-     file_points_in='points.laz',
-     file_dsm_out='dsm.tif',
-     file_dtm_out='dtm.tif',
-     file_chm_out='chm.tif',
-     grid_size=0.5,
-     instance_type='x2large'):
-      '''
-    | 
-    | point_cloud_to_dsm( client,
-    |      file_points_in='points.laz',
-    |      file_dsm_out='dsm.tif',
-    |      file_dtm_out='dtm.tif',
-    |      file_chm_out='chm.tif',
-    |      grid_size=0.5,
-    |      instance_type='x2large' )
-
-:param file_points_in: input points
-:param file_dsm_out: dsm file
-:param file_dtm_out: dtm file
-:param file_chm_out: chm file
-:param grid_size: grid size
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "point cloud to dsm",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def point_cloud_to_dsm_folder(client,
-     folder_points_in='/folder_points_in',
-     folder_dsm_out='/folder_dsm_out',
-     folder_dtm_out='/folder_dtm_out',
-     folder_chm_out='/folder_chm_out',
-     grid_size=0.5,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_file_points_in=".laz",
-     extension_file_dsm_out=".tif",
-     extension_file_dtm_out=".tif",
-     extension_file_chm_out=".tif",
-     skip_existing_files = False):
-      '''
-    | 
-    | point_cloud_to_dsm_folder(client,
-    |      folder_points_in='/folder_points_in',
-    |      folder_dsm_out='/folder_dsm_out',
-    |      folder_dtm_out='/folder_dtm_out',
-    |      folder_chm_out='/folder_chm_out',
-    |      grid_size=0.5,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_folder_points_in=".laz",
-    |      extension_folder_dsm_out=".tif",
-    |      extension_folder_dtm_out=".tif",
-    |      extension_folder_chm_out=".tif",
-    |      skip_existing_files = False )
-
-:param grid_size: grid size
-:param folder_points_in: input points
-:param folder_dsm_out: dsm folder
-:param folder_dtm_out: dtm folder
-:param folder_chm_out: chm folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_folder_points_in: File extension of files in folder for folder_points_in
-:param extension_folder_dsm_out: File extension of files in folder for folder_dsm_out
-:param extension_folder_dtm_out: File extension of files in folder for folder_dtm_out
-:param extension_folder_chm_out: File extension of files in folder for folder_chm_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_points_in']
-      del all_parameters['folder_dsm_out']
-      del all_parameters['folder_dtm_out']
-      del all_parameters['folder_chm_out']
-      del all_parameters['extension_file_points_in']
-      del all_parameters['extension_file_dsm_out']
-      del all_parameters['extension_file_dtm_out']
-      del all_parameters['extension_file_chm_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "file_points_in,file_dsm_out,file_dtm_out,file_chm_out"
-      folders = folder_points_in + "," + folder_dsm_out + "," + folder_dtm_out + "," + folder_chm_out
-      extensions = extension_file_points_in + "," + extension_file_dsm_out + "," + extension_file_dtm_out + "," + extension_file_chm_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "point cloud to dsm" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
    def align_points(client,
      folder_source_in='segmented_object',
      folder_transformation_in='transformations',
@@ -6211,6 +6815,218 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "align points" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def uniform_down_sampling(client,
+     input_file='in.laz',
+     cols='',
+     output_file='out.laz',
+     every_k_points=2,
+     instance_type='x2large'):
+      '''Uniform down sampling of point cloud
+    | 
+    | uniform_down_sampling( client,
+    |      input_file='in.laz',
+    |      cols='',
+    |      output_file='out.laz',
+    |      every_k_points=2,
+    |      instance_type='x2large' )
+
+:param input_file: Input point cloud file
+:param cols: Columns to read from input file, default is all columns
+:param output_file: Output point cloud file
+:param every_k_points: Keep every k points
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "uniform down sampling",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def uniform_down_sampling_folder(client,
+     input_folder='/input_folder',
+     cols='',
+     output_folder='/output_folder',
+     every_k_points=2,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_file=".laz",
+     extension_output_file=".laz",
+     skip_existing_files = False):
+      '''Uniform down sampling of point cloud
+    | 
+    | uniform_down_sampling_folder(client,
+    |      input_folder='/input_folder',
+    |      cols='',
+    |      output_folder='/output_folder',
+    |      every_k_points=2,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folder=".laz",
+    |      extension_output_folder=".laz",
+    |      skip_existing_files = False )
+
+:param cols: Columns to read from input file, default is all columns
+:param every_k_points: Keep every k points
+:param input_folder: Input point cloud folder
+:param output_folder: Output point cloud folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folder: File extension of files in folder for input_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_input_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_file,output_file"
+      folders = input_folder + "," + output_folder
+      extensions = extension_input_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "uniform down sampling" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def voxel_downsampling(client,
+     file_in='segmented_object.laz',
+     file_out='aligned_points.laz',
+     voxel_size=0.1,
+     dtype='',
+     instance_type='x2large'):
+      '''deprecated, please use unfiorm_down_sampling_voxel instead!
+    | 
+    | voxel_downsampling( client,
+    |      file_in='segmented_object.laz',
+    |      file_out='aligned_points.laz',
+    |      voxel_size=0.1,
+    |      dtype='',
+    |      instance_type='x2large' )
+
+:param file_in: input folder data
+:param file_out: output folder
+:param voxel_size: voxel size
+:param dtype: values from point cloud, e.g. X,Y,Z
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "voxel downsampling",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def voxel_downsampling_folder(client,
+     folder_in='/folder_in',
+     folder_out='/folder_out',
+     voxel_size=0.1,
+     dtype='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_in=".laz",
+     extension_file_out=".laz",
+     skip_existing_files = False):
+      '''deprecated, please use unfiorm_down_sampling_voxel instead!
+    | 
+    | voxel_downsampling_folder(client,
+    |      folder_in='/folder_in',
+    |      folder_out='/folder_out',
+    |      voxel_size=0.1,
+    |      dtype='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_in=".laz",
+    |      extension_folder_out=".laz",
+    |      skip_existing_files = False )
+
+:param voxel_size: voxel size
+:param dtype: values from point cloud, e.g. X,Y,Z
+:param folder_in: input folder data
+:param folder_out: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_in: File extension of files in folder for folder_in
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_in']
+      del all_parameters['folder_out']
+      del all_parameters['extension_file_in']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_in,file_out"
+      folders = folder_in + "," + folder_out
+      extensions = extension_file_in + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "voxel downsampling" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -6540,6 +7356,128 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "crop to equal value range" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_to_dsm(client,
+     file_points_in='points.laz',
+     file_dsm_out='dsm.tif',
+     file_dtm_out='dtm.tif',
+     file_chm_out='chm.tif',
+     grid_size=0.5,
+     instance_type='x2large'):
+      '''
+    | 
+    | point_cloud_to_dsm( client,
+    |      file_points_in='points.laz',
+    |      file_dsm_out='dsm.tif',
+    |      file_dtm_out='dtm.tif',
+    |      file_chm_out='chm.tif',
+    |      grid_size=0.5,
+    |      instance_type='x2large' )
+
+:param file_points_in: input points
+:param file_dsm_out: dsm file
+:param file_dtm_out: dtm file
+:param file_chm_out: chm file
+:param grid_size: grid size
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "point cloud to dsm",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def point_cloud_to_dsm_folder(client,
+     folder_points_in='/folder_points_in',
+     folder_dsm_out='/folder_dsm_out',
+     folder_dtm_out='/folder_dtm_out',
+     folder_chm_out='/folder_chm_out',
+     grid_size=0.5,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_file_points_in=".laz",
+     extension_file_dsm_out=".tif",
+     extension_file_dtm_out=".tif",
+     extension_file_chm_out=".tif",
+     skip_existing_files = False):
+      '''
+    | 
+    | point_cloud_to_dsm_folder(client,
+    |      folder_points_in='/folder_points_in',
+    |      folder_dsm_out='/folder_dsm_out',
+    |      folder_dtm_out='/folder_dtm_out',
+    |      folder_chm_out='/folder_chm_out',
+    |      grid_size=0.5,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_folder_points_in=".laz",
+    |      extension_folder_dsm_out=".tif",
+    |      extension_folder_dtm_out=".tif",
+    |      extension_folder_chm_out=".tif",
+    |      skip_existing_files = False )
+
+:param grid_size: grid size
+:param folder_points_in: input points
+:param folder_dsm_out: dsm folder
+:param folder_dtm_out: dtm folder
+:param folder_chm_out: chm folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_folder_points_in: File extension of files in folder for folder_points_in
+:param extension_folder_dsm_out: File extension of files in folder for folder_dsm_out
+:param extension_folder_dtm_out: File extension of files in folder for folder_dtm_out
+:param extension_folder_chm_out: File extension of files in folder for folder_chm_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_points_in']
+      del all_parameters['folder_dsm_out']
+      del all_parameters['folder_dtm_out']
+      del all_parameters['folder_chm_out']
+      del all_parameters['extension_file_points_in']
+      del all_parameters['extension_file_dsm_out']
+      del all_parameters['extension_file_dtm_out']
+      del all_parameters['extension_file_chm_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "file_points_in,file_dsm_out,file_dtm_out,file_chm_out"
+      folders = folder_points_in + "," + folder_dsm_out + "," + folder_dtm_out + "," + folder_chm_out
+      extensions = extension_file_points_in + "," + extension_file_dsm_out + "," + extension_file_dtm_out + "," + extension_file_chm_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "point cloud to dsm" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
