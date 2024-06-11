@@ -2398,6 +2398,153 @@ class ml3d:
          client.get_verify_ssl())
 
 
+   def semantic_inference_pt_v2m2(client,
+     data_in_path='in.laz',
+     in_model_parameters_path='trained_model/model_ptv2m2',
+     out_label_path='out.labels',
+     out_probability_path='out.npy',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     number_of_votes=5,
+     instance_type='P2'):
+      '''PT v2m2 Inference
+    | 
+    | semantic_inference_pt_v2m2( client,
+    |      data_in_path='in.laz',
+    |      in_model_parameters_path='trained_model/model_ptv2m2',
+    |      out_label_path='out.labels',
+    |      out_probability_path='out.npy',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      number_of_votes=5,
+    |      instance_type='P2' )
+
+:param data_in_path:  path that contains the test data
+:param in_model_parameters_path:  path to model
+:param out_label_path:  path that contains the results
+:param out_probability_path:  path that contains the results
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param number_of_votes: number of votes
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic inference pt v2m2",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_inference_pt_v2m2_folder(client,
+     data_in_folder='/data_in_folder',
+     in_model_parameters_path='trained_model/model_ptv2m2',
+     out_label_folder='/out_label_folder',
+     out_probability_folder='/out_probability_folder',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     number_of_votes=5,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     extension_out_label_path=".labels",
+     extension_out_probability_path=".npy",
+     skip_existing_files = False):
+      '''PT v2m2 Inference
+    | 
+    | semantic_inference_pt_v2m2_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      in_model_parameters_path='trained_model/model_ptv2m2',
+    |      out_label_folder='/out_label_folder',
+    |      out_probability_folder='/out_probability_folder',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      number_of_votes=5,
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder=".laz",
+    |      extension_out_label_folder=".labels",
+    |      extension_out_probability_folder=".npy",
+    |      skip_existing_files = False )
+
+:param in_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param number_of_votes: number of votes
+:param data_in_folder:  folder that contains the test data
+:param out_label_folder:  folder that contains the results
+:param out_probability_folder:  folder that contains the results
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param extension_out_label_folder: File extension of files in folder for out_label_folder
+:param extension_out_probability_folder: File extension of files in folder for out_probability_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['out_label_folder']
+      del all_parameters['out_probability_folder']
+      del all_parameters['extension_data_in_path']
+      del all_parameters['extension_out_label_path']
+      del all_parameters['extension_out_probability_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path,out_label_path,out_probability_path"
+      folders = data_in_folder + "," + out_label_folder + "," + out_probability_folder
+      extensions = extension_data_in_path + "," + extension_out_label_path + "," + extension_out_probability_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic inference pt v2m2" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def semantic_inference_spunet(client,
      data_in_path='in.laz',
      in_model_parameters_path='trained_model/model_1',
@@ -2412,7 +2559,7 @@ class ml3d:
      layers='2,3,4,6,2,2,2,2',
      number_of_votes=5,
      instance_type='P2'):
-      '''Spunet Training
+      '''Spunet Inference
     | 
     | semantic_inference_spunet( client,
     |      data_in_path='in.laz',
@@ -2474,7 +2621,7 @@ class ml3d:
      extension_out_label_path=".labels",
      extension_out_probability_path=".npy",
      skip_existing_files = False):
-      '''Spunet Training
+      '''Spunet Inference
     | 
     | semantic_inference_spunet_folder(client,
     |      data_in_folder='/data_in_folder',
@@ -2537,6 +2684,161 @@ class ml3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "semantic inference spunet" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_pt_v2m2(client,
+     data_in_path='/data/files/',
+     out_model_parameters_path='trained_model/model_ptv2m2',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     final_div_factor=100,
+     div_factor=10,
+     weight_decay=0.005,
+     instance_type='P2'):
+      '''Pt v2m2 Training
+    | 
+    | semantic_training_pt_v2m2( client,
+    |      data_in_path='/data/files/',
+    |      out_model_parameters_path='trained_model/model_ptv2m2',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      batch_size=10,
+    |      final_div_factor=100,
+    |      div_factor=10,
+    |      weight_decay=0.005,
+    |      instance_type='P2' )
+
+:param data_in_path:  path to folder that contains the training data
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param batch_size: batch size
+:param final_div_factor: final div factor for learning rate
+:param div_factor: div factor for learning rate
+:param weight_decay: weight decay
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "semantic training pt v2m2",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def semantic_training_pt_v2m2_folder(client,
+     data_in_folder='/data_in_folder',
+     out_model_parameters_path='trained_model/model_ptv2m2',
+     class_names='1,2,3,4,5,6,7,8',
+     feature_names='red,green,blue',
+     point_names='X,Y,Z',
+     label_name='classification',
+     resolution=0.05,
+     max_epochs=500,
+     learning_rate=0.01,
+     batch_size=10,
+     final_div_factor=100,
+     div_factor=10,
+     weight_decay=0.005,
+     worker_instance_type='P2',
+     manager_instance_type="small",
+     extension_data_in_path=".laz",
+     skip_existing_files = False):
+      '''Pt v2m2 Training
+    | 
+    | semantic_training_pt_v2m2_folder(client,
+    |      data_in_folder='/data_in_folder',
+    |      out_model_parameters_path='trained_model/model_ptv2m2',
+    |      class_names='1,2,3,4,5,6,7,8',
+    |      feature_names='red,green,blue',
+    |      point_names='X,Y,Z',
+    |      label_name='classification',
+    |      resolution=0.05,
+    |      max_epochs=500,
+    |      learning_rate=0.01,
+    |      batch_size=10,
+    |      final_div_factor=100,
+    |      div_factor=10,
+    |      weight_decay=0.005,
+    |      worker_instance_type='P2',
+    |      manager_instance_type="small",
+    |      extension_data_in_folder="./data/files/",
+    |      skip_existing_files = False )
+
+:param out_model_parameters_path:  path to model
+:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+:param feature_names: comma separated list of features that are provided
+:param point_names: comma separated list of point identifiers in (las/laz)
+:param label_name: label name for (las/laz)
+:param resolution: resolution of the subsampled point cloud
+:param max_epochs: maximum number of epochs
+:param learning_rate: learning rate
+:param batch_size: batch size
+:param final_div_factor: final div factor for learning rate
+:param div_factor: div factor for learning rate
+:param weight_decay: weight decay
+:param data_in_folder:  folder to folder that contains the training data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_data_in_folder: File extension of files in folder for data_in_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['data_in_folder']
+      del all_parameters['extension_data_in_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "data_in_path"
+      folders = data_in_folder
+      extensions = extension_data_in_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "semantic training pt v2m2" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
