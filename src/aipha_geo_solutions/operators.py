@@ -4906,95 +4906,6 @@ class tdp:
 
 
 class ops3d:
-   def union_point_clouds(client,
-     in_files='file1.laz,file2.laz',
-     out_file='laz_files_merged',
-     instance_type='x2large'):
-      '''
-    | 
-    | union_point_clouds( client,
-    |      in_files='file1.laz,file2.laz',
-    |      out_file='laz_files_merged',
-    |      instance_type='x2large' )
-
-:param in_files:  input files as comma separated list
-:param out_file: output directory
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "union point clouds",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def union_point_clouds_folder(client,
-     in_files='file1.laz,file2.laz',
-     out_folder='/out_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_out_file=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | union_point_clouds_folder(client,
-    |      in_files='file1.laz,file2.laz',
-    |      out_folder='/out_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_out_folder=".laz_files_merged",
-    |      skip_existing_files = False )
-
-:param in_files:  input files as comma separated list
-:param out_folder: output directory
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['out_folder']
-      del all_parameters['extension_out_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "out_file"
-      folders = out_folder
-      extensions = extension_out_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "union point clouds" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
    def uniform_downsampling(client,
      file_in='in.laz',
      file_out='out.laz',
@@ -5193,6 +5104,106 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "make laz from values" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def get_bounding_box(client,
+     in_file='simple.laz',
+     dimension=3,
+     out_file='bounding_box.npy',
+     instance_type='x2large'):
+      '''Get bounding box from las or laz file
+    | 
+    | get_bounding_box( client,
+    |      in_file='simple.laz',
+    |      dimension=3,
+    |      out_file='bounding_box.npy',
+    |      instance_type='x2large' )
+
+:param in_file: Input .laz file path
+:param dimension: Dimension of the point cloud
+:param out_file: Output bounding box file path
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "get bounding box",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def get_bounding_box_folder(client,
+     in_folder='/in_folder',
+     dimension=3,
+     out_folder='/out_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_file=".laz",
+     extension_out_file=".npy",
+     skip_existing_files = False):
+      '''Get bounding box from las or laz file
+    | 
+    | get_bounding_box_folder(client,
+    |      in_folder='/in_folder',
+    |      dimension=3,
+    |      out_folder='/out_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".laz",
+    |      extension_out_folder=".npy",
+    |      skip_existing_files = False )
+
+:param dimension: Dimension of the point cloud
+:param in_folder: Input .laz folder folder
+:param out_folder: Output bounding box folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder: File extension of files in folder for out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_file']
+      del all_parameters['extension_out_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_file,out_file"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_file + "," + extension_out_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "get bounding box" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -5676,6 +5687,101 @@ class ops3d:
          client.get_verify_ssl())
 
 
+   def retile_point_cloud_to_grid(client,
+     in_path_points='in1.laz,in2.laz',
+     in_path_grids='grid1.npy,grid2.npy,grid3.npy',
+     out_path_points='out.laz,out2.laz',
+     instance_type='x2large'):
+      '''retile point clouds to grid
+    | 
+    | retile_point_cloud_to_grid( client,
+    |      in_path_points='in1.laz,in2.laz',
+    |      in_path_grids='grid1.npy,grid2.npy,grid3.npy',
+    |      out_path_points='out.laz,out2.laz',
+    |      instance_type='x2large' )
+
+:param in_path_points: Output path for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+:param in_path_grids:  Output path for mapping that contains the tiles that are generated from point cloud x
+:param out_path_points:  Output path to retiled point clouds
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "retile point cloud to grid",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_point_cloud_to_grid_folder(client,
+     in_folder_points='/in_folder_points',
+     in_path_grids='grid1.npy,grid2.npy,grid3.npy',
+     out_path_points='out.laz,out2.laz',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_path_points=".laz",
+     skip_existing_files = False):
+      '''retile point clouds to grid
+    | 
+    | retile_point_cloud_to_grid_folder(client,
+    |      in_folder_points='/in_folder_points',
+    |      in_path_grids='grid1.npy,grid2.npy,grid3.npy',
+    |      out_path_points='out.laz,out2.laz',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder_points=".laz",
+    |      skip_existing_files = False )
+
+:param in_path_grids:  Output path for mapping that contains the tiles that are generated from point cloud x
+:param out_path_points:  Output path to retiled point clouds
+:param in_folder_points: Output folder for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder_points: File extension of files in folder for in_folder_points
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder_points']
+      del all_parameters['extension_in_path_points']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_path_points"
+      folders = in_folder_points
+      extensions = extension_in_path_points
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "retile point cloud to grid" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def make_line_model_from_points(client,
      folder_in='segmented_object',
      folder_out='vobject_coordinates3D',
@@ -6125,6 +6231,106 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "crop points to polygon" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_grid_to_point_cloud(client,
+     in_path_grid='point_cloud_grid',
+     in_path_mapping='file_mapping.txt',
+     out_path_points='out.laz',
+     instance_type='x2large'):
+      '''retile point clouds to grid
+    | 
+    | retile_grid_to_point_cloud( client,
+    |      in_path_grid='point_cloud_grid',
+    |      in_path_mapping='file_mapping.txt',
+    |      out_path_points='out.laz',
+    |      instance_type='x2large' )
+
+:param in_path_grid:  folder that contains the retiled point clouds
+:param in_path_mapping: Mapping that specifies, which point clouds of the grid intersect with the original point cloud
+:param out_path_points: Output path for the merged point cloud
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "retile grid to point cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_grid_to_point_cloud_folder(client,
+     in_path_grid='point_cloud_grid',
+     in_folder_mapping='/in_folder_mapping',
+     out_folder_points='/out_folder_points',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_path_mapping=".txt",
+     extension_out_path_points=".laz",
+     skip_existing_files = False):
+      '''retile point clouds to grid
+    | 
+    | retile_grid_to_point_cloud_folder(client,
+    |      in_path_grid='point_cloud_grid',
+    |      in_folder_mapping='/in_folder_mapping',
+    |      out_folder_points='/out_folder_points',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder_mapping=".txt",
+    |      extension_out_folder_points=".laz",
+    |      skip_existing_files = False )
+
+:param in_path_grid:  folder that contains the retiled point clouds
+:param in_folder_mapping: Mapping that specifies, which point clouds of the grid intersect with the original point cloud
+:param out_folder_points: Output folder for the merged point cloud
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder_mapping: File extension of files in folder for in_folder_mapping
+:param extension_out_folder_points: File extension of files in folder for out_folder_points
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder_mapping']
+      del all_parameters['out_folder_points']
+      del all_parameters['extension_in_path_mapping']
+      del all_parameters['extension_out_path_points']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_path_mapping,out_path_points"
+      folders = in_folder_mapping + "," + out_folder_points
+      extensions = extension_in_path_mapping + "," + extension_out_path_points
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "retile grid to point cloud" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -7032,6 +7238,157 @@ class ops3d:
          client.get_verify_ssl())
 
 
+   def retile_generate_grid_locally(client,
+     in_path='file.laz',
+     dimension=3,
+     grid_size='20,20,50',
+     offset_factor=0.,
+     reference_point='',
+     out_path_tiles='output_grid',
+     out_path_mapping_slice_point_cloud='output_slice.txt',
+     out_path_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles.txt',
+     out_path_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud.txt',
+     instance_type='x2large'):
+      '''Create grid for retileing individual point clouds
+    | 
+    | retile_generate_grid_locally( client,
+    |      in_path='file.laz',
+    |      dimension=3,
+    |      grid_size='20,20,50',
+    |      offset_factor=0.,
+    |      reference_point='',
+    |      out_path_tiles='output_grid',
+    |      out_path_mapping_slice_point_cloud='output_slice.txt',
+    |      out_path_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles.txt',
+    |      out_path_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud.txt',
+    |      instance_type='x2large' )
+
+:param in_path: path to laz files to be retiled
+:param dimension: Dimension to be retiled (x,y) or (x,y,z)
+:param grid_size: Grid size for retileing
+:param offset_factor: Offset factor for grid generation
+:param reference_point: Reference point for grid generation, empty for default (min_x, min_y, min_z)
+:param out_path_tiles: Output bounding box / tiles path
+:param out_path_mapping_slice_point_cloud: Output path for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+:param out_path_mapping_point_cloud_to_tiles: Output path for mapping that contains the tiles that are generated from point cloud x
+:param out_path_mapping_tiles_to_point_cloud: Output path for mapping that contains the point clouds that are used to generate tile x
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "retile generate grid locally",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_generate_grid_locally_folder(client,
+     in_folder='/in_folder',
+     dimension=3,
+     grid_size='20,20,50',
+     offset_factor=0.,
+     reference_point='',
+     out_folder_tiles='/out_folder_tiles',
+     out_folder_mapping_slice_point_cloud='/out_folder_mapping_slice_point_cloud',
+     out_folder_mapping_point_cloud_to_tiles='/out_folder_mapping_point_cloud_to_tiles',
+     out_folder_mapping_tiles_to_point_cloud='/out_folder_mapping_tiles_to_point_cloud',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_path=".laz",
+     extension_out_path_tiles=".laz",
+     extension_out_path_mapping_slice_point_cloud=".txt",
+     extension_out_path_mapping_point_cloud_to_tiles=".txt",
+     extension_out_path_mapping_tiles_to_point_cloud=".txt",
+     skip_existing_files = False):
+      '''Create grid for retileing individual point clouds
+    | 
+    | retile_generate_grid_locally_folder(client,
+    |      in_folder='/in_folder',
+    |      dimension=3,
+    |      grid_size='20,20,50',
+    |      offset_factor=0.,
+    |      reference_point='',
+    |      out_folder_tiles='/out_folder_tiles',
+    |      out_folder_mapping_slice_point_cloud='/out_folder_mapping_slice_point_cloud',
+    |      out_folder_mapping_point_cloud_to_tiles='/out_folder_mapping_point_cloud_to_tiles',
+    |      out_folder_mapping_tiles_to_point_cloud='/out_folder_mapping_tiles_to_point_cloud',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".laz",
+    |      extension_out_folder_tiles=".output_grid",
+    |      extension_out_folder_mapping_slice_point_cloud=".txt",
+    |      extension_out_folder_mapping_point_cloud_to_tiles=".txt",
+    |      extension_out_folder_mapping_tiles_to_point_cloud=".txt",
+    |      skip_existing_files = False )
+
+:param dimension: Dimension to be retiled (x,y) or (x,y,z)
+:param grid_size: Grid size for retileing
+:param offset_factor: Offset factor for grid generation
+:param reference_point: Reference point for grid generation, empty for default (min_x, min_y, min_z)
+:param in_folder: folder to laz folders to be retiled
+:param out_folder_tiles: Output bounding box / tiles folder
+:param out_folder_mapping_slice_point_cloud: Output folder for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+:param out_folder_mapping_point_cloud_to_tiles: Output folder for mapping that contains the tiles that are generated from point cloud x
+:param out_folder_mapping_tiles_to_point_cloud: Output folder for mapping that contains the point clouds that are used to generate tile x
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder_tiles: File extension of files in folder for out_folder_tiles
+:param extension_out_folder_mapping_slice_point_cloud: File extension of files in folder for out_folder_mapping_slice_point_cloud
+:param extension_out_folder_mapping_point_cloud_to_tiles: File extension of files in folder for out_folder_mapping_point_cloud_to_tiles
+:param extension_out_folder_mapping_tiles_to_point_cloud: File extension of files in folder for out_folder_mapping_tiles_to_point_cloud
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder_tiles']
+      del all_parameters['out_folder_mapping_slice_point_cloud']
+      del all_parameters['out_folder_mapping_point_cloud_to_tiles']
+      del all_parameters['out_folder_mapping_tiles_to_point_cloud']
+      del all_parameters['extension_in_path']
+      del all_parameters['extension_out_path_tiles']
+      del all_parameters['extension_out_path_mapping_slice_point_cloud']
+      del all_parameters['extension_out_path_mapping_point_cloud_to_tiles']
+      del all_parameters['extension_out_path_mapping_tiles_to_point_cloud']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_path,out_path_tiles,out_path_mapping_slice_point_cloud,out_path_mapping_point_cloud_to_tiles,out_path_mapping_tiles_to_point_cloud"
+      folders = in_folder + "," + out_folder_tiles + "," + out_folder_mapping_slice_point_cloud + "," + out_folder_mapping_point_cloud_to_tiles + "," + out_folder_mapping_tiles_to_point_cloud
+      extensions = extension_in_path + "," + extension_out_path_tiles + "," + extension_out_path_mapping_slice_point_cloud + "," + extension_out_path_mapping_point_cloud_to_tiles + "," + extension_out_path_mapping_tiles_to_point_cloud
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "retile generate grid locally" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def align_points(client,
      folder_source_in='segmented_object',
      folder_transformation_in='transformations',
@@ -7658,6 +8015,142 @@ class ops3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "crop to equal value range" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_generate_grid_globally(client,
+     in_paths='file1.laz,file2.laz',
+     dimension=3,
+     grid_size='20,20,50',
+     offset_factor=0.,
+     reference_point='',
+     out_path_tiles='output_grid',
+     out_folder_mapping_slice_point_cloud='slices',
+     out_folder_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles',
+     out_folder_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud',
+     instance_type='x2large'):
+      '''Create grid for retileing point clouds over multiple georeferenced point clouds
+    | 
+    | retile_generate_grid_globally( client,
+    |      in_paths='file1.laz,file2.laz',
+    |      dimension=3,
+    |      grid_size='20,20,50',
+    |      offset_factor=0.,
+    |      reference_point='',
+    |      out_path_tiles='output_grid',
+    |      out_folder_mapping_slice_point_cloud='slices',
+    |      out_folder_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles',
+    |      out_folder_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud',
+    |      instance_type='x2large' )
+
+:param in_paths: path to laz files to be retiled
+:param dimension: Dimension to be retiled (x,y) or (x,y,z)
+:param grid_size: Grid size for retileing
+:param offset_factor: Offset factor for grid generation
+:param reference_point: Reference point for grid generation, empty for default (min_x, min_y, min_z)
+:param out_path_tiles: Output bounding box / tiles path
+:param out_folder_mapping_slice_point_cloud:  Output path for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+:param out_folder_mapping_point_cloud_to_tiles:  Output path for mapping that contains the tiles that are generated from point cloud x
+:param out_folder_mapping_tiles_to_point_cloud:  Output path for mapping that contains the point clouds that are used to generate tile x
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "retile generate grid globally",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def retile_generate_grid_globally_folder(client,
+     in_folders='/in_folders',
+     dimension=3,
+     grid_size='20,20,50',
+     offset_factor=0.,
+     reference_point='',
+     out_folder_tiles='/out_folder_tiles',
+     out_folder_mapping_slice_point_cloud='slices',
+     out_folder_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles',
+     out_folder_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_paths=".laz",
+     extension_out_path_tiles=".laz",
+     skip_existing_files = False):
+      '''Create grid for retileing point clouds over multiple georeferenced point clouds
+    | 
+    | retile_generate_grid_globally_folder(client,
+    |      in_folders='/in_folders',
+    |      dimension=3,
+    |      grid_size='20,20,50',
+    |      offset_factor=0.,
+    |      reference_point='',
+    |      out_folder_tiles='/out_folder_tiles',
+    |      out_folder_mapping_slice_point_cloud='slices',
+    |      out_folder_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles',
+    |      out_folder_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folders=".laz",
+    |      extension_out_folder_tiles=".output_grid",
+    |      skip_existing_files = False )
+
+:param dimension: Dimension to be retiled (x,y) or (x,y,z)
+:param grid_size: Grid size for retileing
+:param offset_factor: Offset factor for grid generation
+:param reference_point: Reference point for grid generation, empty for default (min_x, min_y, min_z)
+:param out_folder_mapping_slice_point_cloud:  Output path for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+:param out_folder_mapping_point_cloud_to_tiles:  Output path for mapping that contains the tiles that are generated from point cloud x
+:param out_folder_mapping_tiles_to_point_cloud:  Output path for mapping that contains the point clouds that are used to generate tile x
+:param in_folders: folder to laz folders to be retiled
+:param out_folder_tiles: Output bounding box / tiles folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folders: File extension of files in folder for in_folders
+:param extension_out_folder_tiles: File extension of files in folder for out_folder_tiles
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folders']
+      del all_parameters['out_folder_tiles']
+      del all_parameters['extension_in_paths']
+      del all_parameters['extension_out_path_tiles']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_paths,out_path_tiles"
+      folders = in_folders + "," + out_folder_tiles
+      extensions = extension_in_paths + "," + extension_out_path_tiles
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "retile generate grid globally" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),

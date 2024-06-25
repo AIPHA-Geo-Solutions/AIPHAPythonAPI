@@ -4350,102 +4350,6 @@ class AIPHAProcessing:
 			 self._get_param_subset = outer_class._get_param_subset
 
 
-		 def union_point_clouds(self,
-			in_paths='file1.laz,file2.laz', 
-			out_path='__auto__',
-			extension_out_file = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				union point clouds
-				
-				:param in_paths:  input files as comma separated list
-				:param out_path: output directory
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_out_file']
-			 iterable_names = ['out_path']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'in_paths': 'in_paths', 'out_path': 'out_folder'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['out_folder']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'union_point_clouds_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.ops3d.union_point_clouds_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'ops3d',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'in_paths': 'in_files', 'out_path': 'out_file'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['out_file']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'union_point_clouds',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.ops3d.union_point_clouds(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'ops3d',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
 		 def uniform_downsampling(self,
 			path_in='__auto__', 
 			path_out='__auto__', 
@@ -4636,6 +4540,105 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ops3d.make_laz_from_values(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def get_bounding_box(self,
+			in_path='__auto__', 
+			dimension=3, 
+			out_path='__auto__',
+			extension_in_file = '.laz',
+			extension_out_file = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Get bounding box from las or laz file
+				
+				:param in_path: Input .laz folder folder
+				:param dimension: Dimension of the point cloud
+				:param out_path: Output bounding box folder folder
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_file', 'extension_out_file']
+			 iterable_names = ['in_path','out_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_path': 'in_folder', 'dimension': 'dimension', 'out_path': 'out_folder'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folder', 'out_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'get_bounding_box_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.get_bounding_box_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_path': 'in_file', 'dimension': 'dimension', 'out_path': 'out_file'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_file', 'out_file']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'get_bounding_box',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.get_bounding_box(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -5064,6 +5067,104 @@ class AIPHAProcessing:
 
 
 
+		 def retile_point_cloud_to_grid(self,
+			in_path_points='__auto__', 
+			in_path_grids='grid1.npy,grid2.npy,grid3.npy', 
+			out_path_points='out.laz,out2.laz',
+			extension_in_path_points = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				retile point clouds to grid
+				
+				:param in_path_points: Output folder for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+				:param in_path_grids:  Output path for mapping that contains the tiles that are generated from point cloud x
+				:param out_path_points:  Output path to retiled point clouds
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_path_points']
+			 iterable_names = ['in_path_points']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_path_points': 'in_folder_points', 'in_path_grids': 'in_path_grids', 'out_path_points': 'out_path_points'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folder_points']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_point_cloud_to_grid_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.retile_point_cloud_to_grid_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_path_points': 'in_path_points', 'in_path_grids': 'in_path_grids', 'out_path_points': 'out_path_points'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_path_points']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_point_cloud_to_grid',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.retile_point_cloud_to_grid(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def make_line_model_from_points(self,
 			path_in='segmented_object', 
 			path_out='vobject_coordinates3D', 
@@ -5465,6 +5566,105 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ops3d.crop_points_to_polygon(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def retile_grid_to_point_cloud(self,
+			in_path_grid='point_cloud_grid', 
+			in_path_mapping='__auto__', 
+			out_path_points='__auto__',
+			extension_in_path_mapping = '.txt',
+			extension_out_path_points = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				retile point clouds to grid
+				
+				:param in_path_grid:  folder that contains the retiled point clouds
+				:param in_path_mapping: Mapping that specifies, which point clouds of the grid intersect with the original point cloud
+				:param out_path_points: Output folder for the merged point cloud
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_path_mapping', 'extension_out_path_points']
+			 iterable_names = ['in_path_mapping','out_path_points']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_path_grid': 'in_path_grid', 'in_path_mapping': 'in_folder_mapping', 'out_path_points': 'out_folder_points'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folder_mapping', 'out_folder_points']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['txt', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_grid_to_point_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.retile_grid_to_point_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_path_grid': 'in_path_grid', 'in_path_mapping': 'in_path_mapping', 'out_path_points': 'out_path_points'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_path_mapping', 'out_path_points']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['txt', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_grid_to_point_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.retile_grid_to_point_cloud(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -6230,6 +6430,120 @@ class AIPHAProcessing:
 
 
 
+		 def retile_generate_grid_locally(self,
+			in_path='__auto__', 
+			dimension=3, 
+			grid_size='20,20,50', 
+			offset_factor=0., 
+			reference_point='', 
+			out_path_tiles='__auto__', 
+			out_path_mapping_slice_point_cloud='__auto__', 
+			out_path_mapping_point_cloud_to_tiles='__auto__', 
+			out_path_mapping_tiles_to_point_cloud='__auto__',
+			extension_in_path = '.laz',
+			extension_out_path_tiles = '',
+			extension_out_path_mapping_slice_point_cloud = '.txt',
+			extension_out_path_mapping_point_cloud_to_tiles = '.txt',
+			extension_out_path_mapping_tiles_to_point_cloud = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Create grid for retileing individual point clouds
+				
+				:param in_path: folder to laz folders to be retiled
+				:param dimension: Dimension to be retiled (x,y) or (x,y,z)
+				:param grid_size: Grid size for retileing
+				:param offset_factor: Offset factor for grid generation
+				:param reference_point: Reference point for grid generation, empty for default (min_x, min_y, min_z)
+				:param out_path_tiles: Output bounding box / tiles folder
+				:param out_path_mapping_slice_point_cloud: Output folder for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+				:param out_path_mapping_point_cloud_to_tiles: Output folder for mapping that contains the tiles that are generated from point cloud x
+				:param out_path_mapping_tiles_to_point_cloud: Output folder for mapping that contains the point clouds that are used to generate tile x
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_path', 'extension_out_path_tiles', 'extension_out_path_mapping_slice_point_cloud', 'extension_out_path_mapping_point_cloud_to_tiles', 'extension_out_path_mapping_tiles_to_point_cloud']
+			 iterable_names = ['in_path','out_path_tiles','out_path_mapping_slice_point_cloud','out_path_mapping_point_cloud_to_tiles','out_path_mapping_tiles_to_point_cloud']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_path': 'in_folder', 'dimension': 'dimension', 'grid_size': 'grid_size', 'offset_factor': 'offset_factor', 'reference_point': 'reference_point', 'out_path_tiles': 'out_folder_tiles', 'out_path_mapping_slice_point_cloud': 'out_folder_mapping_slice_point_cloud', 'out_path_mapping_point_cloud_to_tiles': 'out_folder_mapping_point_cloud_to_tiles', 'out_path_mapping_tiles_to_point_cloud': 'out_folder_mapping_tiles_to_point_cloud'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folder', 'out_folder_tiles', 'out_folder_mapping_slice_point_cloud', 'out_folder_mapping_point_cloud_to_tiles', 'out_folder_mapping_tiles_to_point_cloud']
+				 itertable_iotypes = ['in', 'out', 'out', 'out', 'out']
+				 iterable_file_types = ['laz', 'laz', 'txt', 'txt', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_generate_grid_locally_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.retile_generate_grid_locally_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_path': 'in_path', 'dimension': 'dimension', 'grid_size': 'grid_size', 'offset_factor': 'offset_factor', 'reference_point': 'reference_point', 'out_path_tiles': 'out_path_tiles', 'out_path_mapping_slice_point_cloud': 'out_path_mapping_slice_point_cloud', 'out_path_mapping_point_cloud_to_tiles': 'out_path_mapping_point_cloud_to_tiles', 'out_path_mapping_tiles_to_point_cloud': 'out_path_mapping_tiles_to_point_cloud'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_path', 'out_path_tiles', 'out_path_mapping_slice_point_cloud', 'out_path_mapping_point_cloud_to_tiles', 'out_path_mapping_tiles_to_point_cloud']
+				 itertable_iotypes = ['in', 'out', 'out', 'out', 'out']
+				 iterable_file_types = ['laz', 'laz', 'txt', 'txt', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_generate_grid_locally',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.retile_generate_grid_locally(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def align_points(self,
 			path_source_in='segmented_object', 
 			path_transformation_in='transformations', 
@@ -6819,6 +7133,117 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ops3d.crop_to_equal_value_range(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def retile_generate_grid_globally(self,
+			in_paths='__auto__', 
+			dimension=3, 
+			grid_size='20,20,50', 
+			offset_factor=0., 
+			reference_point='', 
+			out_path_tiles='__auto__', 
+			out_path_mapping_slice_point_cloud='slices', 
+			out_path_mapping_point_cloud_to_tiles='mapping_point_cloud_to_tiles', 
+			out_path_mapping_tiles_to_point_cloud='mapping_tiles_to_point_cloud',
+			extension_in_paths = '.laz',
+			extension_out_path_tiles = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Create grid for retileing point clouds over multiple georeferenced point clouds
+				
+				:param in_paths: folder to laz folders to be retiled
+				:param dimension: Dimension to be retiled (x,y) or (x,y,z)
+				:param grid_size: Grid size for retileing
+				:param offset_factor: Offset factor for grid generation
+				:param reference_point: Reference point for grid generation, empty for default (min_x, min_y, min_z)
+				:param out_path_tiles: Output bounding box / tiles folder
+				:param out_path_mapping_slice_point_cloud:  Output path for mapping that contains the point clouds (including neighbouring point clouds) that are used to generate slices from point cloud x
+				:param out_path_mapping_point_cloud_to_tiles:  Output path for mapping that contains the tiles that are generated from point cloud x
+				:param out_path_mapping_tiles_to_point_cloud:  Output path for mapping that contains the point clouds that are used to generate tile x
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_paths', 'extension_out_path_tiles']
+			 iterable_names = ['in_paths','out_path_tiles']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_paths': 'in_folders', 'dimension': 'dimension', 'grid_size': 'grid_size', 'offset_factor': 'offset_factor', 'reference_point': 'reference_point', 'out_path_tiles': 'out_folder_tiles', 'out_path_mapping_slice_point_cloud': 'out_path_mapping_slice_point_cloud', 'out_path_mapping_point_cloud_to_tiles': 'out_path_mapping_point_cloud_to_tiles', 'out_path_mapping_tiles_to_point_cloud': 'out_path_mapping_tiles_to_point_cloud'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folders', 'out_folder_tiles']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_generate_grid_globally_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ops3d.retile_generate_grid_globally_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ops3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_paths': 'in_paths', 'dimension': 'dimension', 'grid_size': 'grid_size', 'offset_factor': 'offset_factor', 'reference_point': 'reference_point', 'out_path_tiles': 'out_path_tiles', 'out_path_mapping_slice_point_cloud': 'out_folder_mapping_slice_point_cloud', 'out_path_mapping_point_cloud_to_tiles': 'out_folder_mapping_point_cloud_to_tiles', 'out_path_mapping_tiles_to_point_cloud': 'out_folder_mapping_tiles_to_point_cloud'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_paths', 'out_path_tiles']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'retile_generate_grid_globally',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ops3d.retile_generate_grid_globally(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
