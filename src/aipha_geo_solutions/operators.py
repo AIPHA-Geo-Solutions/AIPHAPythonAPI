@@ -1670,7 +1670,7 @@ class sys:
      destination='file.laz',
      bucket_name='Your S3 bucket',
      instance_type='x2large'):
-      '''Upload a file to an S3 bucket
+      '''Download a file from an S3 bucket
     | 
     | download_from_s3_to_aipha( client,
     |      access_key_id='YOUR_KEY_ID',
@@ -1712,7 +1712,7 @@ class sys:
      manager_instance_type="small",
      extension_destination=".laz",
      skip_existing_files = False):
-      '''Upload a file to an S3 bucket
+      '''Download a file from an S3 bucket
     | 
     | download_from_s3_to_aipha_folder(client,
     |      access_key_id='YOUR_KEY_ID',

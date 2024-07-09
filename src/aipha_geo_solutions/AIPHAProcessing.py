@@ -1852,7 +1852,7 @@ class AIPHAProcessing:
 			extension_destination = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
-				Upload a file to an S3 bucket
+				Download a file from an S3 bucket
 				
 				:param access_key_id: AWS access key ID
 				:param secret_access_key: AWS secret access key
