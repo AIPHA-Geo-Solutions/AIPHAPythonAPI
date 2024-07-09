@@ -1842,6 +1842,216 @@ class AIPHAProcessing:
 
 
 
+		 def download_from_s3_to_aipha(self,
+			access_key_id='YOUR_KEY_ID', 
+			secret_access_key='YOUR_SECRET_KEY', 
+			aws_region='eu-central-1', 
+			target='__auto__', 
+			destination='__auto__', 
+			bucket_name='Your S3 bucket',
+			extension_target = '.laz',
+			extension_destination = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Upload a file to an S3 bucket
+				
+				:param access_key_id: AWS access key ID
+				:param secret_access_key: AWS secret access key
+				:param aws_region: AWS region
+				:param target: File to download from s3
+				:param destination: Location to upload to aipha
+				:param bucket_name: S3 bucket name
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target', 'extension_destination']
+			 iterable_names = ['target','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_s3_to_aipha_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.download_from_s3_to_aipha_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'destination': 'destination', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_s3_to_aipha',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.download_from_s3_to_aipha(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def upload_from_aipha_to_s3(self,
+			access_key_id='YOUR_KEY_ID', 
+			secret_access_key='YOUR_SECRET_KEY', 
+			aws_region='eu-central-1', 
+			target='__auto__', 
+			destination='__auto__', 
+			bucket_name='Your S3 bucket',
+			extension_target = '.laz',
+			extension_destination = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Upload a file to an S3 bucket
+				
+				:param access_key_id: AWS access key ID
+				:param secret_access_key: AWS secret access key
+				:param aws_region: AWS region
+				:param target: File to upload from aipha
+				:param destination: Location of folder to upload on s3
+				:param bucket_name: S3 bucket name
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target', 'extension_destination']
+			 iterable_names = ['target','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_s3_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_s3_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'destination': 'destination', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_s3',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_s3(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 	 class ml3d:
 		 ''' 
          Namespace for ml3d functions.
@@ -2545,6 +2755,120 @@ class AIPHAProcessing:
 
 
 
+		 def semantic_inference_pt_v3m1(self,
+			data_in_path='__auto__', 
+			in_model_parameters_path='trained_model/model_ptv2m2', 
+			out_label_path='__auto__', 
+			out_probability_path='__auto__', 
+			class_names='1,2,3,4,5,6,7,8', 
+			feature_names='red,green,blue', 
+			point_names='X,Y,Z', 
+			label_name='classification', 
+			resolution=0.05, 
+			number_of_votes=5,
+			extension_data_in_path = '.laz',
+			extension_out_label_path = '.labels',
+			extension_out_probability_path = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				PT v3m1 Inference
+				
+				:param data_in_path:  folder that contains the test data
+				:param in_model_parameters_path:  path to model
+				:param out_label_path:  folder that contains the results
+				:param out_probability_path:  folder that contains the results
+				:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+				:param feature_names: comma separated list of features that are provided
+				:param point_names: comma separated list of point identifiers in (las/laz)
+				:param label_name: label name for (las/laz)
+				:param resolution: resolution of the subsampled point cloud
+				:param number_of_votes: number of votes
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_data_in_path', 'extension_out_label_path', 'extension_out_probability_path']
+			 iterable_names = ['data_in_path','out_label_path','out_probability_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'data_in_path': 'data_in_folder', 'in_model_parameters_path': 'in_model_parameters_path', 'out_label_path': 'out_label_folder', 'out_probability_path': 'out_probability_folder', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'number_of_votes': 'number_of_votes'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['data_in_folder', 'out_label_folder', 'out_probability_folder']
+				 itertable_iotypes = ['in', 'out', 'out']
+				 iterable_file_types = ['laz', 'labels', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_inference_pt_v3m1_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ml3d.semantic_inference_pt_v3m1_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'data_in_path': 'data_in_path', 'in_model_parameters_path': 'in_model_parameters_path', 'out_label_path': 'out_label_path', 'out_probability_path': 'out_probability_path', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'number_of_votes': 'number_of_votes'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['data_in_path', 'out_label_path', 'out_probability_path']
+				 itertable_iotypes = ['in', 'out', 'out']
+				 iterable_file_types = ['laz', 'labels', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_inference_pt_v3m1',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ml3d.semantic_inference_pt_v3m1(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def semantic_inference_spunet(self,
 			data_in_path='__auto__', 
 			in_model_parameters_path='trained_model/model_1', 
@@ -2767,6 +3091,124 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.ml3d.semantic_training_pt_v2m2(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def semantic_training_pt_v3m1(self,
+			data_in_path='__auto__', 
+			out_model_parameters_path='trained_model/model_ptv2m2', 
+			class_names='1,2,3,4,5,6,7,8', 
+			feature_names='red,green,blue', 
+			point_names='X,Y,Z', 
+			label_name='classification', 
+			resolution=0.05, 
+			max_epochs=500, 
+			learning_rate=0.01, 
+			batch_size=10, 
+			final_div_factor=100, 
+			div_factor=10, 
+			weight_decay=0.005,
+			extension_data_in_path = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Pt v3m1 Training
+				
+				:param data_in_path:  folder to folder that contains the training data
+				:param out_model_parameters_path:  path to model
+				:param class_names: comma separated list of class names. Class 0 is always given and is used to denote unlabeled points.
+				:param feature_names: comma separated list of features that are provided
+				:param point_names: comma separated list of point identifiers in (las/laz)
+				:param label_name: label name for (las/laz)
+				:param resolution: resolution of the subsampled point cloud
+				:param max_epochs: maximum number of epochs
+				:param learning_rate: learning rate
+				:param batch_size: batch size
+				:param final_div_factor: final div factor for learning rate
+				:param div_factor: div factor for learning rate
+				:param weight_decay: weight decay
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_data_in_path']
+			 iterable_names = ['data_in_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'data_in_path': 'data_in_folder', 'out_model_parameters_path': 'out_model_parameters_path', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'max_epochs': 'max_epochs', 'learning_rate': 'learning_rate', 'batch_size': 'batch_size', 'final_div_factor': 'final_div_factor', 'div_factor': 'div_factor', 'weight_decay': 'weight_decay'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['data_in_folder']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_training_pt_v3m1_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ml3d.semantic_training_pt_v3m1_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'data_in_path': 'data_in_path', 'out_model_parameters_path': 'out_model_parameters_path', 'class_names': 'class_names', 'feature_names': 'feature_names', 'point_names': 'point_names', 'label_name': 'label_name', 'resolution': 'resolution', 'max_epochs': 'max_epochs', 'learning_rate': 'learning_rate', 'batch_size': 'batch_size', 'final_div_factor': 'final_div_factor', 'div_factor': 'div_factor', 'weight_decay': 'weight_decay'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['data_in_path']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'semantic_training_pt_v3m1',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ml3d.semantic_training_pt_v3m1(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
