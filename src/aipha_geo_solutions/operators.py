@@ -1666,7 +1666,7 @@ class sys:
      access_key_id='YOUR_KEY_ID',
      secret_access_key='YOUR_SECRET_KEY',
      aws_region='eu-central-1',
-     target='file.laz',
+     location='file.laz',
      destination='file.laz',
      bucket_name='Your S3 bucket',
      instance_type='x2large'):
@@ -1676,7 +1676,7 @@ class sys:
     |      access_key_id='YOUR_KEY_ID',
     |      secret_access_key='YOUR_SECRET_KEY',
     |      aws_region='eu-central-1',
-    |      target='file.laz',
+    |      location='file.laz',
     |      destination='file.laz',
     |      bucket_name='Your S3 bucket',
     |      instance_type='x2large' )
@@ -1684,7 +1684,7 @@ class sys:
 :param access_key_id: AWS access key ID
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
-:param target: File to download from s3
+:param location: File to download from s3
 :param destination: Location to upload to aipha
 :param bucket_name: S3 bucket name
 :param instance_type: type of cloud instance used for processing
@@ -1705,12 +1705,11 @@ class sys:
      access_key_id='YOUR_KEY_ID',
      secret_access_key='YOUR_SECRET_KEY',
      aws_region='eu-central-1',
-     folder_target='/folder_target',
+     location='file.laz',
      folder_destination='/folder_destination',
      bucket_name='Your S3 bucket',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_target=".laz",
      extension_destination=".laz",
      skip_existing_files = False):
       '''Upload a file to an S3 bucket
@@ -1719,24 +1718,22 @@ class sys:
     |      access_key_id='YOUR_KEY_ID',
     |      secret_access_key='YOUR_SECRET_KEY',
     |      aws_region='eu-central-1',
-    |      target='/target',
+    |      location='file.laz',
     |      destination='/destination',
     |      bucket_name='Your S3 bucket',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_target=".laz",
     |      extension_destination=".laz",
     |      skip_existing_files = False )
 
 :param access_key_id: AWS access key ID
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
+:param location: File to download from s3
 :param bucket_name: S3 bucket name
-:param folder_target: File to download from s3
 :param folder_destination: Location to upload to aipha
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
 :param extension_destination: File extension of files in folder for folder_destination
 :param skip_existing_files: skip files that already exist in the output folder
 '''
@@ -1747,15 +1744,13 @@ class sys:
       del all_parameters['manager_instance_type']
       del all_parameters['skip_existing_files']
 
-      del all_parameters['folder_target']
       del all_parameters['folder_destination']
-      del all_parameters['extension_target']
       del all_parameters['extension_destination']
 
       cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
@@ -1785,7 +1780,7 @@ class sys:
      secret_access_key='YOUR_SECRET_KEY',
      aws_region='eu-central-1',
      target='file.laz',
-     destination='file.laz',
+     location='file.laz',
      bucket_name='Your S3 bucket',
      instance_type='x2large'):
       '''Upload a file to an S3 bucket
@@ -1795,7 +1790,7 @@ class sys:
     |      secret_access_key='YOUR_SECRET_KEY',
     |      aws_region='eu-central-1',
     |      target='file.laz',
-    |      destination='file.laz',
+    |      location='file.laz',
     |      bucket_name='Your S3 bucket',
     |      instance_type='x2large' )
 
@@ -1803,7 +1798,7 @@ class sys:
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
 :param target: File to upload from aipha
-:param destination: Location of file to upload on s3
+:param location: Location of file to upload on s3
 :param bucket_name: S3 bucket name
 :param instance_type: type of cloud instance used for processing
 '''
@@ -1824,12 +1819,11 @@ class sys:
      secret_access_key='YOUR_SECRET_KEY',
      aws_region='eu-central-1',
      folder_target='/folder_target',
-     folder_destination='/folder_destination',
+     location='file.laz',
      bucket_name='Your S3 bucket',
      worker_instance_type='x2large',
      manager_instance_type="small",
      extension_target=".laz",
-     extension_destination=".laz",
      skip_existing_files = False):
       '''Upload a file to an S3 bucket
     | 
@@ -1838,24 +1832,22 @@ class sys:
     |      secret_access_key='YOUR_SECRET_KEY',
     |      aws_region='eu-central-1',
     |      target='/target',
-    |      destination='/destination',
+    |      location='file.laz',
     |      bucket_name='Your S3 bucket',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
     |      extension_target=".laz",
-    |      extension_destination=".laz",
     |      skip_existing_files = False )
 
 :param access_key_id: AWS access key ID
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
+:param location: Location of file to upload on s3
 :param bucket_name: S3 bucket name
 :param folder_target: File to upload from aipha
-:param folder_destination: Location of folder to upload on s3
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
-:param extension_destination: File extension of files in folder for folder_destination
 :param skip_existing_files: skip files that already exist in the output folder
 '''
 
@@ -1866,14 +1858,12 @@ class sys:
       del all_parameters['skip_existing_files']
 
       del all_parameters['folder_target']
-      del all_parameters['folder_destination']
       del all_parameters['extension_target']
-      del all_parameters['extension_destination']
 
       cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),

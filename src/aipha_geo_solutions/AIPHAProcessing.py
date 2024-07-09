@@ -1846,10 +1846,9 @@ class AIPHAProcessing:
 			access_key_id='YOUR_KEY_ID', 
 			secret_access_key='YOUR_SECRET_KEY', 
 			aws_region='eu-central-1', 
-			target='__auto__', 
+			location='file.laz', 
 			destination='__auto__', 
 			bucket_name='Your S3 bucket',
-			extension_target = '.laz',
 			extension_destination = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
@@ -1858,7 +1857,7 @@ class AIPHAProcessing:
 				:param access_key_id: AWS access key ID
 				:param secret_access_key: AWS secret access key
 				:param aws_region: AWS region
-				:param target: File to download from s3
+				:param location: File to download from s3
 				:param destination: Location to upload to aipha
 				:param bucket_name: S3 bucket name
 				
@@ -1866,20 +1865,20 @@ class AIPHAProcessing:
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
 			 print(params_dict)
-			 extension_names = ['extension_target', 'extension_destination']
-			 iterable_names = ['target','destination']
+			 extension_names = ['extension_destination']
+			 iterable_names = ['destination']
 			 print(iterable_names, params_dict)
 			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
 			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
 			 print(folder_parallel_processing, iterable_subset_dict, True)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
+				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'location': 'location', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
+				 itertable_params = ['destination']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -1909,14 +1908,14 @@ class AIPHAProcessing:
 
     
 			 else:
-				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'destination': 'destination', 'bucket_name': 'bucket_name'}
+				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'location': 'location', 'destination': 'destination', 'bucket_name': 'bucket_name'}
 				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
 				 for ext in extension_names:
 					 params_dict.pop(ext)
 
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
+				 itertable_params = ['destination']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -1952,10 +1951,9 @@ class AIPHAProcessing:
 			secret_access_key='YOUR_SECRET_KEY', 
 			aws_region='eu-central-1', 
 			target='__auto__', 
-			destination='__auto__', 
+			location='file.laz', 
 			bucket_name='Your S3 bucket',
 			extension_target = '.laz',
-			extension_destination = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
 				Upload a file to an S3 bucket
@@ -1964,27 +1962,27 @@ class AIPHAProcessing:
 				:param secret_access_key: AWS secret access key
 				:param aws_region: AWS region
 				:param target: File to upload from aipha
-				:param destination: Location of folder to upload on s3
+				:param location: Location of file to upload on s3
 				:param bucket_name: S3 bucket name
 				
 			 '''
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
 			 print(params_dict)
-			 extension_names = ['extension_target', 'extension_destination']
-			 iterable_names = ['target','destination']
+			 extension_names = ['extension_target']
+			 iterable_names = ['target']
 			 print(iterable_names, params_dict)
 			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
 			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
 			 print(folder_parallel_processing, iterable_subset_dict, True)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
+				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'location': 'location', 'bucket_name': 'bucket_name'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -2014,14 +2012,14 @@ class AIPHAProcessing:
 
     
 			 else:
-				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'destination': 'destination', 'bucket_name': 'bucket_name'}
+				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'location': 'location', 'bucket_name': 'bucket_name'}
 				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
 				 for ext in extension_names:
 					 params_dict.pop(ext)
 
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
