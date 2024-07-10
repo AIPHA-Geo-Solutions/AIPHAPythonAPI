@@ -1846,11 +1846,10 @@ class AIPHAProcessing:
 			url='__auto__', 
 			port='22', 
 			username='ubuntu', 
-			identity_path='__auto__', 
+			identity_path='', 
 			target='__auto__', 
 			location='file.laz',
 			extension_url = '.1',
-			extension_identity_file = '',
 			extension_target = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
@@ -1859,7 +1858,7 @@ class AIPHAProcessing:
 				:param url: Url to host
 				:param port: Port to host
 				:param username: Username to host
-				:param identity_path: Path to identity folder on aipha
+				:param identity_path:  Path to identity file on aipha
 				:param target: Path to upload from aipha
 				:param location: Location of file to upload on host
 				
@@ -1867,20 +1866,20 @@ class AIPHAProcessing:
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
 			 print(params_dict)
-			 extension_names = ['extension_url', 'extension_identity_file', 'extension_target']
-			 iterable_names = ['url','identity_path','target']
+			 extension_names = ['extension_url', 'extension_target']
+			 iterable_names = ['url','target']
 			 print(iterable_names, params_dict)
 			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
 			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
 			 print(folder_parallel_processing, iterable_subset_dict, True)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_folder', 'target': 'folder_target', 'location': 'location'}
+				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_path', 'target': 'folder_target', 'location': 'location'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
-				 itertable_params = ['url', 'identity_folder', 'target']
-				 itertable_iotypes = ['in', 'in', 'in']
-				 iterable_file_types = ['1', 'laz', 'laz']
+				 itertable_params = ['url', 'target']
+				 itertable_iotypes = ['in', 'in']
+				 iterable_file_types = ['1', 'laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -1915,9 +1914,9 @@ class AIPHAProcessing:
 				 for ext in extension_names:
 					 params_dict.pop(ext)
 
-				 itertable_params = ['url', 'identity_file', 'target']
-				 itertable_iotypes = ['in', 'in', 'in']
-				 iterable_file_types = ['1', 'laz', 'laz']
+				 itertable_params = ['url', 'target']
+				 itertable_iotypes = ['in', 'in']
+				 iterable_file_types = ['1', 'laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -1952,11 +1951,10 @@ class AIPHAProcessing:
 			url='__auto__', 
 			port='22', 
 			username='ubuntu', 
-			identity_path='__auto__', 
+			identity_path='', 
 			location='file.laz', 
 			destination='__auto__',
 			extension_url = '.1',
-			extension_identity_file = '',
 			extension_destination = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
@@ -1965,7 +1963,7 @@ class AIPHAProcessing:
 				:param url: Url to host
 				:param port: Port to host
 				:param username: Username to host
-				:param identity_path: Path to identity folder on aipha
+				:param identity_path:  Path to identity file on aipha
 				:param location: Path to download from host
 				:param destination: Location to upload to aipha
 				
@@ -1973,20 +1971,20 @@ class AIPHAProcessing:
 			 params_dict = locals().copy()
 			 params_dict.pop('self')
 			 print(params_dict)
-			 extension_names = ['extension_url', 'extension_identity_file', 'extension_destination']
-			 iterable_names = ['url','identity_path','destination']
+			 extension_names = ['extension_url', 'extension_destination']
+			 iterable_names = ['url','destination']
 			 print(iterable_names, params_dict)
 			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
 			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
 			 print(folder_parallel_processing, iterable_subset_dict, True)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_folder', 'location': 'location', 'destination': 'folder_destination'}
+				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_path', 'location': 'location', 'destination': 'folder_destination'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
-				 itertable_params = ['url', 'identity_folder', 'destination']
-				 itertable_iotypes = ['in', 'in', 'out']
-				 iterable_file_types = ['1', 'laz', 'laz']
+				 itertable_params = ['url', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['1', 'laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,
@@ -2021,9 +2019,9 @@ class AIPHAProcessing:
 				 for ext in extension_names:
 					 params_dict.pop(ext)
 
-				 itertable_params = ['url', 'identity_file', 'destination']
-				 itertable_iotypes = ['in', 'in', 'out']
-				 iterable_file_types = ['1', 'laz', 'laz']
+				 itertable_params = ['url', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['1', 'laz']
 				 uid = self.get_unique_id()
 				 connector = AIPHAConnector(
 				                params_dict,

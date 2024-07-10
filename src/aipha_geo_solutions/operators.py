@@ -1684,7 +1684,7 @@ class sys:
 :param url: Url to host
 :param port: Port to host
 :param username: Username to host
-:param identity_file: Path to identity file on aipha
+:param identity_file:  Path to identity file on aipha
 :param target: Path to upload from aipha
 :param location: Location of file to upload on host
 :param instance_type: type of cloud instance used for processing
@@ -1705,12 +1705,11 @@ class sys:
      url='127.0.0.1',
      port='22',
      username='ubuntu',
-     identity_folder='/identity_folder',
+     identity_file='',
      folder_target='/folder_target',
      location='file.laz',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_identity_file=".laz",
      extension_target=".laz",
      skip_existing_files = False):
       '''Upload a path to a host via ssh
@@ -1719,24 +1718,22 @@ class sys:
     |      url='127.0.0.1',
     |      port='22',
     |      username='ubuntu',
-    |      identity_folder='/identity_folder',
+    |      identity_file='',
     |      target='/target',
     |      location='file.laz',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_identity_folder=".",
     |      extension_target=".laz",
     |      skip_existing_files = False )
 
 :param url: Url to host
 :param port: Port to host
 :param username: Username to host
+:param identity_file:  Path to identity file on aipha
 :param location: Location of file to upload on host
-:param identity_folder: Path to identity folder on aipha
 :param folder_target: Path to upload from aipha
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
-:param extension_identity_folder: File extension of files in folder for identity_folder
 :param extension_target: File extension of files in folder for folder_target
 :param skip_existing_files: skip files that already exist in the output folder
 '''
@@ -1747,15 +1744,13 @@ class sys:
       del all_parameters['manager_instance_type']
       del all_parameters['skip_existing_files']
 
-      del all_parameters['identity_folder']
       del all_parameters['folder_target']
-      del all_parameters['extension_identity_file']
       del all_parameters['extension_target']
 
       cmd_str = json.dumps(all_parameters)
-      parameters = "identity_file,target"
-      folders = identity_folder + "," + folder_target
-      extensions = extension_identity_file + "," + extension_target
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
@@ -1802,7 +1797,7 @@ class sys:
 :param url: Url to host
 :param port: Port to host
 :param username: Username to host
-:param identity_file: Path to identity file on aipha
+:param identity_file:  Path to identity file on aipha
 :param location: Path to download from host
 :param destination: Location to upload to aipha
 :param instance_type: type of cloud instance used for processing
@@ -1823,12 +1818,11 @@ class sys:
      url='127.0.0.1',
      port='22',
      username='ubuntu',
-     identity_folder='/identity_folder',
+     identity_file='',
      location='file.laz',
      folder_destination='/folder_destination',
      worker_instance_type='x2large',
      manager_instance_type="small",
-     extension_identity_file=".laz",
      extension_destination=".laz",
      skip_existing_files = False):
       '''Download a path from a host via ssh
@@ -1837,24 +1831,22 @@ class sys:
     |      url='127.0.0.1',
     |      port='22',
     |      username='ubuntu',
-    |      identity_folder='/identity_folder',
+    |      identity_file='',
     |      location='file.laz',
     |      destination='/destination',
     |      worker_instance_type='x2large',
     |      manager_instance_type="small",
-    |      extension_identity_folder=".",
     |      extension_destination=".laz",
     |      skip_existing_files = False )
 
 :param url: Url to host
 :param port: Port to host
 :param username: Username to host
+:param identity_file:  Path to identity file on aipha
 :param location: Path to download from host
-:param identity_folder: Path to identity folder on aipha
 :param folder_destination: Location to upload to aipha
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
-:param extension_identity_folder: File extension of files in folder for identity_folder
 :param extension_destination: File extension of files in folder for folder_destination
 :param skip_existing_files: skip files that already exist in the output folder
 '''
@@ -1865,15 +1857,13 @@ class sys:
       del all_parameters['manager_instance_type']
       del all_parameters['skip_existing_files']
 
-      del all_parameters['identity_folder']
       del all_parameters['folder_destination']
-      del all_parameters['extension_identity_file']
       del all_parameters['extension_destination']
 
       cmd_str = json.dumps(all_parameters)
-      parameters = "identity_file,destination"
-      folders = identity_folder + "," + folder_destination
-      extensions = extension_identity_file + "," + extension_destination
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
