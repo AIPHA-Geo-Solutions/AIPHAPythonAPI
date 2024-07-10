@@ -1842,6 +1842,218 @@ class AIPHAProcessing:
 
 
 
+		 def upload_from_aipha_to_host(self,
+			url='__auto__', 
+			port='22', 
+			username='ubuntu', 
+			identity_path='__auto__', 
+			target='__auto__', 
+			location='file.laz',
+			extension_url = '.1',
+			extension_identity_file = '',
+			extension_target = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Upload a path to a host via ssh
+				
+				:param url: Url to host
+				:param port: Port to host
+				:param username: Username to host
+				:param identity_path: Path to identity folder on aipha
+				:param target: Path to upload from aipha
+				:param location: Location of file to upload on host
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_url', 'extension_identity_file', 'extension_target']
+			 iterable_names = ['url','identity_path','target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_folder', 'target': 'folder_target', 'location': 'location'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['url', 'identity_folder', 'target']
+				 itertable_iotypes = ['in', 'in', 'in']
+				 iterable_file_types = ['1', 'laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_host_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_host_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_file', 'target': 'target', 'location': 'location'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['url', 'identity_file', 'target']
+				 itertable_iotypes = ['in', 'in', 'in']
+				 iterable_file_types = ['1', 'laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_host',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_host(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def download_from_host_to_aipha(self,
+			url='__auto__', 
+			port='22', 
+			username='ubuntu', 
+			identity_path='__auto__', 
+			location='file.laz', 
+			destination='__auto__',
+			extension_url = '.1',
+			extension_identity_file = '',
+			extension_destination = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Download a path from a host via ssh
+				
+				:param url: Url to host
+				:param port: Port to host
+				:param username: Username to host
+				:param identity_path: Path to identity folder on aipha
+				:param location: Path to download from host
+				:param destination: Location to upload to aipha
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_url', 'extension_identity_file', 'extension_destination']
+			 iterable_names = ['url','identity_path','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_folder', 'location': 'location', 'destination': 'folder_destination'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['url', 'identity_folder', 'destination']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['1', 'laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_host_to_aipha_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.download_from_host_to_aipha_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_file', 'location': 'location', 'destination': 'destination'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['url', 'identity_file', 'destination']
+				 itertable_iotypes = ['in', 'in', 'out']
+				 iterable_file_types = ['1', 'laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_host_to_aipha',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.download_from_host_to_aipha(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
 		 def download_from_s3_to_aipha(self,
 			access_key_id='YOUR_KEY_ID', 
 			secret_access_key='YOUR_SECRET_KEY', 
@@ -1852,12 +2064,12 @@ class AIPHAProcessing:
 			extension_destination = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
-				Download a file from an S3 bucket
+				Download a path from a S3 bucket
 				
 				:param access_key_id: AWS access key ID
 				:param secret_access_key: AWS secret access key
 				:param aws_region: AWS region
-				:param location: File to download from s3
+				:param location: Path to download from s3
 				:param destination: Location to upload to aipha
 				:param bucket_name: S3 bucket name
 				
@@ -1956,12 +2168,12 @@ class AIPHAProcessing:
 			extension_target = '.laz',
 			folder_parallel_processing = '__auto__'):
 			 '''
-				Upload a file to an S3 bucket
+				Upload a path to a S3 bucket
 				
 				:param access_key_id: AWS access key ID
 				:param secret_access_key: AWS secret access key
 				:param aws_region: AWS region
-				:param target: File to upload from aipha
+				:param target: Path to upload from aipha
 				:param location: Location of file to upload on s3
 				:param bucket_name: S3 bucket name
 				

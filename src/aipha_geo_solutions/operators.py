@@ -1662,6 +1662,242 @@ class sys:
          client.get_verify_ssl())
 
 
+   def upload_from_aipha_to_host(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_file='',
+     target='file.laz',
+     location='file.laz',
+     instance_type='x2large'):
+      '''Upload a path to a host via ssh
+    | 
+    | upload_from_aipha_to_host( client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_file='',
+    |      target='file.laz',
+    |      location='file.laz',
+    |      instance_type='x2large' )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param identity_file: Path to identity file on aipha
+:param target: Path to upload from aipha
+:param location: Location of file to upload on host
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "upload from aipha to host",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_from_aipha_to_host_folder(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_folder='/identity_folder',
+     folder_target='/folder_target',
+     location='file.laz',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_identity_file=".laz",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''Upload a path to a host via ssh
+    | 
+    | upload_from_aipha_to_host_folder(client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_folder='/identity_folder',
+    |      target='/target',
+    |      location='file.laz',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_identity_folder=".",
+    |      extension_target=".laz",
+    |      skip_existing_files = False )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param location: Location of file to upload on host
+:param identity_folder: Path to identity folder on aipha
+:param folder_target: Path to upload from aipha
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_identity_folder: File extension of files in folder for identity_folder
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['identity_folder']
+      del all_parameters['folder_target']
+      del all_parameters['extension_identity_file']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "identity_file,target"
+      folders = identity_folder + "," + folder_target
+      extensions = extension_identity_file + "," + extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "upload from aipha to host" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_from_host_to_aipha(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_file='',
+     location='file.laz',
+     destination='file.laz',
+     instance_type='x2large'):
+      '''Download a path from a host via ssh
+    | 
+    | download_from_host_to_aipha( client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_file='',
+    |      location='file.laz',
+    |      destination='file.laz',
+    |      instance_type='x2large' )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param identity_file: Path to identity file on aipha
+:param location: Path to download from host
+:param destination: Location to upload to aipha
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "download from host to aipha",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_from_host_to_aipha_folder(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_folder='/identity_folder',
+     location='file.laz',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_identity_file=".laz",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''Download a path from a host via ssh
+    | 
+    | download_from_host_to_aipha_folder(client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_folder='/identity_folder',
+    |      location='file.laz',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_identity_folder=".",
+    |      extension_destination=".laz",
+    |      skip_existing_files = False )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param location: Path to download from host
+:param identity_folder: Path to identity folder on aipha
+:param folder_destination: Location to upload to aipha
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_identity_folder: File extension of files in folder for identity_folder
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['identity_folder']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_identity_file']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "identity_file,destination"
+      folders = identity_folder + "," + folder_destination
+      extensions = extension_identity_file + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "download from host to aipha" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def download_from_s3_to_aipha(client,
      access_key_id='YOUR_KEY_ID',
      secret_access_key='YOUR_SECRET_KEY',
@@ -1670,7 +1906,7 @@ class sys:
      destination='file.laz',
      bucket_name='Your S3 bucket',
      instance_type='x2large'):
-      '''Download a file from an S3 bucket
+      '''Download a path from a S3 bucket
     | 
     | download_from_s3_to_aipha( client,
     |      access_key_id='YOUR_KEY_ID',
@@ -1684,7 +1920,7 @@ class sys:
 :param access_key_id: AWS access key ID
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
-:param location: File to download from s3
+:param location: Path to download from s3
 :param destination: Location to upload to aipha
 :param bucket_name: S3 bucket name
 :param instance_type: type of cloud instance used for processing
@@ -1712,7 +1948,7 @@ class sys:
      manager_instance_type="small",
      extension_destination=".laz",
      skip_existing_files = False):
-      '''Download a file from an S3 bucket
+      '''Download a path from a S3 bucket
     | 
     | download_from_s3_to_aipha_folder(client,
     |      access_key_id='YOUR_KEY_ID',
@@ -1729,7 +1965,7 @@ class sys:
 :param access_key_id: AWS access key ID
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
-:param location: File to download from s3
+:param location: Path to download from s3
 :param bucket_name: S3 bucket name
 :param folder_destination: Location to upload to aipha
 :param worker_instance_type: cloud instance type of worker nodes
@@ -1783,7 +2019,7 @@ class sys:
      location='file.laz',
      bucket_name='Your S3 bucket',
      instance_type='x2large'):
-      '''Upload a file to an S3 bucket
+      '''Upload a path to a S3 bucket
     | 
     | upload_from_aipha_to_s3( client,
     |      access_key_id='YOUR_KEY_ID',
@@ -1797,7 +2033,7 @@ class sys:
 :param access_key_id: AWS access key ID
 :param secret_access_key: AWS secret access key
 :param aws_region: AWS region
-:param target: File to upload from aipha
+:param target: Path to upload from aipha
 :param location: Location of file to upload on s3
 :param bucket_name: S3 bucket name
 :param instance_type: type of cloud instance used for processing
@@ -1825,7 +2061,7 @@ class sys:
      manager_instance_type="small",
      extension_target=".laz",
      skip_existing_files = False):
-      '''Upload a file to an S3 bucket
+      '''Upload a path to a S3 bucket
     | 
     | upload_from_aipha_to_s3_folder(client,
     |      access_key_id='YOUR_KEY_ID',
@@ -1844,7 +2080,7 @@ class sys:
 :param aws_region: AWS region
 :param location: Location of file to upload on s3
 :param bucket_name: S3 bucket name
-:param folder_target: File to upload from aipha
+:param folder_target: Path to upload from aipha
 :param worker_instance_type: cloud instance type of worker nodes
 :param manager_instance_type: cloud instance type of manager node
 :param extension_target: File extension of files in folder for folder_target
