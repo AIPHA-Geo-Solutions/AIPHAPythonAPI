@@ -240,1884 +240,113 @@ def sleep_infinity_folder(client,
 
 
 
-class sys:
-   def create_directory_in_cloud(client,
-     destination='data',
-     instance_type='x2large'):
-      '''
-    | 
-    | create_directory_in_cloud( client,
-    |      destination='data',
-    |      instance_type='x2large' )
-
-:param destination: Destionation location on host. default folder: ./data
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "create directory in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def create_directory_in_cloud_folder(client,
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | create_directory_in_cloud_folder(client,
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_destination=".data",
-    |      skip_existing_files = False )
-
-:param folder_destination: Destionation location on host. default folder: ./data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_destination']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "destination"
-      folders = folder_destination
-      extensions = extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "create directory in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_data_from_cloud(client,
-     url='',
-     target='data',
-     protocol='',
-     username='',
-     password='',
-     port=21,
-     instance_type='x2large'):
-      '''
-    | 
-    | upload_data_from_cloud( client,
-    |      url='',
-    |      target='data',
-    |      protocol='',
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      instance_type='x2large' )
-
-:param url: destination URL
-:param target: Target location on host for upload. default folder: ./data
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param username: Username
-:param password: Password
-:param port: port
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "upload data from cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_data_from_cloud_folder(client,
-     url='',
-     folder_target='/folder_target',
-     protocol='',
-     username='',
-     password='',
-     port=21,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | upload_data_from_cloud_folder(client,
-    |      url='',
-    |      target='/target',
-    |      protocol='',
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".data",
-    |      skip_existing_files = False )
-
-:param url: destination URL
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param username: Username
-:param password: Password
-:param port: port
-:param folder_target: Target location on host for upload. default folder: ./data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "upload data from cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def select_corresponding_path(client,
-     original_file='path.txt',
-     original_identifier_file='idx.txt',
-     corresponding_file='cor.txt',
-     output_file='res.txt',
-     selection_criteria='oldest',
-     default_value='__original__',
-     instance_type='x2large'):
-      '''
-    | 
-    | select_corresponding_path( client,
-    |      original_file='path.txt',
-    |      original_identifier_file='idx.txt',
-    |      corresponding_file='cor.txt',
-    |      output_file='res.txt',
-    |      selection_criteria='oldest',
-    |      default_value='__original__',
-    |      instance_type='x2large' )
-
-:param original_file: original paths
-:param original_identifier_file: original identifiers
-:param corresponding_file: corresponding paths
-:param output_file: output file
-:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
-:param default_value: default value if no corresponding path is found
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "select corresponding path",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def select_corresponding_path_folder(client,
-     original_folder='/original_folder',
-     original_identifier_folder='/original_identifier_folder',
-     corresponding_folder='/corresponding_folder',
-     output_folder='/output_folder',
-     selection_criteria='oldest',
-     default_value='__original__',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_original_file=".txt",
-     extension_original_identifier_file=".txt",
-     extension_corresponding_file=".txt",
-     extension_output_file=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | select_corresponding_path_folder(client,
-    |      original_folder='/original_folder',
-    |      original_identifier_folder='/original_identifier_folder',
-    |      corresponding_folder='/corresponding_folder',
-    |      output_folder='/output_folder',
-    |      selection_criteria='oldest',
-    |      default_value='__original__',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_original_folder=".txt",
-    |      extension_original_identifier_folder=".txt",
-    |      extension_corresponding_folder=".txt",
-    |      extension_output_folder=".txt",
-    |      skip_existing_files = False )
-
-:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
-:param default_value: default value if no corresponding path is found
-:param original_folder: original folders
-:param original_identifier_folder: original identifiers
-:param corresponding_folder: corresponding folders
-:param output_folder: output folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_original_folder: File extension of files in folder for original_folder
-:param extension_original_identifier_folder: File extension of files in folder for original_identifier_folder
-:param extension_corresponding_folder: File extension of files in folder for corresponding_folder
-:param extension_output_folder: File extension of files in folder for output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['original_folder']
-      del all_parameters['original_identifier_folder']
-      del all_parameters['corresponding_folder']
-      del all_parameters['output_folder']
-      del all_parameters['extension_original_file']
-      del all_parameters['extension_original_identifier_file']
-      del all_parameters['extension_corresponding_file']
-      del all_parameters['extension_output_file']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "original_file,original_identifier_file,corresponding_file,output_file"
-      folders = original_folder + "," + original_identifier_folder + "," + corresponding_folder + "," + output_folder
-      extensions = extension_original_file + "," + extension_original_identifier_file + "," + extension_corresponding_file + "," + extension_output_file
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "select corresponding path" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def remove_files_from_cloud(client,
-     target='',
-     instance_type='x2large'):
-      '''
-    | 
-    | remove_files_from_cloud( client,
-    |      target='',
-    |      instance_type='x2large' )
-
-:param target: Target to be deleted
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "remove files from cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def remove_files_from_cloud_folder(client,
-     folder_target='/folder_target',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | remove_files_from_cloud_folder(client,
-    |      target='/target',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be deleted
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "remove files from cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def split_path(client,
-     in_path='',
-     out_path='',
-     split_type='filename',
-     instance_type='x2large'):
-      '''
-    | 
-    | split_path( client,
-    |      in_path='',
-    |      out_path='',
-    |      split_type='filename',
-    |      instance_type='x2large' )
-
-:param in_path: input path
-:param out_path: output path
-:param split_type: split type: [filename, dirname, basename, ext]
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "split path",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def split_path_folder(client,
-     in_folder='/in_folder',
-     out_folder='/out_folder',
-     split_type='filename',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_in_path=".laz",
-     extension_out_path=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | split_path_folder(client,
-    |      in_folder='/in_folder',
-    |      out_folder='/out_folder',
-    |      split_type='filename',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_in_folder=".",
-    |      extension_out_folder=".",
-    |      skip_existing_files = False )
-
-:param split_type: split type: [filename, dirname, basename, ext]
-:param in_folder: input folder
-:param out_folder: output folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_in_folder: File extension of files in folder for in_folder
-:param extension_out_folder: File extension of files in folder for out_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['in_folder']
-      del all_parameters['out_folder']
-      del all_parameters['extension_in_path']
-      del all_parameters['extension_out_path']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "in_path,out_path"
-      folders = in_folder + "," + out_folder
-      extensions = extension_in_path + "," + extension_out_path
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "split path" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def find_file_paths(client,
-     input_files='files.txt',
-     output_files='paths.txt',
-     search_folder='/search_folder',
-     replace_in='',
-     replace_out='',
-     substrings='',
-     instance_type='x2large'):
-      '''
-    | 
-    | find_file_paths( client,
-    |      input_files='files.txt',
-    |      output_files='paths.txt',
-    |      search_folder='/search_folder',
-    |      replace_in='',
-    |      replace_out='',
-    |      substrings='',
-    |      instance_type='x2large' )
-
-:param input_files: File containing the list of filenames
-:param output_files: Path to save the modified filelist
-:param search_folder:  Folder to traverse for finding files
-:param replace_in: The part to replace in the filenames
-:param replace_out: The new part to replace with
-:param substrings:  a list of substrings that need to occure in the file paths to be vallid
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "find file paths",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def find_file_paths_folder(client,
-     input_folders='/input_folders',
-     output_folders='/output_folders',
-     search_folder='/search_folder',
-     replace_in='',
-     replace_out='',
-     substrings='',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_input_files=".txt",
-     extension_output_files=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | find_file_paths_folder(client,
-    |      input_folders='/input_folders',
-    |      output_folders='/output_folders',
-    |      search_folder='/search_folder',
-    |      replace_in='',
-    |      replace_out='',
-    |      substrings='',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_input_folders=".txt",
-    |      extension_output_folders=".txt",
-    |      skip_existing_files = False )
-
-:param search_folder:  Folder to traverse for finding files
-:param replace_in: The part to replace in the filenames
-:param replace_out: The new part to replace with
-:param substrings:  a list of substrings that need to occure in the file paths to be vallid
-:param input_folders: File containing the list of foldernames
-:param output_folders: Path to save the modified folderlist
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_input_folders: File extension of files in folder for input_folders
-:param extension_output_folders: File extension of files in folder for output_folders
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['input_folders']
-      del all_parameters['output_folders']
-      del all_parameters['extension_input_files']
-      del all_parameters['extension_output_files']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "input_files,output_files"
-      folders = input_folders + "," + output_folders
-      extensions = extension_input_files + "," + extension_output_files
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "find file paths" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def move_file_in_cloud(client,
-     target='',
-     destination='',
-     instance_type='x2large'):
-      '''
-    | 
-    | move_file_in_cloud( client,
-    |      target='',
-    |      destination='',
-    |      instance_type='x2large' )
-
-:param target: Target to be moved
-:param destination: Destination
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "move file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def move_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | move_file_in_cloud_folder(client,
-    |      target='/target',
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      extension_destination=".",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be moved
-:param folder_destination: Destination
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_destination']
-      del all_parameters['extension_target']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "move file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def copy_file_in_cloud(client,
-     target='',
-     destination='',
-     instance_type='x2large'):
-      '''
-    | 
-    | copy_file_in_cloud( client,
-    |      target='',
-    |      destination='',
-    |      instance_type='x2large' )
-
-:param target: Target to be moved
-:param destination: Destination
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "copy file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def copy_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | copy_file_in_cloud_folder(client,
-    |      target='/target',
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      extension_destination=".",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be moved
-:param folder_destination: Destination
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_destination']
-      del all_parameters['extension_target']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "copy file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def touch_file_in_cloud(client,
-     target='file.txt',
-     instance_type='x2large'):
-      '''
-    | 
-    | touch_file_in_cloud( client,
-    |      target='file.txt',
-    |      instance_type='x2large' )
-
-:param target: File to be touched
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "touch file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def touch_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | touch_file_in_cloud_folder(client,
-    |      target='/target',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".txt",
-    |      skip_existing_files = False )
-
-:param folder_target: File to be touched
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "touch file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def select_by_identifier(client,
-     original_folder='original_folder',
-     original_identifier_file='idx.txt',
-     output_folder='output_folder',
-     instance_type='x2large'):
-      '''
-    | 
-    | select_by_identifier( client,
-    |      original_folder='original_folder',
-    |      original_identifier_file='idx.txt',
-    |      output_folder='output_folder',
-    |      instance_type='x2large' )
-
-:param original_folder: original folder
-:param original_identifier_file: original identifiers
-:param output_folder: output folder
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "select by identifier",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def select_by_identifier_folder(client,
-     folder_original_folder='/folder_original_folder',
-     original_identifier_folder='/original_identifier_folder',
-     folder_output_folder='/folder_output_folder',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_original_folder=".laz",
-     extension_original_identifier_file=".txt",
-     extension_output_folder=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | select_by_identifier_folder(client,
-    |      original_folder='/original_folder',
-    |      original_identifier_folder='/original_identifier_folder',
-    |      output_folder='/output_folder',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_original_folder=".original_folder",
-    |      extension_original_identifier_folder=".txt",
-    |      extension_output_folder=".output_folder",
-    |      skip_existing_files = False )
-
-:param folder_original_folder: original folder
-:param original_identifier_folder: original identifiers
-:param folder_output_folder: output folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_original_folder: File extension of files in folder for folder_original_folder
-:param extension_original_identifier_folder: File extension of files in folder for original_identifier_folder
-:param extension_output_folder: File extension of files in folder for folder_output_folder
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_original_folder']
-      del all_parameters['original_identifier_folder']
-      del all_parameters['folder_output_folder']
-      del all_parameters['extension_original_folder']
-      del all_parameters['extension_original_identifier_file']
-      del all_parameters['extension_output_folder']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "original_folder,original_identifier_file,output_folder"
-      folders = folder_original_folder + "," + original_identifier_folder + "," + folder_output_folder
-      extensions = extension_original_folder + "," + extension_original_identifier_file + "," + extension_output_folder
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "select by identifier" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def recursive_list(client,
-     target='target/',
-     destination='output.txt',
-     instance_type='x2large'):
-      '''
-    | 
-    | recursive_list( client,
-    |      target='target/',
-    |      destination='output.txt',
-    |      instance_type='x2large' )
-
-:param target: Target folder to be listed recursively
-:param destination: Output file
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "recursive list",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def recursive_list_folder(client,
-     folder_target='/folder_target',
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_destination=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | recursive_list_folder(client,
-    |      target='/target',
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".target/",
-    |      extension_destination=".txt",
-    |      skip_existing_files = False )
-
-:param folder_target: Target folder to be listed recursively
-:param folder_destination: Output folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_destination']
-      del all_parameters['extension_target']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,destination"
-      folders = folder_target + "," + folder_destination
-      extensions = extension_target + "," + extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "recursive list" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def rename_file_in_cloud(client,
-     target='',
-     prefix='',
-     suffix='',
-     replace_from='',
-     replace_to='',
-     replace_count=0,
-     instance_type='x2large'):
-      '''
-    | 
-    | rename_file_in_cloud( client,
-    |      target='',
-    |      prefix='',
-    |      suffix='',
-    |      replace_from='',
-    |      replace_to='',
-    |      replace_count=0,
-    |      instance_type='x2large' )
-
-:param target: Target to be renamed
-:param prefix: add prefix
-:param suffix: add suffix
-:param replace_from: replace string in filename
-:param replace_to: replace string in filename
-:param replace_count: replace string in filename
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "rename file in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def rename_file_in_cloud_folder(client,
-     folder_target='/folder_target',
-     prefix='',
-     suffix='',
-     replace_from='',
-     replace_to='',
-     replace_count=0,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | rename_file_in_cloud_folder(client,
-    |      target='/target',
-    |      prefix='',
-    |      suffix='',
-    |      replace_from='',
-    |      replace_to='',
-    |      replace_count=0,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".",
-    |      skip_existing_files = False )
-
-:param prefix: add prefix
-:param suffix: add suffix
-:param replace_from: replace string in filename
-:param replace_to: replace string in filename
-:param replace_count: replace string in filename
-:param folder_target: Target to be renamed
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "rename file in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def list_files_in_cloud(client,
-     target='folder/',
-     file_out='files.txt',
-     instance_type='x2large'):
-      '''
-    | 
-    | list_files_in_cloud( client,
-    |      target='folder/',
-    |      file_out='files.txt',
-    |      instance_type='x2large' )
-
-:param target: Target to be listet
-:param file_out: output_file
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "list files in cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def list_files_in_cloud_folder(client,
-     folder_target='/folder_target',
-     folder_out='/folder_out',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     extension_file_out=".txt",
-     skip_existing_files = False):
-      '''
-    | 
-    | list_files_in_cloud_folder(client,
-    |      target='/target',
-    |      folder_out='/folder_out',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".folder/",
-    |      extension_folder_out=".txt",
-    |      skip_existing_files = False )
-
-:param folder_target: Target to be listet
-:param folder_out: output_folder
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param extension_folder_out: File extension of files in folder for folder_out
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['folder_out']
-      del all_parameters['extension_target']
-      del all_parameters['extension_file_out']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target,file_out"
-      folders = folder_target + "," + folder_out
-      extensions = extension_target + "," + extension_file_out
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "list files in cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_data_to_cloud(client,
-     url='',
-     destination='data',
-     protocol='',
-     download_type=0,
-     username='',
-     password='',
-     port=21,
-     instance_type='x2large'):
-      '''
-    | 
-    | download_data_to_cloud( client,
-    |      url='',
-    |      destination='data',
-    |      protocol='',
-    |      download_type=0,
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      instance_type='x2large' )
-
-:param url: URL to data
-:param destination: Destionation location on host. default folder: ./data
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param download_type: download type: 0: all files from folder, 1: individual file
-:param username: Username
-:param password: Password
-:param port: port
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "download data to cloud",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_data_to_cloud_folder(client,
-     url='',
-     folder_destination='/folder_destination',
-     protocol='',
-     download_type=0,
-     username='',
-     password='',
-     port=21,
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''
-    | 
-    | download_data_to_cloud_folder(client,
-    |      url='',
-    |      destination='/destination',
-    |      protocol='',
-    |      download_type=0,
-    |      username='',
-    |      password='',
-    |      port=21,
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_destination=".data",
-    |      skip_existing_files = False )
-
-:param url: URL to data
-:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-:param download_type: download type: 0: all files from folder, 1: individual file
-:param username: Username
-:param password: Password
-:param port: port
-:param folder_destination: Destionation location on host. default folder: ./data
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_destination']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "destination"
-      folders = folder_destination
-      extensions = extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "download data to cloud" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_from_aipha_to_host(client,
-     url='127.0.0.1',
-     port='22',
-     username='ubuntu',
-     identity_file='',
-     target='file.laz',
-     location='file.laz',
-     instance_type='x2large'):
-      '''Upload a path to a host via ssh
-    | 
-    | upload_from_aipha_to_host( client,
-    |      url='127.0.0.1',
-    |      port='22',
-    |      username='ubuntu',
-    |      identity_file='',
-    |      target='file.laz',
-    |      location='file.laz',
-    |      instance_type='x2large' )
-
-:param url: Url to host
-:param port: Port to host
-:param username: Username to host
-:param identity_file:  Path to identity file on aipha
-:param target: Path to upload from aipha
-:param location: Location of file to upload on host
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "upload from aipha to host",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_from_aipha_to_host_folder(client,
-     url='127.0.0.1',
-     port='22',
-     username='ubuntu',
-     identity_file='',
-     folder_target='/folder_target',
-     location='file.laz',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''Upload a path to a host via ssh
-    | 
-    | upload_from_aipha_to_host_folder(client,
-    |      url='127.0.0.1',
-    |      port='22',
-    |      username='ubuntu',
-    |      identity_file='',
-    |      target='/target',
-    |      location='file.laz',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".laz",
-    |      skip_existing_files = False )
-
-:param url: Url to host
-:param port: Port to host
-:param username: Username to host
-:param identity_file:  Path to identity file on aipha
-:param location: Location of file to upload on host
-:param folder_target: Path to upload from aipha
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "upload from aipha to host" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_from_host_to_aipha(client,
-     url='127.0.0.1',
-     port='22',
-     username='ubuntu',
-     identity_file='',
-     location='file.laz',
-     destination='file.laz',
-     instance_type='x2large'):
-      '''Download a path from a host via ssh
-    | 
-    | download_from_host_to_aipha( client,
-    |      url='127.0.0.1',
-    |      port='22',
-    |      username='ubuntu',
-    |      identity_file='',
-    |      location='file.laz',
-    |      destination='file.laz',
-    |      instance_type='x2large' )
-
-:param url: Url to host
-:param port: Port to host
-:param username: Username to host
-:param identity_file:  Path to identity file on aipha
-:param location: Path to download from host
-:param destination: Location to upload to aipha
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "download from host to aipha",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_from_host_to_aipha_folder(client,
-     url='127.0.0.1',
-     port='22',
-     username='ubuntu',
-     identity_file='',
-     location='file.laz',
-     folder_destination='/folder_destination',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''Download a path from a host via ssh
-    | 
-    | download_from_host_to_aipha_folder(client,
-    |      url='127.0.0.1',
-    |      port='22',
-    |      username='ubuntu',
-    |      identity_file='',
-    |      location='file.laz',
-    |      destination='/destination',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_destination=".laz",
-    |      skip_existing_files = False )
-
-:param url: Url to host
-:param port: Port to host
-:param username: Username to host
-:param identity_file:  Path to identity file on aipha
-:param location: Path to download from host
-:param folder_destination: Location to upload to aipha
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_destination']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "destination"
-      folders = folder_destination
-      extensions = extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "download from host to aipha" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_from_s3_to_aipha(client,
-     access_key_id='YOUR_KEY_ID',
-     secret_access_key='YOUR_SECRET_KEY',
-     aws_region='eu-central-1',
-     location='file.laz',
-     destination='file.laz',
-     bucket_name='Your S3 bucket',
-     instance_type='x2large'):
-      '''Download a path from a S3 bucket
-    | 
-    | download_from_s3_to_aipha( client,
-    |      access_key_id='YOUR_KEY_ID',
-    |      secret_access_key='YOUR_SECRET_KEY',
-    |      aws_region='eu-central-1',
-    |      location='file.laz',
-    |      destination='file.laz',
-    |      bucket_name='Your S3 bucket',
-    |      instance_type='x2large' )
-
-:param access_key_id: AWS access key ID
-:param secret_access_key: AWS secret access key
-:param aws_region: AWS region
-:param location: Path to download from s3
-:param destination: Location to upload to aipha
-:param bucket_name: S3 bucket name
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "download from s3 to aipha",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def download_from_s3_to_aipha_folder(client,
-     access_key_id='YOUR_KEY_ID',
-     secret_access_key='YOUR_SECRET_KEY',
-     aws_region='eu-central-1',
-     location='file.laz',
-     folder_destination='/folder_destination',
-     bucket_name='Your S3 bucket',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_destination=".laz",
-     skip_existing_files = False):
-      '''Download a path from a S3 bucket
-    | 
-    | download_from_s3_to_aipha_folder(client,
-    |      access_key_id='YOUR_KEY_ID',
-    |      secret_access_key='YOUR_SECRET_KEY',
-    |      aws_region='eu-central-1',
-    |      location='file.laz',
-    |      destination='/destination',
-    |      bucket_name='Your S3 bucket',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_destination=".laz",
-    |      skip_existing_files = False )
-
-:param access_key_id: AWS access key ID
-:param secret_access_key: AWS secret access key
-:param aws_region: AWS region
-:param location: Path to download from s3
-:param bucket_name: S3 bucket name
-:param folder_destination: Location to upload to aipha
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_destination: File extension of files in folder for folder_destination
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_destination']
-      del all_parameters['extension_destination']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "destination"
-      folders = folder_destination
-      extensions = extension_destination
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "download from s3 to aipha" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_from_aipha_to_s3(client,
-     access_key_id='YOUR_KEY_ID',
-     secret_access_key='YOUR_SECRET_KEY',
-     aws_region='eu-central-1',
-     target='file.laz',
-     location='file.laz',
-     bucket_name='Your S3 bucket',
-     instance_type='x2large'):
-      '''Upload a path to a S3 bucket
-    | 
-    | upload_from_aipha_to_s3( client,
-    |      access_key_id='YOUR_KEY_ID',
-    |      secret_access_key='YOUR_SECRET_KEY',
-    |      aws_region='eu-central-1',
-    |      target='file.laz',
-    |      location='file.laz',
-    |      bucket_name='Your S3 bucket',
-    |      instance_type='x2large' )
-
-:param access_key_id: AWS access key ID
-:param secret_access_key: AWS secret access key
-:param aws_region: AWS region
-:param target: Path to upload from aipha
-:param location: Location of file to upload on s3
-:param bucket_name: S3 bucket name
-:param instance_type: type of cloud instance used for processing
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "upload from aipha to s3",
-         all_parameters,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-   def upload_from_aipha_to_s3_folder(client,
-     access_key_id='YOUR_KEY_ID',
-     secret_access_key='YOUR_SECRET_KEY',
-     aws_region='eu-central-1',
-     folder_target='/folder_target',
-     location='file.laz',
-     bucket_name='Your S3 bucket',
-     worker_instance_type='x2large',
-     manager_instance_type="small",
-     extension_target=".laz",
-     skip_existing_files = False):
-      '''Upload a path to a S3 bucket
-    | 
-    | upload_from_aipha_to_s3_folder(client,
-    |      access_key_id='YOUR_KEY_ID',
-    |      secret_access_key='YOUR_SECRET_KEY',
-    |      aws_region='eu-central-1',
-    |      target='/target',
-    |      location='file.laz',
-    |      bucket_name='Your S3 bucket',
-    |      worker_instance_type='x2large',
-    |      manager_instance_type="small",
-    |      extension_target=".laz",
-    |      skip_existing_files = False )
-
-:param access_key_id: AWS access key ID
-:param secret_access_key: AWS secret access key
-:param aws_region: AWS region
-:param location: Location of file to upload on s3
-:param bucket_name: S3 bucket name
-:param folder_target: Path to upload from aipha
-:param worker_instance_type: cloud instance type of worker nodes
-:param manager_instance_type: cloud instance type of manager node
-:param extension_target: File extension of files in folder for folder_target
-:param skip_existing_files: skip files that already exist in the output folder
-'''
-
-      all_parameters = locals().copy()
-      del all_parameters['client']
-      del all_parameters['worker_instance_type']
-      del all_parameters['manager_instance_type']
-      del all_parameters['skip_existing_files']
-
-      del all_parameters['folder_target']
-      del all_parameters['extension_target']
-
-      cmd_str = json.dumps(all_parameters)
-      parameters = "target"
-      folders = folder_target
-      extensions = extension_target
-      each_file_params = {
-        "user_id": client.get_username(),
-        "user_token": client.get_token(),
-        "command": "'" + "upload from aipha to s3" + "'",
-        "parameters_dictionary_str": "'" + cmd_str + "'",
-        "server_address": client.get_server_address(),
-        "verify_ssl": client.get_verify_ssl(),
-        "folders": folders,
-        "parameters": parameters,
-        "extensions": extensions,
-        "worker_instance_type": worker_instance_type,
-        "instance_type": manager_instance_type,
-        "skip_existing_files": skip_existing_files
-      }
-
-      return command_request(
-         client.get_username(),
-         client.get_token(),
-         "execute each file in folder",
-         each_file_params,
-         client.get_server_address(),
-         client.get_verify_ssl())
-
-
-
-
-
 class ml3d:
+   def evaluate_semantic_segmentation(client,
+     prediction_path='pred.labels',
+     ground_truth_path='gt.labels',
+     class_names='1,2,3,4',
+     invalid_label=0,
+     instance_type='x2large'):
+      '''Evaluate semantic segmentation
+    | 
+    | evaluate_semantic_segmentation( client,
+    |      prediction_path='pred.labels',
+    |      ground_truth_path='gt.labels',
+    |      class_names='1,2,3,4',
+    |      invalid_label=0,
+    |      instance_type='x2large' )
+
+:param prediction_path: Path to prediction file or folder
+:param ground_truth_path: Path to ground truth file or folder
+:param class_names: class names
+:param invalid_label: Invalid label
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "evaluate semantic segmentation",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def evaluate_semantic_segmentation_folder(client,
+     prediction_folder='/prediction_folder',
+     ground_truth_folder='/ground_truth_folder',
+     class_names='1,2,3,4',
+     invalid_label=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_prediction_path=".labels",
+     extension_ground_truth_path=".labels",
+     skip_existing_files = False):
+      '''Evaluate semantic segmentation
+    | 
+    | evaluate_semantic_segmentation_folder(client,
+    |      prediction_folder='/prediction_folder',
+    |      ground_truth_folder='/ground_truth_folder',
+    |      class_names='1,2,3,4',
+    |      invalid_label=0,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_prediction_folder=".labels",
+    |      extension_ground_truth_folder=".labels",
+    |      skip_existing_files = False )
+
+:param class_names: class names
+:param invalid_label: Invalid label
+:param prediction_folder: Path to prediction folder or folder
+:param ground_truth_folder: Path to ground truth folder or folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_prediction_folder: File extension of files in folder for prediction_folder
+:param extension_ground_truth_folder: File extension of files in folder for ground_truth_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['prediction_folder']
+      del all_parameters['ground_truth_folder']
+      del all_parameters['extension_prediction_path']
+      del all_parameters['extension_ground_truth_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "prediction_path,ground_truth_path"
+      folders = prediction_folder + "," + ground_truth_folder
+      extensions = extension_prediction_path + "," + extension_ground_truth_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "evaluate semantic segmentation" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
    def semantic_training_scf(client,
      data_in_path='/data/files/',
      out_model_parameters_path='trained_model/model_1',
@@ -4889,6 +3118,1883 @@ class ml3d:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "universal inference" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+
+
+
+class sys:
+   def create_directory_in_cloud(client,
+     destination='data',
+     instance_type='x2large'):
+      '''
+    | 
+    | create_directory_in_cloud( client,
+    |      destination='data',
+    |      instance_type='x2large' )
+
+:param destination: Destionation location on host. default folder: ./data
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "create directory in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def create_directory_in_cloud_folder(client,
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | create_directory_in_cloud_folder(client,
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_destination=".data",
+    |      skip_existing_files = False )
+
+:param folder_destination: Destionation location on host. default folder: ./data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "create directory in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_data_from_cloud(client,
+     url='',
+     target='data',
+     protocol='',
+     username='',
+     password='',
+     port=21,
+     instance_type='x2large'):
+      '''
+    | 
+    | upload_data_from_cloud( client,
+    |      url='',
+    |      target='data',
+    |      protocol='',
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      instance_type='x2large' )
+
+:param url: destination URL
+:param target: Target location on host for upload. default folder: ./data
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param username: Username
+:param password: Password
+:param port: port
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "upload data from cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_data_from_cloud_folder(client,
+     url='',
+     folder_target='/folder_target',
+     protocol='',
+     username='',
+     password='',
+     port=21,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | upload_data_from_cloud_folder(client,
+    |      url='',
+    |      target='/target',
+    |      protocol='',
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".data",
+    |      skip_existing_files = False )
+
+:param url: destination URL
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param username: Username
+:param password: Password
+:param port: port
+:param folder_target: Target location on host for upload. default folder: ./data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "upload data from cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_corresponding_path(client,
+     original_file='path.txt',
+     original_identifier_file='idx.txt',
+     corresponding_file='cor.txt',
+     output_file='res.txt',
+     selection_criteria='oldest',
+     default_value='__original__',
+     instance_type='x2large'):
+      '''
+    | 
+    | select_corresponding_path( client,
+    |      original_file='path.txt',
+    |      original_identifier_file='idx.txt',
+    |      corresponding_file='cor.txt',
+    |      output_file='res.txt',
+    |      selection_criteria='oldest',
+    |      default_value='__original__',
+    |      instance_type='x2large' )
+
+:param original_file: original paths
+:param original_identifier_file: original identifiers
+:param corresponding_file: corresponding paths
+:param output_file: output file
+:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
+:param default_value: default value if no corresponding path is found
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "select corresponding path",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_corresponding_path_folder(client,
+     original_folder='/original_folder',
+     original_identifier_folder='/original_identifier_folder',
+     corresponding_folder='/corresponding_folder',
+     output_folder='/output_folder',
+     selection_criteria='oldest',
+     default_value='__original__',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_original_file=".txt",
+     extension_original_identifier_file=".txt",
+     extension_corresponding_file=".txt",
+     extension_output_file=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | select_corresponding_path_folder(client,
+    |      original_folder='/original_folder',
+    |      original_identifier_folder='/original_identifier_folder',
+    |      corresponding_folder='/corresponding_folder',
+    |      output_folder='/output_folder',
+    |      selection_criteria='oldest',
+    |      default_value='__original__',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_original_folder=".txt",
+    |      extension_original_identifier_folder=".txt",
+    |      extension_corresponding_folder=".txt",
+    |      extension_output_folder=".txt",
+    |      skip_existing_files = False )
+
+:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
+:param default_value: default value if no corresponding path is found
+:param original_folder: original folders
+:param original_identifier_folder: original identifiers
+:param corresponding_folder: corresponding folders
+:param output_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_original_folder: File extension of files in folder for original_folder
+:param extension_original_identifier_folder: File extension of files in folder for original_identifier_folder
+:param extension_corresponding_folder: File extension of files in folder for corresponding_folder
+:param extension_output_folder: File extension of files in folder for output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['original_folder']
+      del all_parameters['original_identifier_folder']
+      del all_parameters['corresponding_folder']
+      del all_parameters['output_folder']
+      del all_parameters['extension_original_file']
+      del all_parameters['extension_original_identifier_file']
+      del all_parameters['extension_corresponding_file']
+      del all_parameters['extension_output_file']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "original_file,original_identifier_file,corresponding_file,output_file"
+      folders = original_folder + "," + original_identifier_folder + "," + corresponding_folder + "," + output_folder
+      extensions = extension_original_file + "," + extension_original_identifier_file + "," + extension_corresponding_file + "," + extension_output_file
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "select corresponding path" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remove_files_from_cloud(client,
+     target='',
+     instance_type='x2large'):
+      '''
+    | 
+    | remove_files_from_cloud( client,
+    |      target='',
+    |      instance_type='x2large' )
+
+:param target: Target to be deleted
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "remove files from cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def remove_files_from_cloud_folder(client,
+     folder_target='/folder_target',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | remove_files_from_cloud_folder(client,
+    |      target='/target',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be deleted
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "remove files from cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def split_path(client,
+     in_path='',
+     out_path='',
+     split_type='filename',
+     instance_type='x2large'):
+      '''
+    | 
+    | split_path( client,
+    |      in_path='',
+    |      out_path='',
+    |      split_type='filename',
+    |      instance_type='x2large' )
+
+:param in_path: input path
+:param out_path: output path
+:param split_type: split type: [filename, dirname, basename, ext]
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "split path",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def split_path_folder(client,
+     in_folder='/in_folder',
+     out_folder='/out_folder',
+     split_type='filename',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_in_path=".laz",
+     extension_out_path=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | split_path_folder(client,
+    |      in_folder='/in_folder',
+    |      out_folder='/out_folder',
+    |      split_type='filename',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_in_folder=".",
+    |      extension_out_folder=".",
+    |      skip_existing_files = False )
+
+:param split_type: split type: [filename, dirname, basename, ext]
+:param in_folder: input folder
+:param out_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_in_folder: File extension of files in folder for in_folder
+:param extension_out_folder: File extension of files in folder for out_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['in_folder']
+      del all_parameters['out_folder']
+      del all_parameters['extension_in_path']
+      del all_parameters['extension_out_path']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "in_path,out_path"
+      folders = in_folder + "," + out_folder
+      extensions = extension_in_path + "," + extension_out_path
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "split path" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def find_file_paths(client,
+     input_files='files.txt',
+     output_files='paths.txt',
+     search_folder='/search_folder',
+     replace_in='',
+     replace_out='',
+     substrings='',
+     instance_type='x2large'):
+      '''
+    | 
+    | find_file_paths( client,
+    |      input_files='files.txt',
+    |      output_files='paths.txt',
+    |      search_folder='/search_folder',
+    |      replace_in='',
+    |      replace_out='',
+    |      substrings='',
+    |      instance_type='x2large' )
+
+:param input_files: File containing the list of filenames
+:param output_files: Path to save the modified filelist
+:param search_folder:  Folder to traverse for finding files
+:param replace_in: The part to replace in the filenames
+:param replace_out: The new part to replace with
+:param substrings:  a list of substrings that need to occure in the file paths to be vallid
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "find file paths",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def find_file_paths_folder(client,
+     input_folders='/input_folders',
+     output_folders='/output_folders',
+     search_folder='/search_folder',
+     replace_in='',
+     replace_out='',
+     substrings='',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_input_files=".txt",
+     extension_output_files=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | find_file_paths_folder(client,
+    |      input_folders='/input_folders',
+    |      output_folders='/output_folders',
+    |      search_folder='/search_folder',
+    |      replace_in='',
+    |      replace_out='',
+    |      substrings='',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_input_folders=".txt",
+    |      extension_output_folders=".txt",
+    |      skip_existing_files = False )
+
+:param search_folder:  Folder to traverse for finding files
+:param replace_in: The part to replace in the filenames
+:param replace_out: The new part to replace with
+:param substrings:  a list of substrings that need to occure in the file paths to be vallid
+:param input_folders: File containing the list of foldernames
+:param output_folders: Path to save the modified folderlist
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_input_folders: File extension of files in folder for input_folders
+:param extension_output_folders: File extension of files in folder for output_folders
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['input_folders']
+      del all_parameters['output_folders']
+      del all_parameters['extension_input_files']
+      del all_parameters['extension_output_files']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "input_files,output_files"
+      folders = input_folders + "," + output_folders
+      extensions = extension_input_files + "," + extension_output_files
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "find file paths" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def move_file_in_cloud(client,
+     target='',
+     destination='',
+     instance_type='x2large'):
+      '''
+    | 
+    | move_file_in_cloud( client,
+    |      target='',
+    |      destination='',
+    |      instance_type='x2large' )
+
+:param target: Target to be moved
+:param destination: Destination
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "move file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def move_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | move_file_in_cloud_folder(client,
+    |      target='/target',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      extension_destination=".",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be moved
+:param folder_destination: Destination
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "move file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def copy_file_in_cloud(client,
+     target='',
+     destination='',
+     instance_type='x2large'):
+      '''
+    | 
+    | copy_file_in_cloud( client,
+    |      target='',
+    |      destination='',
+    |      instance_type='x2large' )
+
+:param target: Target to be moved
+:param destination: Destination
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "copy file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def copy_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | copy_file_in_cloud_folder(client,
+    |      target='/target',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      extension_destination=".",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be moved
+:param folder_destination: Destination
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "copy file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def touch_file_in_cloud(client,
+     target='file.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | touch_file_in_cloud( client,
+    |      target='file.txt',
+    |      instance_type='x2large' )
+
+:param target: File to be touched
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "touch file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def touch_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | touch_file_in_cloud_folder(client,
+    |      target='/target',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".txt",
+    |      skip_existing_files = False )
+
+:param folder_target: File to be touched
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "touch file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_by_identifier(client,
+     original_folder='original_folder',
+     original_identifier_file='idx.txt',
+     output_folder='output_folder',
+     instance_type='x2large'):
+      '''
+    | 
+    | select_by_identifier( client,
+    |      original_folder='original_folder',
+    |      original_identifier_file='idx.txt',
+    |      output_folder='output_folder',
+    |      instance_type='x2large' )
+
+:param original_folder: original folder
+:param original_identifier_file: original identifiers
+:param output_folder: output folder
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "select by identifier",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def select_by_identifier_folder(client,
+     folder_original_folder='/folder_original_folder',
+     original_identifier_folder='/original_identifier_folder',
+     folder_output_folder='/folder_output_folder',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_original_folder=".laz",
+     extension_original_identifier_file=".txt",
+     extension_output_folder=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | select_by_identifier_folder(client,
+    |      original_folder='/original_folder',
+    |      original_identifier_folder='/original_identifier_folder',
+    |      output_folder='/output_folder',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_original_folder=".original_folder",
+    |      extension_original_identifier_folder=".txt",
+    |      extension_output_folder=".output_folder",
+    |      skip_existing_files = False )
+
+:param folder_original_folder: original folder
+:param original_identifier_folder: original identifiers
+:param folder_output_folder: output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_original_folder: File extension of files in folder for folder_original_folder
+:param extension_original_identifier_folder: File extension of files in folder for original_identifier_folder
+:param extension_output_folder: File extension of files in folder for folder_output_folder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_original_folder']
+      del all_parameters['original_identifier_folder']
+      del all_parameters['folder_output_folder']
+      del all_parameters['extension_original_folder']
+      del all_parameters['extension_original_identifier_file']
+      del all_parameters['extension_output_folder']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "original_folder,original_identifier_file,output_folder"
+      folders = folder_original_folder + "," + original_identifier_folder + "," + folder_output_folder
+      extensions = extension_original_folder + "," + extension_original_identifier_file + "," + extension_output_folder
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "select by identifier" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def recursive_list(client,
+     target='target/',
+     destination='output.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | recursive_list( client,
+    |      target='target/',
+    |      destination='output.txt',
+    |      instance_type='x2large' )
+
+:param target: Target folder to be listed recursively
+:param destination: Output file
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "recursive list",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def recursive_list_folder(client,
+     folder_target='/folder_target',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_destination=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | recursive_list_folder(client,
+    |      target='/target',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".target/",
+    |      extension_destination=".txt",
+    |      skip_existing_files = False )
+
+:param folder_target: Target folder to be listed recursively
+:param folder_destination: Output folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_destination']
+      del all_parameters['extension_target']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,destination"
+      folders = folder_target + "," + folder_destination
+      extensions = extension_target + "," + extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "recursive list" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def rename_file_in_cloud(client,
+     target='',
+     prefix='',
+     suffix='',
+     replace_from='',
+     replace_to='',
+     replace_count=0,
+     instance_type='x2large'):
+      '''
+    | 
+    | rename_file_in_cloud( client,
+    |      target='',
+    |      prefix='',
+    |      suffix='',
+    |      replace_from='',
+    |      replace_to='',
+    |      replace_count=0,
+    |      instance_type='x2large' )
+
+:param target: Target to be renamed
+:param prefix: add prefix
+:param suffix: add suffix
+:param replace_from: replace string in filename
+:param replace_to: replace string in filename
+:param replace_count: replace string in filename
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "rename file in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def rename_file_in_cloud_folder(client,
+     folder_target='/folder_target',
+     prefix='',
+     suffix='',
+     replace_from='',
+     replace_to='',
+     replace_count=0,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | rename_file_in_cloud_folder(client,
+    |      target='/target',
+    |      prefix='',
+    |      suffix='',
+    |      replace_from='',
+    |      replace_to='',
+    |      replace_count=0,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".",
+    |      skip_existing_files = False )
+
+:param prefix: add prefix
+:param suffix: add suffix
+:param replace_from: replace string in filename
+:param replace_to: replace string in filename
+:param replace_count: replace string in filename
+:param folder_target: Target to be renamed
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "rename file in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def list_files_in_cloud(client,
+     target='folder/',
+     file_out='files.txt',
+     instance_type='x2large'):
+      '''
+    | 
+    | list_files_in_cloud( client,
+    |      target='folder/',
+    |      file_out='files.txt',
+    |      instance_type='x2large' )
+
+:param target: Target to be listet
+:param file_out: output_file
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "list files in cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def list_files_in_cloud_folder(client,
+     folder_target='/folder_target',
+     folder_out='/folder_out',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     extension_file_out=".txt",
+     skip_existing_files = False):
+      '''
+    | 
+    | list_files_in_cloud_folder(client,
+    |      target='/target',
+    |      folder_out='/folder_out',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".folder/",
+    |      extension_folder_out=".txt",
+    |      skip_existing_files = False )
+
+:param folder_target: Target to be listet
+:param folder_out: output_folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param extension_folder_out: File extension of files in folder for folder_out
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['folder_out']
+      del all_parameters['extension_target']
+      del all_parameters['extension_file_out']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target,file_out"
+      folders = folder_target + "," + folder_out
+      extensions = extension_target + "," + extension_file_out
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "list files in cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_data_to_cloud(client,
+     url='',
+     destination='data',
+     protocol='',
+     download_type=0,
+     username='',
+     password='',
+     port=21,
+     instance_type='x2large'):
+      '''
+    | 
+    | download_data_to_cloud( client,
+    |      url='',
+    |      destination='data',
+    |      protocol='',
+    |      download_type=0,
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      instance_type='x2large' )
+
+:param url: URL to data
+:param destination: Destionation location on host. default folder: ./data
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param download_type: download type: 0: all files from folder, 1: individual file
+:param username: Username
+:param password: Password
+:param port: port
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "download data to cloud",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_data_to_cloud_folder(client,
+     url='',
+     folder_destination='/folder_destination',
+     protocol='',
+     download_type=0,
+     username='',
+     password='',
+     port=21,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''
+    | 
+    | download_data_to_cloud_folder(client,
+    |      url='',
+    |      destination='/destination',
+    |      protocol='',
+    |      download_type=0,
+    |      username='',
+    |      password='',
+    |      port=21,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_destination=".data",
+    |      skip_existing_files = False )
+
+:param url: URL to data
+:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+:param download_type: download type: 0: all files from folder, 1: individual file
+:param username: Username
+:param password: Password
+:param port: port
+:param folder_destination: Destionation location on host. default folder: ./data
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "download data to cloud" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_from_aipha_to_host(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_file='',
+     target='file.laz',
+     location='file.laz',
+     instance_type='x2large'):
+      '''Upload a path to a host via ssh
+    | 
+    | upload_from_aipha_to_host( client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_file='',
+    |      target='file.laz',
+    |      location='file.laz',
+    |      instance_type='x2large' )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param identity_file:  Path to identity file on aipha
+:param target: Path to upload from aipha
+:param location: Location of file to upload on host
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "upload from aipha to host",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_from_aipha_to_host_folder(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_file='',
+     folder_target='/folder_target',
+     location='file.laz',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''Upload a path to a host via ssh
+    | 
+    | upload_from_aipha_to_host_folder(client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_file='',
+    |      target='/target',
+    |      location='file.laz',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".laz",
+    |      skip_existing_files = False )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param identity_file:  Path to identity file on aipha
+:param location: Location of file to upload on host
+:param folder_target: Path to upload from aipha
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "upload from aipha to host" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_from_host_to_aipha(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_file='',
+     location='file.laz',
+     destination='file.laz',
+     instance_type='x2large'):
+      '''Download a path from a host via ssh
+    | 
+    | download_from_host_to_aipha( client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_file='',
+    |      location='file.laz',
+    |      destination='file.laz',
+    |      instance_type='x2large' )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param identity_file:  Path to identity file on aipha
+:param location: Path to download from host
+:param destination: Location to upload to aipha
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "download from host to aipha",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_from_host_to_aipha_folder(client,
+     url='127.0.0.1',
+     port='22',
+     username='ubuntu',
+     identity_file='',
+     location='file.laz',
+     folder_destination='/folder_destination',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''Download a path from a host via ssh
+    | 
+    | download_from_host_to_aipha_folder(client,
+    |      url='127.0.0.1',
+    |      port='22',
+    |      username='ubuntu',
+    |      identity_file='',
+    |      location='file.laz',
+    |      destination='/destination',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_destination=".laz",
+    |      skip_existing_files = False )
+
+:param url: Url to host
+:param port: Port to host
+:param username: Username to host
+:param identity_file:  Path to identity file on aipha
+:param location: Path to download from host
+:param folder_destination: Location to upload to aipha
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "download from host to aipha" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_from_s3_to_aipha(client,
+     access_key_id='YOUR_KEY_ID',
+     secret_access_key='YOUR_SECRET_KEY',
+     aws_region='eu-central-1',
+     location='file.laz',
+     destination='file.laz',
+     bucket_name='Your S3 bucket',
+     instance_type='x2large'):
+      '''Download a path from a S3 bucket
+    | 
+    | download_from_s3_to_aipha( client,
+    |      access_key_id='YOUR_KEY_ID',
+    |      secret_access_key='YOUR_SECRET_KEY',
+    |      aws_region='eu-central-1',
+    |      location='file.laz',
+    |      destination='file.laz',
+    |      bucket_name='Your S3 bucket',
+    |      instance_type='x2large' )
+
+:param access_key_id: AWS access key ID
+:param secret_access_key: AWS secret access key
+:param aws_region: AWS region
+:param location: Path to download from s3
+:param destination: Location to upload to aipha
+:param bucket_name: S3 bucket name
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "download from s3 to aipha",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def download_from_s3_to_aipha_folder(client,
+     access_key_id='YOUR_KEY_ID',
+     secret_access_key='YOUR_SECRET_KEY',
+     aws_region='eu-central-1',
+     location='file.laz',
+     folder_destination='/folder_destination',
+     bucket_name='Your S3 bucket',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_destination=".laz",
+     skip_existing_files = False):
+      '''Download a path from a S3 bucket
+    | 
+    | download_from_s3_to_aipha_folder(client,
+    |      access_key_id='YOUR_KEY_ID',
+    |      secret_access_key='YOUR_SECRET_KEY',
+    |      aws_region='eu-central-1',
+    |      location='file.laz',
+    |      destination='/destination',
+    |      bucket_name='Your S3 bucket',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_destination=".laz",
+    |      skip_existing_files = False )
+
+:param access_key_id: AWS access key ID
+:param secret_access_key: AWS secret access key
+:param aws_region: AWS region
+:param location: Path to download from s3
+:param bucket_name: S3 bucket name
+:param folder_destination: Location to upload to aipha
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_destination: File extension of files in folder for folder_destination
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_destination']
+      del all_parameters['extension_destination']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "destination"
+      folders = folder_destination
+      extensions = extension_destination
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "download from s3 to aipha" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_from_aipha_to_s3(client,
+     access_key_id='YOUR_KEY_ID',
+     secret_access_key='YOUR_SECRET_KEY',
+     aws_region='eu-central-1',
+     target='file.laz',
+     location='file.laz',
+     bucket_name='Your S3 bucket',
+     instance_type='x2large'):
+      '''Upload a path to a S3 bucket
+    | 
+    | upload_from_aipha_to_s3( client,
+    |      access_key_id='YOUR_KEY_ID',
+    |      secret_access_key='YOUR_SECRET_KEY',
+    |      aws_region='eu-central-1',
+    |      target='file.laz',
+    |      location='file.laz',
+    |      bucket_name='Your S3 bucket',
+    |      instance_type='x2large' )
+
+:param access_key_id: AWS access key ID
+:param secret_access_key: AWS secret access key
+:param aws_region: AWS region
+:param target: Path to upload from aipha
+:param location: Location of file to upload on s3
+:param bucket_name: S3 bucket name
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "upload from aipha to s3",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def upload_from_aipha_to_s3_folder(client,
+     access_key_id='YOUR_KEY_ID',
+     secret_access_key='YOUR_SECRET_KEY',
+     aws_region='eu-central-1',
+     folder_target='/folder_target',
+     location='file.laz',
+     bucket_name='Your S3 bucket',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_target=".laz",
+     skip_existing_files = False):
+      '''Upload a path to a S3 bucket
+    | 
+    | upload_from_aipha_to_s3_folder(client,
+    |      access_key_id='YOUR_KEY_ID',
+    |      secret_access_key='YOUR_SECRET_KEY',
+    |      aws_region='eu-central-1',
+    |      target='/target',
+    |      location='file.laz',
+    |      bucket_name='Your S3 bucket',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_target=".laz",
+    |      skip_existing_files = False )
+
+:param access_key_id: AWS access key ID
+:param secret_access_key: AWS secret access key
+:param aws_region: AWS region
+:param location: Location of file to upload on s3
+:param bucket_name: S3 bucket name
+:param folder_target: Path to upload from aipha
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_target: File extension of files in folder for folder_target
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['folder_target']
+      del all_parameters['extension_target']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "target"
+      folders = folder_target
+      extensions = extension_target
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "upload from aipha to s3" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -10658,14 +10764,14 @@ class val:
          client.get_verify_ssl())
 
 
-   def max(client,
+   def min(client,
      infile='in.npy',
      outfile='out.npy',
      dtype='float',
      instance_type='x2large'):
-      '''Maximum of a matrix.
+      '''Minimum of a matrix.
     | 
-    | max( client,
+    | min( client,
     |      infile='in.npy',
     |      outfile='out.npy',
     |      dtype='float',
@@ -10682,13 +10788,13 @@ class val:
       return command_request(
          client.get_username(),
          client.get_token(),
-         "max",
+         "min",
          all_parameters,
          client.get_server_address(),
          client.get_verify_ssl())
 
 
-   def max_folder(client,
+   def min_folder(client,
      infolder='/infolder',
      outfolder='/outfolder',
      dtype='float',
@@ -10697,9 +10803,9 @@ class val:
      extension_infile=".npy",
      extension_outfile=".npy",
      skip_existing_files = False):
-      '''Maximum of a matrix.
+      '''Minimum of a matrix.
     | 
-    | max_folder(client,
+    | min_folder(client,
     |      infolder='/infolder',
     |      outfolder='/outfolder',
     |      dtype='float',
@@ -10737,7 +10843,7 @@ class val:
       each_file_params = {
         "user_id": client.get_username(),
         "user_token": client.get_token(),
-        "command": "'" + "max" + "'",
+        "command": "'" + "min" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -11071,6 +11177,106 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "values greater equal" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def max(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     instance_type='x2large'):
+      '''Maximum of a matrix.
+    | 
+    | max( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "max",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def max_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy",
+     skip_existing_files = False):
+      '''Maximum of a matrix.
+    | 
+    | max_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy",
+    |      skip_existing_files = False )
+
+:param dtype: Data type of the matrix (default: float)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "max" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),
@@ -12187,6 +12393,218 @@ class val:
         "user_id": client.get_username(),
         "user_token": client.get_token(),
         "command": "'" + "values add" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def argmax(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     axis=-1,
+     instance_type='x2large'):
+      '''Argmax of a matrix.
+    | 
+    | argmax( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      axis=-1,
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param axis: Axis to find the argmax (default: None)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "argmax",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def argmax_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     axis=-1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy",
+     skip_existing_files = False):
+      '''Argmax of a matrix.
+    | 
+    | argmax_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      axis=-1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy",
+    |      skip_existing_files = False )
+
+:param dtype: Data type of the matrix (default: float)
+:param axis: Axis to find the argmax (default: None)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "argmax" + "'",
+        "parameters_dictionary_str": "'" + cmd_str + "'",
+        "server_address": client.get_server_address(),
+        "verify_ssl": client.get_verify_ssl(),
+        "folders": folders,
+        "parameters": parameters,
+        "extensions": extensions,
+        "worker_instance_type": worker_instance_type,
+        "instance_type": manager_instance_type,
+        "skip_existing_files": skip_existing_files
+      }
+
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "execute each file in folder",
+         each_file_params,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def argmin(client,
+     infile='in.npy',
+     outfile='out.npy',
+     dtype='float',
+     axis=-1,
+     instance_type='x2large'):
+      '''Argmin of a matrix.
+    | 
+    | argmin( client,
+    |      infile='in.npy',
+    |      outfile='out.npy',
+    |      dtype='float',
+    |      axis=-1,
+    |      instance_type='x2large' )
+
+:param infile: Input file path
+:param outfile: Output file path
+:param dtype: Data type of the matrix (default: float)
+:param axis: Axis to find the argmax (default: None)
+:param instance_type: type of cloud instance used for processing
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      return command_request(
+         client.get_username(),
+         client.get_token(),
+         "argmin",
+         all_parameters,
+         client.get_server_address(),
+         client.get_verify_ssl())
+
+
+   def argmin_folder(client,
+     infolder='/infolder',
+     outfolder='/outfolder',
+     dtype='float',
+     axis=-1,
+     worker_instance_type='x2large',
+     manager_instance_type="small",
+     extension_infile=".npy",
+     extension_outfile=".npy",
+     skip_existing_files = False):
+      '''Argmin of a matrix.
+    | 
+    | argmin_folder(client,
+    |      infolder='/infolder',
+    |      outfolder='/outfolder',
+    |      dtype='float',
+    |      axis=-1,
+    |      worker_instance_type='x2large',
+    |      manager_instance_type="small",
+    |      extension_infolder=".npy",
+    |      extension_outfolder=".npy",
+    |      skip_existing_files = False )
+
+:param dtype: Data type of the matrix (default: float)
+:param axis: Axis to find the argmax (default: None)
+:param infolder: Input folder folder
+:param outfolder: Output folder folder
+:param worker_instance_type: cloud instance type of worker nodes
+:param manager_instance_type: cloud instance type of manager node
+:param extension_infolder: File extension of files in folder for infolder
+:param extension_outfolder: File extension of files in folder for outfolder
+:param skip_existing_files: skip files that already exist in the output folder
+'''
+
+      all_parameters = locals().copy()
+      del all_parameters['client']
+      del all_parameters['worker_instance_type']
+      del all_parameters['manager_instance_type']
+      del all_parameters['skip_existing_files']
+
+      del all_parameters['infolder']
+      del all_parameters['outfolder']
+      del all_parameters['extension_infile']
+      del all_parameters['extension_outfile']
+
+      cmd_str = json.dumps(all_parameters)
+      parameters = "infile,outfile"
+      folders = infolder + "," + outfolder
+      extensions = extension_infile + "," + extension_outfile
+      each_file_params = {
+        "user_id": client.get_username(),
+        "user_token": client.get_token(),
+        "command": "'" + "argmin" + "'",
         "parameters_dictionary_str": "'" + cmd_str + "'",
         "server_address": client.get_server_address(),
         "verify_ssl": client.get_verify_ssl(),

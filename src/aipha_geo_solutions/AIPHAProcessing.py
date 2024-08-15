@@ -429,1837 +429,6 @@ class AIPHAProcessing:
 			 params_subset[name] = params[name]
 		 return params_subset
 
-	 class sys:
-		 ''' 
-         Namespace for sys functions.
-		 '''
-
-		 def __init__(self, outer_class):
-			 self.outer_class = outer_class
-			 self.client = outer_class.client
-			 self.processing_folder = outer_class.processing_folder
-			 self._get_call_stack = outer_class._get_call_stack
-			 self._add_call_stack = outer_class._add_call_stack
-			 self.get_unique_id = outer_class.get_unique_id
-			 self.worker_instance_type, self.manager_instance_type = outer_class.get_instance_types()
-			 self._check_folder_level_processing = outer_class._check_folder_level_processing
-			 self._remap_parameters = outer_class._remap_parameters
-			 self._get_param_subset = outer_class._get_param_subset
-
-
-		 def create_directory_in_cloud(self,
-			destination='__auto__',
-			extension_destination = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				create directory in cloud
-				
-				:param destination: Destionation location on host. default folder: ./data
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_destination']
-			 iterable_names = ['destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'destination': 'folder_destination'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['destination']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'create_directory_in_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.create_directory_in_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'destination': 'destination'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['destination']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'create_directory_in_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.create_directory_in_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def upload_data_from_cloud(self,
-			url='__auto__', 
-			target='__auto__', 
-			protocol='', 
-			username='', 
-			password='', 
-			port=21,
-			extension_url = '',
-			extension_target = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				upload data from cloud
-				
-				:param url: destination URL
-				:param target: Target location on host for upload. default folder: ./data
-				:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-				:param username: Username
-				:param password: Password
-				:param port: port
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_url', 'extension_target']
-			 iterable_names = ['url','target']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'url': 'url', 'target': 'folder_target', 'protocol': 'protocol', 'username': 'username', 'password': 'password', 'port': 'port'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['url', 'target']
-				 itertable_iotypes = ['in', 'in']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'upload_data_from_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.upload_data_from_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'url': 'url', 'target': 'target', 'protocol': 'protocol', 'username': 'username', 'password': 'password', 'port': 'port'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['url', 'target']
-				 itertable_iotypes = ['in', 'in']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'upload_data_from_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.upload_data_from_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def select_corresponding_path(self,
-			original_path='__auto__', 
-			original_identifier_path='__auto__', 
-			corresponding_path='__auto__', 
-			output_path='__auto__', 
-			selection_criteria='oldest', 
-			default_value='__original__',
-			extension_original_file = '.txt',
-			extension_original_identifier_file = '.txt',
-			extension_corresponding_file = '.txt',
-			extension_output_file = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				select corresponding path
-				
-				:param original_path: original folders
-				:param original_identifier_path: original identifiers
-				:param corresponding_path: corresponding folders
-				:param output_path: output folder
-				:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
-				:param default_value: default value if no corresponding path is found
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_original_file', 'extension_original_identifier_file', 'extension_corresponding_file', 'extension_output_file']
-			 iterable_names = ['original_path','original_identifier_path','corresponding_path','output_path']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'original_path': 'original_folder', 'original_identifier_path': 'original_identifier_folder', 'corresponding_path': 'corresponding_folder', 'output_path': 'output_folder', 'selection_criteria': 'selection_criteria', 'default_value': 'default_value'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['original_folder', 'original_identifier_folder', 'corresponding_folder', 'output_folder']
-				 itertable_iotypes = ['in', 'in', 'in', 'out']
-				 iterable_file_types = ['txt', 'txt', 'txt', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'select_corresponding_path_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.select_corresponding_path_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'original_path': 'original_file', 'original_identifier_path': 'original_identifier_file', 'corresponding_path': 'corresponding_file', 'output_path': 'output_file', 'selection_criteria': 'selection_criteria', 'default_value': 'default_value'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['original_file', 'original_identifier_file', 'corresponding_file', 'output_file']
-				 itertable_iotypes = ['in', 'in', 'in', 'out']
-				 iterable_file_types = ['txt', 'txt', 'txt', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'select_corresponding_path',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.select_corresponding_path(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def remove_files_from_cloud(self,
-			target='__auto__',
-			extension_target = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				remove files from cloud
-				
-				:param target: Target to be deleted
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target']
-			 iterable_names = ['target']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'remove_files_from_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.remove_files_from_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'remove_files_from_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.remove_files_from_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def split_path(self,
-			in_path='__auto__', 
-			out_path='__auto__', 
-			split_type='filename',
-			extension_in_path = '',
-			extension_out_path = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				split path
-				
-				:param in_path: input folder
-				:param out_path: output folder
-				:param split_type: split type: [filename, dirname, basename, ext]
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_in_path', 'extension_out_path']
-			 iterable_names = ['in_path','out_path']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'in_path': 'in_folder', 'out_path': 'out_folder', 'split_type': 'split_type'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['in_folder', 'out_folder']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'split_path_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.split_path_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'in_path': 'in_path', 'out_path': 'out_path', 'split_type': 'split_type'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['in_path', 'out_path']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'split_path',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.split_path(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def find_file_paths(self,
-			input_paths='__auto__', 
-			output_paths='__auto__', 
-			search_path='/search_folder', 
-			replace_in='', 
-			replace_out='', 
-			substrings='',
-			extension_input_files = '.txt',
-			extension_output_files = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				find file paths
-				
-				:param input_paths: File containing the list of foldernames
-				:param output_paths: Path to save the modified folderlist
-				:param search_path:  Folder to traverse for finding files
-				:param replace_in: The part to replace in the filenames
-				:param replace_out: The new part to replace with
-				:param substrings:  a list of substrings that need to occure in the file paths to be vallid
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_input_files', 'extension_output_files']
-			 iterable_names = ['input_paths','output_paths']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'input_paths': 'input_folders', 'output_paths': 'output_folders', 'search_path': 'search_path', 'replace_in': 'replace_in', 'replace_out': 'replace_out', 'substrings': 'substrings'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['input_folders', 'output_folders']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['txt', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'find_file_paths_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.find_file_paths_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'input_paths': 'input_files', 'output_paths': 'output_files', 'search_path': 'search_folder', 'replace_in': 'replace_in', 'replace_out': 'replace_out', 'substrings': 'substrings'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['input_files', 'output_files']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['txt', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'find_file_paths',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.find_file_paths(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def move_file_in_cloud(self,
-			target='__auto__', 
-			destination='__auto__',
-			extension_target = '',
-			extension_destination = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				move file in cloud
-				
-				:param target: Target to be moved
-				:param destination: Destination
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target', 'extension_destination']
-			 iterable_names = ['target','destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target', 'destination': 'folder_destination'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'move_file_in_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.move_file_in_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target', 'destination': 'destination'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'move_file_in_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.move_file_in_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def copy_file_in_cloud(self,
-			target='__auto__', 
-			destination='__auto__',
-			extension_target = '',
-			extension_destination = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				copy file in cloud
-				
-				:param target: Target to be moved
-				:param destination: Destination
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target', 'extension_destination']
-			 iterable_names = ['target','destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target', 'destination': 'folder_destination'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'copy_file_in_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.copy_file_in_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target', 'destination': 'destination'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'copy_file_in_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.copy_file_in_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def touch_file_in_cloud(self,
-			target='__auto__',
-			extension_target = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				touch file in cloud
-				
-				:param target: File to be touched
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target']
-			 iterable_names = ['target']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'touch_file_in_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.touch_file_in_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'touch_file_in_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.touch_file_in_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def select_by_identifier(self,
-			original_path='original_folder', 
-			original_identifier_path='__auto__', 
-			output_path='output_folder',
-			extension_original_identifier_file = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				select by identifier
-				
-				:param original_path: original folder
-				:param original_identifier_path: original identifiers
-				:param output_path: output folder
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_original_identifier_file']
-			 iterable_names = ['original_identifier_path']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'original_path': 'original_path', 'original_identifier_path': 'original_identifier_folder', 'output_path': 'output_path'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['original_identifier_folder']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'select_by_identifier_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.select_by_identifier_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'original_path': 'original_folder', 'original_identifier_path': 'original_identifier_file', 'output_path': 'output_folder'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['original_identifier_file']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'select_by_identifier',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.select_by_identifier(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def recursive_list(self,
-			target='__auto__', 
-			destination='__auto__',
-			extension_target = '',
-			extension_destination = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				recursive list
-				
-				:param target: Target folder to be listed recursively
-				:param destination: Output folder
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target', 'extension_destination']
-			 iterable_names = ['target','destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target', 'destination': 'folder_destination'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'recursive_list_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.recursive_list_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target', 'destination': 'destination'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'recursive_list',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.recursive_list(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def rename_file_in_cloud(self,
-			target='__auto__', 
-			prefix='', 
-			suffix='', 
-			replace_from='', 
-			replace_to='', 
-			replace_count=0,
-			extension_target = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				rename file in cloud
-				
-				:param target: Target to be renamed
-				:param prefix: add prefix
-				:param suffix: add suffix
-				:param replace_from: replace string in filename
-				:param replace_to: replace string in filename
-				:param replace_count: replace string in filename
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target']
-			 iterable_names = ['target']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target', 'prefix': 'prefix', 'suffix': 'suffix', 'replace_from': 'replace_from', 'replace_to': 'replace_to', 'replace_count': 'replace_count'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'rename_file_in_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.rename_file_in_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target', 'prefix': 'prefix', 'suffix': 'suffix', 'replace_from': 'replace_from', 'replace_to': 'replace_to', 'replace_count': 'replace_count'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'rename_file_in_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.rename_file_in_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def list_files_in_cloud(self,
-			target='__auto__', 
-			path_out='__auto__',
-			extension_target = '',
-			extension_file_out = '.txt',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				list files in cloud
-				
-				:param target: Target to be listet
-				:param path_out: output_folder
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target', 'extension_file_out']
-			 iterable_names = ['target','path_out']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'target': 'folder_target', 'path_out': 'folder_out'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target', 'folder_out']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'list_files_in_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.list_files_in_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'target': 'target', 'path_out': 'file_out'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target', 'file_out']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'txt']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'list_files_in_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.list_files_in_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def download_data_to_cloud(self,
-			url='__auto__', 
-			destination='__auto__', 
-			protocol='', 
-			download_type=0, 
-			username='', 
-			password='', 
-			port=21,
-			extension_url = '',
-			extension_destination = '',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				download data to cloud
-				
-				:param url: URL to data
-				:param destination: Destionation location on host. default folder: ./data
-				:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
-				:param download_type: download type: 0: all files from folder, 1: individual file
-				:param username: Username
-				:param password: Password
-				:param port: port
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_url', 'extension_destination']
-			 iterable_names = ['url','destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
-			 print(folder_parallel_processing, iterable_subset_dict, False)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'url': 'url', 'destination': 'folder_destination', 'protocol': 'protocol', 'download_type': 'download_type', 'username': 'username', 'password': 'password', 'port': 'port'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['url', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'download_data_to_cloud_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.download_data_to_cloud_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'url': 'url', 'destination': 'destination', 'protocol': 'protocol', 'download_type': 'download_type', 'username': 'username', 'password': 'password', 'port': 'port'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['url', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['laz', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'download_data_to_cloud',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.download_data_to_cloud(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def upload_from_aipha_to_host(self,
-			url='__auto__', 
-			port='22', 
-			username='ubuntu', 
-			identity_path='', 
-			target='__auto__', 
-			location='file.laz',
-			extension_url = '.1',
-			extension_target = '.laz',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				Upload a path to a host via ssh
-				
-				:param url: Url to host
-				:param port: Port to host
-				:param username: Username to host
-				:param identity_path:  Path to identity file on aipha
-				:param target: Path to upload from aipha
-				:param location: Location of file to upload on host
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_url', 'extension_target']
-			 iterable_names = ['url','target']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_path', 'target': 'folder_target', 'location': 'location'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['url', 'target']
-				 itertable_iotypes = ['in', 'in']
-				 iterable_file_types = ['1', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'upload_from_aipha_to_host_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.upload_from_aipha_to_host_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_file', 'target': 'target', 'location': 'location'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['url', 'target']
-				 itertable_iotypes = ['in', 'in']
-				 iterable_file_types = ['1', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'upload_from_aipha_to_host',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.upload_from_aipha_to_host(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def download_from_host_to_aipha(self,
-			url='__auto__', 
-			port='22', 
-			username='ubuntu', 
-			identity_path='', 
-			location='file.laz', 
-			destination='__auto__',
-			extension_url = '.1',
-			extension_destination = '.laz',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				Download a path from a host via ssh
-				
-				:param url: Url to host
-				:param port: Port to host
-				:param username: Username to host
-				:param identity_path:  Path to identity file on aipha
-				:param location: Path to download from host
-				:param destination: Location to upload to aipha
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_url', 'extension_destination']
-			 iterable_names = ['url','destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_path', 'location': 'location', 'destination': 'folder_destination'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['url', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['1', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'download_from_host_to_aipha_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.download_from_host_to_aipha_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_file', 'location': 'location', 'destination': 'destination'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['url', 'destination']
-				 itertable_iotypes = ['in', 'out']
-				 iterable_file_types = ['1', 'laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'download_from_host_to_aipha',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.download_from_host_to_aipha(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def download_from_s3_to_aipha(self,
-			access_key_id='YOUR_KEY_ID', 
-			secret_access_key='YOUR_SECRET_KEY', 
-			aws_region='eu-central-1', 
-			location='file.laz', 
-			destination='__auto__', 
-			bucket_name='Your S3 bucket',
-			extension_destination = '.laz',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				Download a path from a S3 bucket
-				
-				:param access_key_id: AWS access key ID
-				:param secret_access_key: AWS secret access key
-				:param aws_region: AWS region
-				:param location: Path to download from s3
-				:param destination: Location to upload to aipha
-				:param bucket_name: S3 bucket name
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_destination']
-			 iterable_names = ['destination']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'location': 'location', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['destination']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'download_from_s3_to_aipha_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.download_from_s3_to_aipha_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'location': 'location', 'destination': 'destination', 'bucket_name': 'bucket_name'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['destination']
-				 itertable_iotypes = ['out']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'download_from_s3_to_aipha',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.download_from_s3_to_aipha(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
-		 def upload_from_aipha_to_s3(self,
-			access_key_id='YOUR_KEY_ID', 
-			secret_access_key='YOUR_SECRET_KEY', 
-			aws_region='eu-central-1', 
-			target='__auto__', 
-			location='file.laz', 
-			bucket_name='Your S3 bucket',
-			extension_target = '.laz',
-			folder_parallel_processing = '__auto__'):
-			 '''
-				Upload a path to a S3 bucket
-				
-				:param access_key_id: AWS access key ID
-				:param secret_access_key: AWS secret access key
-				:param aws_region: AWS region
-				:param target: Path to upload from aipha
-				:param location: Location of file to upload on s3
-				:param bucket_name: S3 bucket name
-				
-			 '''
-			 params_dict = locals().copy()
-			 params_dict.pop('self')
-			 print(params_dict)
-			 extension_names = ['extension_target']
-			 iterable_names = ['target']
-			 print(iterable_names, params_dict)
-			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
-			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
-			 print(folder_parallel_processing, iterable_subset_dict, True)
-			 params_dict.pop('folder_parallel_processing')
-			 if folder_level_processing:
-				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'location': 'location', 'bucket_name': 'bucket_name'}
-				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'upload_from_aipha_to_s3_folder',
-				                True,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['worker_instance_type'] = self.worker_instance_type,
-				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.sys.upload_from_aipha_to_s3_folder(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          True,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-			 else:
-				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'location': 'location', 'bucket_name': 'bucket_name'}
-				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
-				 for ext in extension_names:
-					 params_dict.pop(ext)
-
-				 itertable_params = ['target']
-				 itertable_iotypes = ['in']
-				 iterable_file_types = ['laz']
-				 uid = self.get_unique_id()
-				 connector = AIPHAConnector(
-				                params_dict,
-				                itertable_params, 
-				                itertable_iotypes, 
-				                iterable_file_types,
-				                uid,
-				                self.processing_folder,
-				                'upload_from_aipha_to_s3',
-				                False,
-				                self._get_call_stack()
-				                )
-				 params_dict = connector.resolve_auto_connections(params_dict)
-				 params_dict['client'] = self.client
-				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.sys.upload_from_aipha_to_s3(**params_dict)
-				 operator = AIPHAOperator(connector, 
-				                          params_dict, 
-				                          result_promise, 
-				                          self.outer_class, 
-				                          'sys',
-				                          False,
-				                          uid)
-				 self._add_call_stack(operator)
-				 return operator
-
-    
-
-
-
 	 class ml3d:
 		 ''' 
          Namespace for ml3d functions.
@@ -2276,6 +445,107 @@ class AIPHAProcessing:
 			 self._check_folder_level_processing = outer_class._check_folder_level_processing
 			 self._remap_parameters = outer_class._remap_parameters
 			 self._get_param_subset = outer_class._get_param_subset
+
+
+		 def evaluate_semantic_segmentation(self,
+			prediction_path='__auto__', 
+			ground_truth_path='__auto__', 
+			class_names='1,2,3,4', 
+			invalid_label=0,
+			extension_prediction_path = '.labels',
+			extension_ground_truth_path = '.labels',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Evaluate semantic segmentation
+				
+				:param prediction_path: Path to prediction folder or folder
+				:param ground_truth_path: Path to ground truth folder or folder
+				:param class_names: class names
+				:param invalid_label: Invalid label
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_prediction_path', 'extension_ground_truth_path']
+			 iterable_names = ['prediction_path','ground_truth_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'prediction_path': 'prediction_folder', 'ground_truth_path': 'ground_truth_folder', 'class_names': 'class_names', 'invalid_label': 'invalid_label'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['prediction_folder', 'ground_truth_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['labels', 'labels']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'evaluate_semantic_segmentation_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.ml3d.evaluate_semantic_segmentation_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'prediction_path': 'prediction_path', 'ground_truth_path': 'ground_truth_path', 'class_names': 'class_names', 'invalid_label': 'invalid_label'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['prediction_path', 'ground_truth_path']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['labels', 'labels']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'evaluate_semantic_segmentation',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.ml3d.evaluate_semantic_segmentation(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
 
 
 		 def semantic_training_scf(self,
@@ -4313,6 +2583,1837 @@ class AIPHAProcessing:
 				                          result_promise, 
 				                          self.outer_class, 
 				                          'ml3d',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+	 class sys:
+		 ''' 
+         Namespace for sys functions.
+		 '''
+
+		 def __init__(self, outer_class):
+			 self.outer_class = outer_class
+			 self.client = outer_class.client
+			 self.processing_folder = outer_class.processing_folder
+			 self._get_call_stack = outer_class._get_call_stack
+			 self._add_call_stack = outer_class._add_call_stack
+			 self.get_unique_id = outer_class.get_unique_id
+			 self.worker_instance_type, self.manager_instance_type = outer_class.get_instance_types()
+			 self._check_folder_level_processing = outer_class._check_folder_level_processing
+			 self._remap_parameters = outer_class._remap_parameters
+			 self._get_param_subset = outer_class._get_param_subset
+
+
+		 def create_directory_in_cloud(self,
+			destination='__auto__',
+			extension_destination = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				create directory in cloud
+				
+				:param destination: Destionation location on host. default folder: ./data
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_destination']
+			 iterable_names = ['destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'destination': 'folder_destination'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['destination']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'create_directory_in_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.create_directory_in_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'destination': 'destination'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['destination']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'create_directory_in_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.create_directory_in_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def upload_data_from_cloud(self,
+			url='__auto__', 
+			target='__auto__', 
+			protocol='', 
+			username='', 
+			password='', 
+			port=21,
+			extension_url = '',
+			extension_target = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				upload data from cloud
+				
+				:param url: destination URL
+				:param target: Target location on host for upload. default folder: ./data
+				:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+				:param username: Username
+				:param password: Password
+				:param port: port
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_url', 'extension_target']
+			 iterable_names = ['url','target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'url': 'url', 'target': 'folder_target', 'protocol': 'protocol', 'username': 'username', 'password': 'password', 'port': 'port'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['url', 'target']
+				 itertable_iotypes = ['in', 'in']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_data_from_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.upload_data_from_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'url': 'url', 'target': 'target', 'protocol': 'protocol', 'username': 'username', 'password': 'password', 'port': 'port'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['url', 'target']
+				 itertable_iotypes = ['in', 'in']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_data_from_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.upload_data_from_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def select_corresponding_path(self,
+			original_path='__auto__', 
+			original_identifier_path='__auto__', 
+			corresponding_path='__auto__', 
+			output_path='__auto__', 
+			selection_criteria='oldest', 
+			default_value='__original__',
+			extension_original_file = '.txt',
+			extension_original_identifier_file = '.txt',
+			extension_corresponding_file = '.txt',
+			extension_output_file = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				select corresponding path
+				
+				:param original_path: original folders
+				:param original_identifier_path: original identifiers
+				:param corresponding_path: corresponding folders
+				:param output_path: output folder
+				:param selection_criteria: selection criteria: [oldest, newest, shortest, longest]
+				:param default_value: default value if no corresponding path is found
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_original_file', 'extension_original_identifier_file', 'extension_corresponding_file', 'extension_output_file']
+			 iterable_names = ['original_path','original_identifier_path','corresponding_path','output_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'original_path': 'original_folder', 'original_identifier_path': 'original_identifier_folder', 'corresponding_path': 'corresponding_folder', 'output_path': 'output_folder', 'selection_criteria': 'selection_criteria', 'default_value': 'default_value'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['original_folder', 'original_identifier_folder', 'corresponding_folder', 'output_folder']
+				 itertable_iotypes = ['in', 'in', 'in', 'out']
+				 iterable_file_types = ['txt', 'txt', 'txt', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'select_corresponding_path_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.select_corresponding_path_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'original_path': 'original_file', 'original_identifier_path': 'original_identifier_file', 'corresponding_path': 'corresponding_file', 'output_path': 'output_file', 'selection_criteria': 'selection_criteria', 'default_value': 'default_value'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['original_file', 'original_identifier_file', 'corresponding_file', 'output_file']
+				 itertable_iotypes = ['in', 'in', 'in', 'out']
+				 iterable_file_types = ['txt', 'txt', 'txt', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'select_corresponding_path',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.select_corresponding_path(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def remove_files_from_cloud(self,
+			target='__auto__',
+			extension_target = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				remove files from cloud
+				
+				:param target: Target to be deleted
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target']
+			 iterable_names = ['target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'remove_files_from_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.remove_files_from_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'remove_files_from_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.remove_files_from_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def split_path(self,
+			in_path='__auto__', 
+			out_path='__auto__', 
+			split_type='filename',
+			extension_in_path = '',
+			extension_out_path = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				split path
+				
+				:param in_path: input folder
+				:param out_path: output folder
+				:param split_type: split type: [filename, dirname, basename, ext]
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_in_path', 'extension_out_path']
+			 iterable_names = ['in_path','out_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'in_path': 'in_folder', 'out_path': 'out_folder', 'split_type': 'split_type'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['in_folder', 'out_folder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'split_path_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.split_path_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'in_path': 'in_path', 'out_path': 'out_path', 'split_type': 'split_type'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['in_path', 'out_path']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'split_path',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.split_path(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def find_file_paths(self,
+			input_paths='__auto__', 
+			output_paths='__auto__', 
+			search_path='/search_folder', 
+			replace_in='', 
+			replace_out='', 
+			substrings='',
+			extension_input_files = '.txt',
+			extension_output_files = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				find file paths
+				
+				:param input_paths: File containing the list of foldernames
+				:param output_paths: Path to save the modified folderlist
+				:param search_path:  Folder to traverse for finding files
+				:param replace_in: The part to replace in the filenames
+				:param replace_out: The new part to replace with
+				:param substrings:  a list of substrings that need to occure in the file paths to be vallid
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_input_files', 'extension_output_files']
+			 iterable_names = ['input_paths','output_paths']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'input_paths': 'input_folders', 'output_paths': 'output_folders', 'search_path': 'search_path', 'replace_in': 'replace_in', 'replace_out': 'replace_out', 'substrings': 'substrings'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['input_folders', 'output_folders']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['txt', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'find_file_paths_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.find_file_paths_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'input_paths': 'input_files', 'output_paths': 'output_files', 'search_path': 'search_folder', 'replace_in': 'replace_in', 'replace_out': 'replace_out', 'substrings': 'substrings'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['input_files', 'output_files']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['txt', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'find_file_paths',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.find_file_paths(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def move_file_in_cloud(self,
+			target='__auto__', 
+			destination='__auto__',
+			extension_target = '',
+			extension_destination = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				move file in cloud
+				
+				:param target: Target to be moved
+				:param destination: Destination
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target', 'extension_destination']
+			 iterable_names = ['target','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target', 'destination': 'folder_destination'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'move_file_in_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.move_file_in_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target', 'destination': 'destination'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'move_file_in_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.move_file_in_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def copy_file_in_cloud(self,
+			target='__auto__', 
+			destination='__auto__',
+			extension_target = '',
+			extension_destination = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				copy file in cloud
+				
+				:param target: Target to be moved
+				:param destination: Destination
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target', 'extension_destination']
+			 iterable_names = ['target','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target', 'destination': 'folder_destination'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'copy_file_in_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.copy_file_in_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target', 'destination': 'destination'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'copy_file_in_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.copy_file_in_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def touch_file_in_cloud(self,
+			target='__auto__',
+			extension_target = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				touch file in cloud
+				
+				:param target: File to be touched
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target']
+			 iterable_names = ['target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'touch_file_in_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.touch_file_in_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'touch_file_in_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.touch_file_in_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def select_by_identifier(self,
+			original_path='original_folder', 
+			original_identifier_path='__auto__', 
+			output_path='output_folder',
+			extension_original_identifier_file = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				select by identifier
+				
+				:param original_path: original folder
+				:param original_identifier_path: original identifiers
+				:param output_path: output folder
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_original_identifier_file']
+			 iterable_names = ['original_identifier_path']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'original_path': 'original_path', 'original_identifier_path': 'original_identifier_folder', 'output_path': 'output_path'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['original_identifier_folder']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'select_by_identifier_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.select_by_identifier_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'original_path': 'original_folder', 'original_identifier_path': 'original_identifier_file', 'output_path': 'output_folder'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['original_identifier_file']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'select_by_identifier',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.select_by_identifier(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def recursive_list(self,
+			target='__auto__', 
+			destination='__auto__',
+			extension_target = '',
+			extension_destination = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				recursive list
+				
+				:param target: Target folder to be listed recursively
+				:param destination: Output folder
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target', 'extension_destination']
+			 iterable_names = ['target','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target', 'destination': 'folder_destination'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'recursive_list_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.recursive_list_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target', 'destination': 'destination'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'recursive_list',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.recursive_list(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def rename_file_in_cloud(self,
+			target='__auto__', 
+			prefix='', 
+			suffix='', 
+			replace_from='', 
+			replace_to='', 
+			replace_count=0,
+			extension_target = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				rename file in cloud
+				
+				:param target: Target to be renamed
+				:param prefix: add prefix
+				:param suffix: add suffix
+				:param replace_from: replace string in filename
+				:param replace_to: replace string in filename
+				:param replace_count: replace string in filename
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target']
+			 iterable_names = ['target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target', 'prefix': 'prefix', 'suffix': 'suffix', 'replace_from': 'replace_from', 'replace_to': 'replace_to', 'replace_count': 'replace_count'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'rename_file_in_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.rename_file_in_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target', 'prefix': 'prefix', 'suffix': 'suffix', 'replace_from': 'replace_from', 'replace_to': 'replace_to', 'replace_count': 'replace_count'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'rename_file_in_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.rename_file_in_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def list_files_in_cloud(self,
+			target='__auto__', 
+			path_out='__auto__',
+			extension_target = '',
+			extension_file_out = '.txt',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				list files in cloud
+				
+				:param target: Target to be listet
+				:param path_out: output_folder
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target', 'extension_file_out']
+			 iterable_names = ['target','path_out']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'target': 'folder_target', 'path_out': 'folder_out'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target', 'folder_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'list_files_in_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.list_files_in_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'target': 'target', 'path_out': 'file_out'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target', 'file_out']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'txt']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'list_files_in_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.list_files_in_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def download_data_to_cloud(self,
+			url='__auto__', 
+			destination='__auto__', 
+			protocol='', 
+			download_type=0, 
+			username='', 
+			password='', 
+			port=21,
+			extension_url = '',
+			extension_destination = '',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				download data to cloud
+				
+				:param url: URL to data
+				:param destination: Destionation location on host. default folder: ./data
+				:param protocol: protocol: : automatically try to infer protocol, ftp: ftp, sftp: sftp
+				:param download_type: download type: 0: all files from folder, 1: individual file
+				:param username: Username
+				:param password: Password
+				:param port: port
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_url', 'extension_destination']
+			 iterable_names = ['url','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, False)
+			 print(folder_parallel_processing, iterable_subset_dict, False)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'url': 'url', 'destination': 'folder_destination', 'protocol': 'protocol', 'download_type': 'download_type', 'username': 'username', 'password': 'password', 'port': 'port'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['url', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_data_to_cloud_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.download_data_to_cloud_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'url': 'url', 'destination': 'destination', 'protocol': 'protocol', 'download_type': 'download_type', 'username': 'username', 'password': 'password', 'port': 'port'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['url', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['laz', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_data_to_cloud',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.download_data_to_cloud(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def upload_from_aipha_to_host(self,
+			url='__auto__', 
+			port='22', 
+			username='ubuntu', 
+			identity_path='', 
+			target='__auto__', 
+			location='file.laz',
+			extension_url = '.1',
+			extension_target = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Upload a path to a host via ssh
+				
+				:param url: Url to host
+				:param port: Port to host
+				:param username: Username to host
+				:param identity_path:  Path to identity file on aipha
+				:param target: Path to upload from aipha
+				:param location: Location of file to upload on host
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_url', 'extension_target']
+			 iterable_names = ['url','target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_path', 'target': 'folder_target', 'location': 'location'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['url', 'target']
+				 itertable_iotypes = ['in', 'in']
+				 iterable_file_types = ['1', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_host_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_host_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_file', 'target': 'target', 'location': 'location'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['url', 'target']
+				 itertable_iotypes = ['in', 'in']
+				 iterable_file_types = ['1', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_host',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_host(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def download_from_host_to_aipha(self,
+			url='__auto__', 
+			port='22', 
+			username='ubuntu', 
+			identity_path='', 
+			location='file.laz', 
+			destination='__auto__',
+			extension_url = '.1',
+			extension_destination = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Download a path from a host via ssh
+				
+				:param url: Url to host
+				:param port: Port to host
+				:param username: Username to host
+				:param identity_path:  Path to identity file on aipha
+				:param location: Path to download from host
+				:param destination: Location to upload to aipha
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_url', 'extension_destination']
+			 iterable_names = ['url','destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_path', 'location': 'location', 'destination': 'folder_destination'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['url', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['1', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_host_to_aipha_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.download_from_host_to_aipha_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'url': 'url', 'port': 'port', 'username': 'username', 'identity_path': 'identity_file', 'location': 'location', 'destination': 'destination'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['url', 'destination']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['1', 'laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_host_to_aipha',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.download_from_host_to_aipha(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def download_from_s3_to_aipha(self,
+			access_key_id='YOUR_KEY_ID', 
+			secret_access_key='YOUR_SECRET_KEY', 
+			aws_region='eu-central-1', 
+			location='file.laz', 
+			destination='__auto__', 
+			bucket_name='Your S3 bucket',
+			extension_destination = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Download a path from a S3 bucket
+				
+				:param access_key_id: AWS access key ID
+				:param secret_access_key: AWS secret access key
+				:param aws_region: AWS region
+				:param location: Path to download from s3
+				:param destination: Location to upload to aipha
+				:param bucket_name: S3 bucket name
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_destination']
+			 iterable_names = ['destination']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'location': 'location', 'destination': 'folder_destination', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['destination']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_s3_to_aipha_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.download_from_s3_to_aipha_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'location': 'location', 'destination': 'destination', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['destination']
+				 itertable_iotypes = ['out']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'download_from_s3_to_aipha',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.download_from_s3_to_aipha(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def upload_from_aipha_to_s3(self,
+			access_key_id='YOUR_KEY_ID', 
+			secret_access_key='YOUR_SECRET_KEY', 
+			aws_region='eu-central-1', 
+			target='__auto__', 
+			location='file.laz', 
+			bucket_name='Your S3 bucket',
+			extension_target = '.laz',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Upload a path to a S3 bucket
+				
+				:param access_key_id: AWS access key ID
+				:param secret_access_key: AWS secret access key
+				:param aws_region: AWS region
+				:param target: Path to upload from aipha
+				:param location: Location of file to upload on s3
+				:param bucket_name: S3 bucket name
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_target']
+			 iterable_names = ['target']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'folder_target', 'location': 'location', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_s3_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_s3_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'access_key_id': 'access_key_id', 'secret_access_key': 'secret_access_key', 'aws_region': 'aws_region', 'target': 'target', 'location': 'location', 'bucket_name': 'bucket_name'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['target']
+				 itertable_iotypes = ['in']
+				 iterable_file_types = ['laz']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'upload_from_aipha_to_s3',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.sys.upload_from_aipha_to_s3(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'sys',
 				                          False,
 				                          uid)
 				 self._add_call_stack(operator)
@@ -9498,7 +9599,7 @@ class AIPHAProcessing:
 
 
 
-		 def max(self,
+		 def min(self,
 			inpath='__auto__', 
 			outpath='__auto__', 
 			dtype='float',
@@ -9506,7 +9607,7 @@ class AIPHAProcessing:
 			extension_outfile = '.npy',
 			folder_parallel_processing = '__auto__'):
 			 '''
-				Maximum of a matrix.
+				Minimum of a matrix.
 				
 				:param inpath: Input folder folder
 				:param outpath: Output folder folder
@@ -9538,7 +9639,7 @@ class AIPHAProcessing:
 				                iterable_file_types,
 				                uid,
 				                self.processing_folder,
-				                'max_folder',
+				                'min_folder',
 				                True,
 				                self._get_call_stack()
 				                )
@@ -9546,7 +9647,7 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['worker_instance_type'] = self.worker_instance_type,
 				 params_dict['manager_instance_type'] = self.manager_instance_type 
-				 result_promise = ao.val.max_folder(**params_dict)
+				 result_promise = ao.val.min_folder(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -9575,14 +9676,14 @@ class AIPHAProcessing:
 				                iterable_file_types,
 				                uid,
 				                self.processing_folder,
-				                'max',
+				                'min',
 				                False,
 				                self._get_call_stack()
 				                )
 				 params_dict = connector.resolve_auto_connections(params_dict)
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
-				 result_promise = ao.val.max(**params_dict)
+				 result_promise = ao.val.min(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -9889,6 +9990,105 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.val.values_greater_equal(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def max(self,
+			inpath='__auto__', 
+			outpath='__auto__', 
+			dtype='float',
+			extension_infile = '.npy',
+			extension_outfile = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Maximum of a matrix.
+				
+				:param inpath: Input folder folder
+				:param outpath: Output folder folder
+				:param dtype: Data type of the matrix (default: float)
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_infile', 'extension_outfile']
+			 iterable_names = ['inpath','outpath']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'inpath': 'infolder', 'outpath': 'outfolder', 'dtype': 'dtype'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['infolder', 'outfolder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'max_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.max_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'inpath': 'infile', 'outpath': 'outfile', 'dtype': 'dtype'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['infile', 'outfile']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'max',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.max(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -10915,6 +11115,208 @@ class AIPHAProcessing:
 				 params_dict['client'] = self.client
 				 params_dict['instance_type'] = self.worker_instance_type 
 				 result_promise = ao.val.values_add(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def argmax(self,
+			inpath='__auto__', 
+			outpath='__auto__', 
+			dtype='float', 
+			axis=-1,
+			extension_infile = '.npy',
+			extension_outfile = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Argmax of a matrix.
+				
+				:param inpath: Input folder folder
+				:param outpath: Output folder folder
+				:param dtype: Data type of the matrix (default: float)
+				:param axis: Axis to find the argmax (default: None)
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_infile', 'extension_outfile']
+			 iterable_names = ['inpath','outpath']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'inpath': 'infolder', 'outpath': 'outfolder', 'dtype': 'dtype', 'axis': 'axis'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['infolder', 'outfolder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'argmax_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.argmax_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'inpath': 'infile', 'outpath': 'outfile', 'dtype': 'dtype', 'axis': 'axis'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['infile', 'outfile']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'argmax',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.argmax(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          False,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+
+
+
+		 def argmin(self,
+			inpath='__auto__', 
+			outpath='__auto__', 
+			dtype='float', 
+			axis=-1,
+			extension_infile = '.npy',
+			extension_outfile = '.npy',
+			folder_parallel_processing = '__auto__'):
+			 '''
+				Argmin of a matrix.
+				
+				:param inpath: Input folder folder
+				:param outpath: Output folder folder
+				:param dtype: Data type of the matrix (default: float)
+				:param axis: Axis to find the argmax (default: None)
+				
+			 '''
+			 params_dict = locals().copy()
+			 params_dict.pop('self')
+			 print(params_dict)
+			 extension_names = ['extension_infile', 'extension_outfile']
+			 iterable_names = ['inpath','outpath']
+			 print(iterable_names, params_dict)
+			 iterable_subset_dict = self._get_param_subset(params_dict, iterable_names)
+			 folder_level_processing = self._check_folder_level_processing(folder_parallel_processing, iterable_subset_dict, True)
+			 print(folder_parallel_processing, iterable_subset_dict, True)
+			 params_dict.pop('folder_parallel_processing')
+			 if folder_level_processing:
+				 params_folder_mapping = {'inpath': 'infolder', 'outpath': 'outfolder', 'dtype': 'dtype', 'axis': 'axis'}
+				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
+
+				 itertable_params = ['infolder', 'outfolder']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'argmin_folder',
+				                True,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['worker_instance_type'] = self.worker_instance_type,
+				 params_dict['manager_instance_type'] = self.manager_instance_type 
+				 result_promise = ao.val.argmin_folder(**params_dict)
+				 operator = AIPHAOperator(connector, 
+				                          params_dict, 
+				                          result_promise, 
+				                          self.outer_class, 
+				                          'val',
+				                          True,
+				                          uid)
+				 self._add_call_stack(operator)
+				 return operator
+
+    
+			 else:
+				 params_file_mapping = {'inpath': 'infile', 'outpath': 'outfile', 'dtype': 'dtype', 'axis': 'axis'}
+				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
+				 for ext in extension_names:
+					 params_dict.pop(ext)
+
+				 itertable_params = ['infile', 'outfile']
+				 itertable_iotypes = ['in', 'out']
+				 iterable_file_types = ['npy', 'npy']
+				 uid = self.get_unique_id()
+				 connector = AIPHAConnector(
+				                params_dict,
+				                itertable_params, 
+				                itertable_iotypes, 
+				                iterable_file_types,
+				                uid,
+				                self.processing_folder,
+				                'argmin',
+				                False,
+				                self._get_call_stack()
+				                )
+				 params_dict = connector.resolve_auto_connections(params_dict)
+				 params_dict['client'] = self.client
+				 params_dict['instance_type'] = self.worker_instance_type 
+				 result_promise = ao.val.argmin(**params_dict)
 				 operator = AIPHAOperator(connector, 
 				                          params_dict, 
 				                          result_promise, 
@@ -15028,8 +15430,8 @@ class AIPHAProcessing:
 
 
 	 def _init_inner_classes(self):
-		 self.sys = self.sys(self)
 		 self.ml3d = self.ml3d(self)
+		 self.sys = self.sys(self)
 		 self.tdp = self.tdp(self)
 		 self.ops3d = self.ops3d(self)
 		 self.qc = self.qc(self)
