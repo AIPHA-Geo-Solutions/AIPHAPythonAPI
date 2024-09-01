@@ -6233,6 +6233,7 @@ class AIPHAProcessing:
 
 		 def crop_points_to_polygon(self,
 			in_points_path='__auto__', 
+			cols_in='', 
 			in_polygon_path='__auto__', 
 			out_path='__auto__',
 			extension_in_points_file = '.laz',
@@ -6243,6 +6244,7 @@ class AIPHAProcessing:
 				crop points to polygon
 				
 				:param in_points_path: Input folder folder for the point cloud
+				:param cols_in: columns to load
 				:param in_polygon_path: Input folder folder for the polygon (pickle)
 				:param out_path: Output folder folder for the cropped point cloud
 				
@@ -6258,7 +6260,7 @@ class AIPHAProcessing:
 			 print(folder_parallel_processing, iterable_subset_dict, True)
 			 params_dict.pop('folder_parallel_processing')
 			 if folder_level_processing:
-				 params_folder_mapping = {'in_points_path': 'in_points_folder', 'in_polygon_path': 'in_polygon_folder', 'out_path': 'out_folder'}
+				 params_folder_mapping = {'in_points_path': 'in_points_folder', 'cols_in': 'cols_in', 'in_polygon_path': 'in_polygon_folder', 'out_path': 'out_folder'}
 				 params_dict = self._remap_parameters(params_dict, params_folder_mapping)
 
 				 itertable_params = ['in_points_folder', 'in_polygon_folder', 'out_folder']
@@ -6293,7 +6295,7 @@ class AIPHAProcessing:
 
     
 			 else:
-				 params_file_mapping = {'in_points_path': 'in_points_file', 'in_polygon_path': 'in_polygon_file', 'out_path': 'out_file'}
+				 params_file_mapping = {'in_points_path': 'in_points_file', 'cols_in': 'cols_in', 'in_polygon_path': 'in_polygon_file', 'out_path': 'out_file'}
 				 params_dict = self._remap_parameters(params_dict, params_file_mapping)
 				 for ext in extension_names:
 					 params_dict.pop(ext)

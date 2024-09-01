@@ -7008,6 +7008,7 @@ class ops3d:
 
    def crop_points_to_polygon(client,
      in_points_file='points.laz',
+     cols_in='',
      in_polygon_file='polygon.pickle',
      out_file='cropped.laz',
      instance_type='x2large'):
@@ -7015,11 +7016,13 @@ class ops3d:
     | 
     | crop_points_to_polygon( client,
     |      in_points_file='points.laz',
+    |      cols_in='',
     |      in_polygon_file='polygon.pickle',
     |      out_file='cropped.laz',
     |      instance_type='x2large' )
 
 :param in_points_file: Input file path for the point cloud
+:param cols_in: columns to load
 :param in_polygon_file: Input file path for the polygon (pickle)
 :param out_file: Output file path for the cropped point cloud
 :param instance_type: type of cloud instance used for processing
@@ -7038,6 +7041,7 @@ class ops3d:
 
    def crop_points_to_polygon_folder(client,
      in_points_folder='/in_points_folder',
+     cols_in='',
      in_polygon_folder='/in_polygon_folder',
      out_folder='/out_folder',
      worker_instance_type='x2large',
@@ -7050,6 +7054,7 @@ class ops3d:
     | 
     | crop_points_to_polygon_folder(client,
     |      in_points_folder='/in_points_folder',
+    |      cols_in='',
     |      in_polygon_folder='/in_polygon_folder',
     |      out_folder='/out_folder',
     |      worker_instance_type='x2large',
@@ -7059,6 +7064,7 @@ class ops3d:
     |      extension_out_folder=".laz",
     |      skip_existing_files = False )
 
+:param cols_in: columns to load
 :param in_points_folder: Input folder folder for the point cloud
 :param in_polygon_folder: Input folder folder for the polygon (pickle)
 :param out_folder: Output folder folder for the cropped point cloud
